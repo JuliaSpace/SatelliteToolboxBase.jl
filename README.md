@@ -1,6 +1,9 @@
 SatelliteToolboxBase.jl
 =======================
 
+[![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
+
+
 This package contains base functions and type definitions for the
 **SatelliteToolbox.jl** ecosystem.
 
