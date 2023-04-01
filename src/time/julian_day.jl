@@ -222,10 +222,9 @@ function jd_to_date(JD::Number)
     day   = floor(Int, dayf)
     h     = floor(Int, hf)
     m     = floor(Int, mf)
-    s     = sf
 
     # Return.
-    return year, month, day, h, m, s
+    return year, month, day, h, m, sf
 end
 
 function jd_to_date(::Type{Int}, JD::Number)
