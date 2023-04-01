@@ -43,6 +43,30 @@
     )
 
     @test orb isa KeplerianElements{Int64, Float32}
+
+    orb = KeplerianElements(
+        date_to_jd(1986, 6, 19, 18, 35, 0),
+        7130000,
+        0,
+        98.405 |> deg2rad,
+        0,
+        0,
+        0
+    )
+
+    @test orb isa KeplerianElements{Float64, Float64}
+
+    orb = KeplerianElements(
+        date_to_jd(1986, 6, 19, 18, 35, 0),
+        7130000,
+        0,
+        98.405f0 |> deg2rad,
+        0,
+        0,
+        0
+    )
+
+    @test orb isa KeplerianElements{Float64, Float32}
 end
 
 @testset "Show" begin
