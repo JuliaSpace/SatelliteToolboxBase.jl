@@ -2,7 +2,7 @@ SatelliteToolboxBase.jl
 =======================
 
 [![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
-
+[![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
 
 This package contains base functions and type definitions for the
 **SatelliteToolbox.jl** ecosystem.
