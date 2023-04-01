@@ -1,0 +1,173 @@
+SatelliteToolboxBase.jl
+=======================
+
+This package contains base functions and type definitions for the
+**SatelliteToolbox.jl** ecosystem.
+
+> **Note**
+> This package contains only basic definitions used for other packages in the
+> **SatelliteToolbox.jl**. You will need to install other packages to perform
+> analyses and studies.
+
+## Installation
+
+``` julia
+julia> using Pkg
+julia> Pkg.install("SatelliteToolboxTimeBase")
+```
+
+## Usage
+
+### Constants
+
+We define and export the following constants in this package:
+
+| Constant              | Description                                                            |
+|:----------------------|:-----------------------------------------------------------------------|
+| `WGS84_ELLIPSOID`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
+| `WGS84_ELLIPSOID_F32` | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
+| `EGM08_J2`            | J2 perturbation term obtained from EGM-08 model.                       |
+| `EGM08_J3`            | J3 perturbation term obtained from EGM-08 model.                       |
+| `EGM08_J4`            | J4 perturbation term obtained from EGM-08 model.                       |
+| `JD_J2000`            | Julian Day of J2000.0 epoch (2000-01-01T12:00:00.000).                 |
+
+### Orbit
+
+This package defines the abstract type `Orbit` for all orbit representations.
+
+Currently, we defined two types to represent an orbit: `KeplerianElements` and
+`OrbitStateVector`.
+
+`KeplerianElements` defines an orbit in terms of the [Keplerian
+elements](https://en.wikipedia.org/wiki/Orbital_elements). This object is
+created using the function:
+
+```julia
+function KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
+```
+
+where it returns an orbit representation using Keplerian elements with
+semi-major axis `a` [m], eccentricity `e` [ ], inclination `i` [rad], right
+ascension of the ascending node `Ω` [rad], argument of perigee `ω` [rad], and
+true anomaly `f` [rad].
+
+```julia-repl
+julia> orb = KeplerianElements(
+           date_to_jd(1986, 6, 19, 18, 35, 0),
+           7130.982e3,
+              0.0001111,
+             98.405 |> deg2rad,
+            200.000 |> deg2rad,
+             90.000 |> deg2rad,
+            123.456 |> deg2rad,
+       )
+KeplerianElements{Float64, Float64}:
+           Epoch :    2.4466e6 (1986-06-19T18:35:00)
+ Semi-major axis : 7130.98      km
+    Eccentricity :    0.0001111
+     Inclination :   98.405     °
+            RAAN :  200.0       °
+ Arg. of Perigee :   90.0       °
+    True Anomaly :  123.456     °
+```
+
+`OrbitStateVector` defines the orbit in terms of the [object state
+vector](https://en.wikipedia.org/wiki/Orbital_state_vectors). This object is
+created using the function:
+
+```julia
+function OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
+```
+
+where it creates an orbit state vector with epoch `t` [Julian Day], position `r`
+[m], velocity `v` [m / s], and acceleration `a` [m / s²]. If the latter is
+omitted, it will be filled with `[0, 0, 0]`.
+
+### Time
+
+> **Note**
+> Julia already has some of the functionality implemented here.
+> However, we use those functions for historical reasons or because the
+> implementation here is more straightforward. For example, currently, we need
+> to break an instant into year, month, day, hour, minute, second, and
+> millisecond to convert it to Julian day using Julia's `Dates` package, where
+> all terms must be `Integer`s. Here, `date_to_jd` accepts a floating-point
+> seconds, leading to a easier initialization.
+
+#### Converting epochs to Julian day
+
+An epoch can be converted to Julian day using the function `date_to_jd`. This
+function can receive:
+
+- A set of numbers indicating the year, month, day, hour (24h-format), minute,
+  and second;
+- An object of type `Date`; or
+- An object of type `DateTime`.
+
+```julia
+julia> date_to_jd(1986, 6, 19, 18, 35, 10.123456)
+2.446601274422725e6
+
+julia> date_to_jd(1986, 6, 19)
+2.4466005e6
+
+julia> date_to_jd(Date(1986, 6, 19))
+2.4466005e6
+
+julia> date_to_jd(DateTime(1986, 6, 19, 18, 35, 10))
+2.446601274421296e6
+```
+
+#### Converting Julian day to epochs
+
+We can convert a Julian day to an epoch using the function `jd_to_date`. Its
+signature is:
+
+```julia
+jd_to_date([T,] JD::Number)
+```
+
+where `T` is the converted object format.
+
+If `T` is omitted or `Int`, then a tuple with the following data will be
+returned:
+
+- Year.
+- Month (`1` => **January**, `2` => **February**, ...).
+- Day.
+- Hour (0 - 24).
+- Minute (0 - 59).
+- Second (0 - 59).
+
+Notice that if `T` is `Int`, the seconds field will be rounded to an `Int`.
+Otherwise, it will be floating point.
+
+If `T` is `Date`, it will return the Julia structure `Date`. Notice that the
+hours, minutes, and seconds will be neglected because the structure `Date` does
+not support them.
+
+If `T` is `DateTime`, it will return the Julia structure `DateTime`.
+
+```julia
+julia> jd_to_date(2.446601274422725e6)
+(1986, 6, 19, 18, 35, 10.1234570145607)
+
+julia> jd_to_date(Int, 2.446601274422725e6)
+(1986, 6, 19, 18, 35, 10)
+
+julia> jd_to_date(Date, 2.446601274422725e6)
+1986-06-19
+
+julia> jd_to_date(DateTime, 2.446601274422725e6)
+1986-06-19T18:35:10.123
+```
+
+#### Greenwich mean sidereal time
+
+The function `jd_to_gmst` converts a Julian day into the Greenwich mean sidereal
+time [rad]:
+
+```julia
+julia> jd_to_gmst(2.446601274422725e6)
+3.2547373166809748
+```
