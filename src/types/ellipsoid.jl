@@ -1,19 +1,18 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Definitions of types related to ellipsoids.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export Ellipsoid
 
 """
-    Ellipsoid{T}
+    Ellipsoid{T <: Number}
 
-Ellipsoid of rotation to be used for geocentric, geodetic and ECEF
-transformations.
+Ellipsoid of rotation to be used for geocentric, geodetic and ECEF transformations.
 
 # Fields
 
@@ -23,15 +22,15 @@ transformations.
 - `e²::T`: Eccentricity squared.
 - `el²::T`: Second Eccentricity squared.
 """
-struct Ellipsoid{T}
+struct Ellipsoid{T <: Number}
     # Main Variables
-    # ==========================================================================
+    # ======================================================================================
 
     a::T # Semi-major axis in [m]
     f::T # Flattening of the ellipsoid
 
     # Auxiliary variables, pre-computed for convenience
-    # ==========================================================================
+    # ======================================================================================
 
     b::T # Semi-minor axis in [m]
     e²::T # Eccentricity squared
@@ -41,11 +40,10 @@ end
 """
     Ellipsoid(a::T1, f::T2) where {T1 <: Number, T2 <: Number}
 
-Construct an ellipsoid (see [`Ellipsoid`](@ref)) with semi-major axis `a` and
-flattening `f`. The other elements in the structure are computed automatically.
+Construct an ellipsoid (see [`Ellipsoid`](@ref)) with semi-major axis `a` and flattening
+`f`. The other elements in the structure are computed automatically.
 
-The ellipsoid type is obtained by promoting `T1` and `T2` and converting to
-`float`.
+The ellipsoid type is obtained by promoting `T1` and `T2` and converting to `float`.
 """
 function Ellipsoid(a::T1, f::T2) where {T1 <: Number, T2 <: Number}
     a <= 0 && throw(ArgumentError("The semi-major axis must be positive."))

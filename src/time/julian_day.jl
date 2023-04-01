@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions related to dates.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # References
-# ==============================================================================
+# ==========================================================================================
 #
 #   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
 #       Microcosm Press, Hawthorn, CA, USA.
@@ -17,50 +17,46 @@
 #
 #   [3] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Remarks
-# ==============================================================================
+# ==========================================================================================
 #
 # Information about the Julian Day obtained from [2] (Accessed on 2018-04-11).
-# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 #
-# The Julian Day Count is a uniform count of days from a remote epoch in the
-# past (-4712 January 1, 12 hours Greenwich Mean Time (Julian proleptic
-# Calendar) = 4713 BCE January 1, 12 hours GMT (Julian proleptic Calendar) =
-# 4714 BCE November 24, 12 hours GMT (Gregorian proleptic Calendar)). At this
-# instant, the Julian Day Number is 0. It is convenient for astronomers to use
-# since it is not necessary to worry about odd numbers of days in a month,
-# leap years, etc. Once you have the Julian Day Number of a particular date
-# in history, it is easy to calculate time elapsed between it and any other
-# Julian Day Number.
+# The Julian Day Count is a uniform count of days from a remote epoch in the past (-4712
+# January 1, 12 hours Greenwich Mean Time (Julian proleptic Calendar) = 4713 BCE January 1,
+# 12 hours GMT (Julian proleptic Calendar) = 4714 BCE November 24, 12 hours GMT (Gregorian
+# proleptic Calendar)). At this instant, the Julian Day Number is 0. It is convenient for
+# astronomers to use since it is not necessary to worry about odd numbers of days in a
+# month, leap years, etc. Once you have the Julian Day Number of a particular date in
+# history, it is easy to calculate time elapsed between it and any other Julian Day Number.
 #
-# The Julian Day Count has nothing to do with the Julian Calendar introduced by
-# Julius Caesar. It is named for Julius Scaliger, the father of Josephus Justus
-# Scaliger, who invented the concept. It can also be thought of as a logical
-# follow-on to the old Egyptian civil calendar, which also used years of
-# constant lengths.
+# The Julian Day Count has nothing to do with the Julian Calendar introduced by Julius
+# Caesar. It is named for Julius Scaliger, the father of Josephus Justus Scaliger, who
+# invented the concept. It can also be thought of as a logical follow-on to the old Egyptian
+# civil calendar, which also used years of constant lengths.
 #
-# Scaliger chose the particular date in the remote past because it was before
-# recorded history and because in that year, three important cycles coincided
-# with their first year of the cycle: The 19-year Metonic Cycle, the 15-year
-# Indiction Cycle (a Roman Taxation Cycle) and the 28-year Solar Cycle (the
-# length of time for the old Julian Calendar to repeat exactly).
+# Scaliger chose the particular date in the remote past because it was before recorded
+# history and because in that year, three important cycles coincided with their first year
+# of the cycle: The 19-year Metonic Cycle, the 15-year Indiction Cycle (a Roman Taxation
+# Cycle) and the 28-year Solar Cycle (the length of time for the old Julian Calendar to
+# repeat exactly).
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export date_to_jd, jd_to_date, is_leap_year
 
-################################################################################
-#                                  Functions
-################################################################################
+############################################################################################
+#                                        Functions
+############################################################################################
 
 """
     date_to_jd(Y::Integer, M::Integer, D::Integer[, h::Integer, m::Integer, s::Number])
 
-Convert a date represented using the Gregorian Calendar (Year = `y`, Month = `M`
-(1-12), Day = `D`, Hour = `h` (0-24), minute = `m`, and second = `s`) to Julian
-Day.
+Convert a date represented using the Gregorian Calendar (Year = `y`, Month = `M` (1-12), Day
+= `D`, Hour = `h` (0-24), minute = `m`, and second = `s`) to Julian Day.
 
 If the `h`, `m`, and `s` is omitted, the function assumes they are 0.
 
@@ -81,11 +77,20 @@ function date_to_jd(
     s::Number = 0
 )
     # Check the input.
-    ((M < 1) || (M > 12)) && throw(ArgumentError("Invalid month. It must be an integer between 1 and 12."))
-    ((D < 1) || (D > 31)) && throw(ArgumentError("Invalid day. It must be an integer between 1 and 31."))
-    ((h < 0) || (h > 23)) && throw(ArgumentError("Invalid hour. It must be an integer between 0 and 23."))
-    ((m < 0) || (m > 59)) && throw(ArgumentError("Invalid minute. It must be an integer between 0 and 59."))
-    ((s < 0) || (s > 60)) && throw(ArgumentError("Invalid second. It must be a number between 0 and 60."))
+    ((M < 1) || (M > 12)) &&
+        throw(ArgumentError("Invalid month. It must be an integer between 1 and 12."))
+
+    ((D < 1) || (D > 31)) &&
+        throw(ArgumentError("Invalid day. It must be an integer between 1 and 31."))
+
+    ((h < 0) || (h > 23)) &&
+        throw(ArgumentError("Invalid hour. It must be an integer between 0 and 23."))
+
+    ((m < 0) || (m > 59)) &&
+        throw(ArgumentError("Invalid minute. It must be an integer between 0 and 59."))
+
+    ((s < 0) || (s > 60)) &&
+        throw(ArgumentError("Invalid second. It must be a number between 0 and 60."))
 
     # Check if the date is valid in terms of number of days in a month.
     if M == 2
@@ -153,13 +158,12 @@ end
 """
     jd_to_date([T,] JD::Number)
 
-Convert the Julian Day `JD` to Gregorian Calendar. The optional parameter `T`
-defines the return type.
+Convert the Julian Day `JD` to Gregorian Calendar. The optional parameter `T` defines the
+return type.
 
 # Returns
 
-If `T` is omitted or `Int`, then a tuple with the following data will be
-returned:
+If `T` is omitted or `Int`, then a tuple with the following data will be returned:
 
 - Year.
 - Month (`1` => **January**, `2` => **February**, ...).
@@ -168,24 +172,23 @@ returned:
 - Minute (0 - 59).
 - Second (0 - 59).
 
-Notice that if `T` is `Int`, the seconds field will be rounded to an `Int`.
-Otherwise, it will be floating point.
+Notice that if `T` is `Int`, the seconds field will be rounded to an `Int`.  Otherwise, it
+will be floating point.
 
-If `T` is `Date`, it will return the Julia structure `Date`. Notice that the
-hours, minutes, and seconds will be neglected because the structure `Date`
-does not support them.
+If `T` is `Date`, it will return the Julia structure `Date`. Notice that the hours, minutes,
+and seconds will be neglected because the structure `Date` does not support them.
 
 If `T` is `DateTime`, it will return the Julia structure `DateTime`.
 
 # Remarks
 
-The algorithm was obtained from \\[1] (accessed on 2022-07-20). In [1], there is
-the following warning:
+The algorithm was obtained from \\[1] (accessed on 2022-07-20). In [1], there is the
+following warning:
 
-> Note: This method will not give dates accurately on the Gregorian Proleptic
-> Calendar, i.e., the calendar you get by extending the Gregorian calendar
-> backwards to years earlier than 1582. using the Gregorian leap year rules.
-> In particular, the method fails if Y < 400.
+!!! note
+    This method will not give dates accurately on the Gregorian Proleptic Calendar, i.e.,
+    the calendar you get by extending the Gregorian calendar backwards to years earlier than
+    1582 using the Gregorian leap year rules. In particular, the method fails if Y < 400.
 
 # References
 
@@ -228,10 +231,9 @@ end
 function jd_to_date(::Type{Int}, JD::Number)
     year, month, day, h, m, s = jd_to_date(JD)
 
-    # If the seconds are large than 59.5, we must take care of the rounding. In
-    # this case, we should advance a minute that can trigger an advance in all
-    # the other parameters. The safest way here is to just call the function
-    # `jd_to_date` again with an offset.
+    # If the seconds are large than 59.5, we must take care of the rounding. In this case,
+    # we should advance a minute that can trigger an advance in all the other parameters.
+    # The safest way here is to just call the function `jd_to_date` again with an offset.
 
     if s >= 59.5
         Δs = 60.01 - s

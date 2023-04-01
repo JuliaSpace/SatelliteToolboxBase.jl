@@ -3,14 +3,15 @@ SatelliteToolboxBase.jl
 
 [![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
+[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
 This package contains base functions and type definitions for the
 **SatelliteToolbox.jl** ecosystem.
 
 > **Note**
 > This package contains only basic definitions used for other packages in the
-> **SatelliteToolbox.jl**. You will need to install other packages to perform
-> analyses and studies.
+> **SatelliteToolbox.jl**. You will need to install other packages to perform analyses and
+> studies.
 
 ## Installation
 
@@ -42,17 +43,16 @@ Currently, we defined two types to represent an orbit: `KeplerianElements` and
 `OrbitStateVector`.
 
 `KeplerianElements` defines an orbit in terms of the [Keplerian
-elements](https://en.wikipedia.org/wiki/Orbital_elements). This object is
-created using the function:
+elements](https://en.wikipedia.org/wiki/Orbital_elements). This object is created using the
+function:
 
 ```julia
 function KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
 ```
 
-where it returns an orbit representation using Keplerian elements with
-semi-major axis `a` [m], eccentricity `e` [ ], inclination `i` [rad], right
-ascension of the ascending node `Ω` [rad], argument of perigee `ω` [rad], and
-true anomaly `f` [rad].
+where it returns an orbit representation using Keplerian elements with semi-major axis `a`
+[m], eccentricity `e` [ ], inclination `i` [rad], right ascension of the ascending node `Ω`
+[rad], argument of perigee `ω` [rad], and true anomaly `f` [rad].
 
 ```julia-repl
 julia> orb = KeplerianElements(
@@ -75,8 +75,8 @@ KeplerianElements{Float64, Float64}:
 ```
 
 `OrbitStateVector` defines the orbit in terms of the [object state
-vector](https://en.wikipedia.org/wiki/Orbital_state_vectors). This object is
-created using the function:
+vector](https://en.wikipedia.org/wiki/Orbital_state_vectors). This object is created using
+the function:
 
 ```julia
 function OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])

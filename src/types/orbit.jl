@@ -1,23 +1,23 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Types and structures related to orbit representation.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export Orbit, KeplerianElements, OrbitStateVector
 
 """
-    Orbit
+    Orbit{Tepoch <: Number, T <: Number}
 
 Abstract type of an orbit representation.
 """
-abstract type Orbit{Tepoch, T} end
+abstract type Orbit{Tepoch <: Number, T <: Number} end
 
 """
-    KeplerianElements{Tepoch, T}
+    KeplerianElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 
 This structure defines the orbit in terms of the Keplerian elements.
 
@@ -31,7 +31,7 @@ This structure defines the orbit in terms of the Keplerian elements.
 - `ω::T`: Argument of perigee [rad].
 - `f::T`: True anomaly [rad].
 """
-struct KeplerianElements{Tepoch, T} <: Orbit{Tepoch, T}
+struct KeplerianElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     t::Tepoch
     a::T
     e::T
@@ -44,10 +44,9 @@ end
 """
     KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
 
-Create an orbit representation using Keplerian elements with semi-major axis `a`
-[m], eccentricity `e` [ ], inclination `i` [rad], right ascension of the
-ascending node `Ω` [rad], argument of perigee `ω` [rad], and true anomaly `f`
-[rad].
+Create an orbit representation using Keplerian elements with semi-major axis `a` [m],
+eccentricity `e` [ ], inclination `i` [rad], right ascension of the ascending node `Ω`
+[rad], argument of perigee `ω` [rad], and true anomaly `f` [rad].
 
 The object type is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6`.
 """
@@ -94,9 +93,9 @@ end
 """
     OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
 
-Create an orbit state vector with epoch `t` [Julian Day], position `r` [m],
-velocity `v` [m / s], and acceleration `a` [m / s²]. If the latter is omitted,
-it will be filled with `[0, 0, 0]`.
+Create an orbit state vector with epoch `t` [Julian Day], position `r` [m], velocity `v`
+[m / s], and acceleration `a` [m / s²]. If the latter is omitted, it will be filled with
+`[0, 0, 0]`.
 
 The object type is obtained by promoting `Tr`, `Tv`, and `Ta`.
 """
