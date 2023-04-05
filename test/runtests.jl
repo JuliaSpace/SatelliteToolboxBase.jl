@@ -31,3 +31,7 @@ end
         include("./time/issues.jl")
     end
 end
+
+@testset "Issues" verbose = true begin
+    include("./issues.jl")
+end

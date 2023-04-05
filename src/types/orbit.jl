@@ -10,14 +10,14 @@
 export Orbit, KeplerianElements, OrbitStateVector
 
 """
-    Orbit{Tepoch <: Number, T <: Number}
+    abstract type Orbit{Tepoch<:Number, T<:Number}
 
 Abstract type of an orbit representation.
 """
-abstract type Orbit{Tepoch <: Number, T <: Number} end
+abstract type Orbit{Tepoch<:Number, T<:Number} end
 
 """
-    KeplerianElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+    KeplerianElements{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
 
 This structure defines the orbit in terms of the Keplerian elements.
 
@@ -31,7 +31,7 @@ This structure defines the orbit in terms of the Keplerian elements.
 - `ω::T`: Argument of perigee [rad].
 - `f::T`: True anomaly [rad].
 """
-struct KeplerianElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+struct KeplerianElements{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
     t::Tepoch
     a::T
     e::T
@@ -72,7 +72,7 @@ function KeplerianElements(
 end
 
 """
-    OrbitStateVector{Tepoch, T}
+    struct OrbitStateVector{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
 
 Store the state vector representation of an orbit.
 
@@ -83,7 +83,7 @@ Store the state vector representation of an orbit.
 - `v::SVector{3, T}`: Velocity vector [m/s].
 - `a::SVector{3, T}`: Acceleration vector [m/s²].
 """
-struct OrbitStateVector{Tepoch, T} <: Orbit{Tepoch, T}
+struct OrbitStateVector{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
     t::Tepoch
     r::SVector{3, T}
     v::SVector{3, T}
