@@ -7,7 +7,7 @@ using LinearAlgebra
 using ReferenceFrameRotations
 using StaticArrays
 
-import Base: show
+import Base: convert, show
 
 ############################################################################################
 #                                          Types
@@ -30,6 +30,7 @@ include("./constants.jl")
 #                                         Includes
 ############################################################################################
 
+include("./orbit/conversions.jl")
 include("./orbit/kepler_to_rv.jl")
 include("./orbit/kepler_to_sv.jl")
 include("./orbit/rv_to_kepler.jl")

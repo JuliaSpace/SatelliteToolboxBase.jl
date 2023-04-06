@@ -393,3 +393,99 @@ end
         @test ke isa KeplerianElements{Float32, Float32}
     end
 end
+
+# Files: ./src/orbit/conversions.jl
+# ==========================================================================================
+
+@testset "Conversions using Julia Built-in System" verbose = true begin
+    @testset "KeplerianElements => KeplerianElements" begin
+        ke  = KeplerianElements(1, 2, 3, 4, 5, 6, 7)
+        kec = convert(KeplerianElements{Float64, Float32}, ke)
+
+        @test kec isa KeplerianElements{Float64, Float32}
+        @test ke.t ≈ 1
+        @test ke.a ≈ 2
+        @test ke.e ≈ 3
+        @test ke.i ≈ 4
+        @test ke.Ω ≈ 5
+        @test ke.ω ≈ 6
+        @test ke.f ≈ 7
+    end
+
+    @testset "KeplerianElements => OrbitStateVector" begin
+        p    = 11067.790 * 1000
+        e    = 0.83285
+        i    = 87.87  * π / 180
+        RAAN = 227.89 * π / 180
+        w    = 53.38  * π / 180
+        f    = 92.335 * π / 180
+        a    = p / (1 - e^2)
+
+        ke = KeplerianElements(Int64(123), a, e, i, RAAN, w, f)
+        sv = convert(OrbitStateVector, ke)
+
+        @test sv.r[1] / 1000 ≈ +6525.344 atol = 5e-2
+        @test sv.r[2] / 1000 ≈ +6861.535 atol = 5e-2
+        @test sv.r[3] / 1000 ≈ +6449.125 atol = 5e-2
+        @test sv.v[1] / 1000 ≈ +4.902276 atol = 1e-4
+        @test sv.v[2] / 1000 ≈ +5.533124 atol = 1e-4
+        @test sv.v[3] / 1000 ≈ -1.975709 atol = 1e-4
+        @test sv isa OrbitStateVector{Int64, Float64}
+
+        ke = KeplerianElements(Int64(123), a, e, i, RAAN, w, f)
+        sv = convert(OrbitStateVector{Float64, Float32}, ke)
+
+        @test sv.r[1] / 1000 ≈ +6525.344 atol = 5e-2
+        @test sv.r[2] / 1000 ≈ +6861.535 atol = 5e-2
+        @test sv.r[3] / 1000 ≈ +6449.125 atol = 5e-2
+        @test sv.v[1] / 1000 ≈ +4.902276 atol = 1e-4
+        @test sv.v[2] / 1000 ≈ +5.533124 atol = 1e-4
+        @test sv.v[3] / 1000 ≈ -1.975709 atol = 1e-4
+        @test sv isa OrbitStateVector{Float64, Float32}
+    end
+
+    @testset "OrbitStateVector => OrbitStateVector" begin
+        sv  = OrbitStateVector(Int64(123), [1, 2, 3], [4, 5, 6])
+        svc = convert(OrbitStateVector{Float64, Float32}, sv)
+
+        @test svc isa OrbitStateVector{Float64, Float32}
+        @test sv.r[1] ≈ 1
+        @test sv.r[2] ≈ 2
+        @test sv.r[3] ≈ 3
+        @test sv.v[1] ≈ 4
+        @test sv.v[2] ≈ 5
+        @test sv.v[3] ≈ 6
+    end
+
+    @testset "OrbitStateVector => KeplerianElements" begin
+        r_i = [6525.344; 6861.535; 6449.125] * 1000
+        v_i = [4.902276; 5.533124; -1.975709] * 1000
+
+        sv  = OrbitStateVector(Int64(123), r_i, v_i)
+        ke  = convert(KeplerianElements, sv)
+
+        a, e, i, RAAN, w, f = ke.a, ke.e, ke.i, ke.Ω, ke.ω, ke.f
+        p = a * (1 - e^2)
+
+        @test p / 1000       ≈ 11067.790 atol = 5e-2
+        @test e              ≈ 0.83285   atol = 1e-5
+        @test i    * 180 / π ≈ 87.87     atol = 1e-2
+        @test RAAN * 180 / π ≈ 227.89    atol = 1e-2
+        @test w    * 180 / π ≈ 53.38     atol = 1e-2
+        @test f    * 180 / π ≈ 92.335    atol = 1e-3
+        @test ke isa KeplerianElements{Int64, Float64}
+
+        ke = convert(KeplerianElements{Float64, Float32}, sv)
+
+        a, e, i, RAAN, w, f = ke.a, ke.e, ke.i, ke.Ω, ke.ω, ke.f
+        p = a * (1 - e^2)
+
+        @test p / 1000       ≈ 11067.790 atol = 5e-2
+        @test e              ≈ 0.83285   atol = 1e-5
+        @test i    * 180 / π ≈ 87.87     atol = 1e-2
+        @test RAAN * 180 / π ≈ 227.89    atol = 1e-2
+        @test w    * 180 / π ≈ 53.38     atol = 1e-2
+        @test f    * 180 / π ≈ 92.335    atol = 1e-3
+        @test ke isa KeplerianElements{Float64, Float32}
+    end
+end

@@ -9,11 +9,11 @@ using StaticArrays
 end
 
 @testset "Orbit" verbose = true begin
-    @testset "Keplerian elements" verbose = true begin
+    @testset "Keplerian Elements" verbose = true begin
         include("./orbit/keplerian_elements.jl")
     end
 
-    @testset "Orbit state vector" verbose = true begin
+    @testset "Orbit State Vector" verbose = true begin
         include("./orbit/orbit_state_vector.jl")
     end
 
@@ -23,11 +23,11 @@ end
 end
 
 @testset "Time" verbose = true begin
-    @testset "Julian day" verbose = true begin
+    @testset "Julian Day" verbose = true begin
         include("./time/julian_day.jl")
     end
 
-    @testset "Greenwich mean sidereal time (GMST)" verbose = true begin
+    @testset "Greenwich Mean Sidereal Time (GMST)" verbose = true begin
         include("./time/gmst.jl")
     end
 
