@@ -3,7 +3,7 @@
 # Description
 # ==========================================================================================
 #
-#   Conversion from the Keplerian elements to position and vector state vector.
+#   Conversion from the Keplerian elements to position and velocity state vector.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
