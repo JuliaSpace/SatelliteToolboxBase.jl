@@ -1,6 +1,16 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.1.2
+-------------
+
+- ![Feature][badge-feature] We added the constant `GM_EARTH`.
+- ![Feature][badge-feature] The following functions to convert between the orbit
+  representations were added: `kepler_to_rv`, `rv_to_kepler`, `kepler_to_sv`, and
+  `sv_to_kepler`.
+- ![Feature][badge-feature] The orbit representations can be converted between each other
+  using the Julia built-in conversion system (`convert`).
+
 Version 0.1.1
 -------------
 
