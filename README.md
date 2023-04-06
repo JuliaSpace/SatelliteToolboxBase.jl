@@ -87,6 +87,36 @@ where it creates an orbit state vector with epoch `t` [Julian Day], position `r`
 [m], velocity `v` [m / s], and acceleration `a` [m / s²]. If the latter is
 omitted, it will be filled with `[0, 0, 0]`.
 
+``` julia-repl
+julia> r_i = [6525.344; 6861.535; 6449.125] * 1000
+3-element Vector{Float64}:
+ 6.525344e6
+ 6.861535e6
+ 6.449125e6
+
+julia> v_i = [49.02276; 55.33124; -19.75709] * 1000
+3-element Vector{Float64}:
+  49022.759999999995
+  55331.24
+ -19757.09
+
+julia> sv = OrbitStateVector(date_to_jd(1986, 6, 19, 18, 35, 0), r_i, v_i)
+OrbitStateVector{Float64, Float64}:
+  epoch : 2.4466e6 (1986-06-19T18:35:00)
+      r : [6525.34, 6861.53, 6449.12]   km
+      v : [49.0228, 55.3312, -19.7571]  km/s
+```
+
+The conversion between the orbit representations can be performed using the following
+functions:
+
+- `kepler_to_rv`: Convert the Keplerian elements to Cartesian position and velocity.
+- `kepler_to_sv`: convert the Keplerian elements to orbit state vector.
+- `rv_to_kepler`: Convert the Cartesian position and velocity to Keplerian elements.
+- `sv_to_kepler`: Convert the orbit state vector to Keplerian elements.
+
+For more information, see the built-in documentation of those functions.
+
 ### Time
 
 > **Note**
