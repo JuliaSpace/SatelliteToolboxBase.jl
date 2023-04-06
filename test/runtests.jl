@@ -16,6 +16,10 @@ end
     @testset "Orbit state vector" verbose = true begin
         include("./orbit/orbit_state_vector.jl")
     end
+
+    @testset "Conversions" verbose = true begin
+        include("./orbit/conversions.jl")
+    end
 end
 
 @testset "Time" verbose = true begin

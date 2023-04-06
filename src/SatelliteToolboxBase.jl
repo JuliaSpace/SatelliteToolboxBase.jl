@@ -3,6 +3,8 @@ module SatelliteToolboxBase
 using Crayons
 using Dates
 using Printf
+using LinearAlgebra
+using ReferenceFrameRotations
 using StaticArrays
 
 import Base: show
@@ -27,6 +29,9 @@ include("./constants.jl")
 ############################################################################################
 #                                         Includes
 ############################################################################################
+
+include("./orbit/kepler_to_rv.jl")
+include("./orbit/rv_to_kepler.jl")
 
 include("./show/orbit.jl")
 
