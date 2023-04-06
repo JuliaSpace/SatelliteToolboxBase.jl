@@ -31,7 +31,9 @@ include("./constants.jl")
 ############################################################################################
 
 include("./orbit/kepler_to_rv.jl")
+include("./orbit/kepler_to_sv.jl")
 include("./orbit/rv_to_kepler.jl")
+include("./orbit/sv_to_kepler.jl")
 
 include("./show/orbit.jl")
 
