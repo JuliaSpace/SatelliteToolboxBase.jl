@@ -28,6 +28,7 @@ We define and export the following constants in this package:
 
 | Constant              | Description                                                            |
 |:----------------------|:-----------------------------------------------------------------------|
+| `GM_EARTH`            | Earth's standard gravitational parameter.
 | `WGS84_ELLIPSOID`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
 | `WGS84_ELLIPSOID_F32` | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
 | `EGM08_J2`            | J2 perturbation term obtained from EGM-08 model.                       |
