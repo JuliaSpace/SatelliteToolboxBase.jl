@@ -7,13 +7,13 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export GM_EARTH
+export GM_EARTH, EARTH_ANGULAR_SPEED
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
 export EGM08_J2, EGM08_J3, EGM08_J4
 export JD_J2000
 
 ############################################################################################
-#                                    General Parameters
+#                         General Parameters Related to the Earth
 ############################################################################################
 
 """
@@ -22,6 +22,13 @@ export JD_J2000
 Earth's standard gravitational parameter [m³ / s²].
 """
 const GM_EARTH = 3.986004418e14
+
+"""
+    const EARTH_ANGULAR_SPEED
+
+Earth's angular speed [rad / s] without LOD correction.
+"""
+const EARTH_ANGULAR_SPEED = 7.292_115_146_706_979e-5
 
 ############################################################################################
 #                                        Ellipsoids
