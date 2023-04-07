@@ -1,6 +1,11 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.1.3
+-------------
+
+- ![Feature][badge-feature] We added the constant `EARTH_ANGULAR_SPEED`.
+
 Version 0.1.2
 -------------
 
