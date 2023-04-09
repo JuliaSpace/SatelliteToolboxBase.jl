@@ -17,7 +17,11 @@ end
         include("./orbit/orbit_state_vector.jl")
     end
 
-    @testset "Conversions" verbose = true begin
+    @testset "Conversions between Orbit Anomalies" verbose = true begin
+        include("./orbit/anomalies.jl")
+    end
+
+    @testset "Conversions between Orbit Representations" verbose = true begin
         include("./orbit/conversions.jl")
     end
 end
