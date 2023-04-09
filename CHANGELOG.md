@@ -1,6 +1,20 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.0
+-------------
+
+- ![Feature][badge-feature] We added functions to convert between orbit anomalies:
+  - `mean_to_eccentric_anomaly`
+  - `mean_to_true_anomaly`
+  - `eccentric_to_true_anomaly`
+  - `eccentric_to_mean_anomaly`
+  - `true_to_eccentric_anomaly`
+  - `true_to_mean_anomaly`
+- ![Info][badge-info]: We are increasing the minor version here to avoid breaking
+  **SatelliteToolboxTransformations.jl** since the functions described in the previous point
+  were initially implemented there.
+
 Version 0.1.3
 -------------
 
