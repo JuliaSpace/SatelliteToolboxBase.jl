@@ -1,6 +1,11 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.1
+-------------
+
+- ![Feature][badge-feature] We added the constant `ASTRONOMICAL_UNIT`.
+
 Version 0.2.0
 -------------
 
