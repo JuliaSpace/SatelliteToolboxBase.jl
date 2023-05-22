@@ -28,6 +28,7 @@ We define and export the following constants in this package:
 
 | Constant              | Description                                                            |
 |:----------------------|:-----------------------------------------------------------------------|
+| `ASTRONOMICAL_UNIT`   | The approximate distance between the Earth and the Sun.                |
 | `GM_EARTH`            | Earth's standard gravitational parameter.                              |
 | `EARTH_ANGULAR_SPEED` | Earth's angular speed without LOD correction.                          |
 | `WGS84_ELLIPSOID`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
