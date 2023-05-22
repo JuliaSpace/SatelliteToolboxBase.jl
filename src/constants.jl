@@ -7,7 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export GM_EARTH, EARTH_ANGULAR_SPEED
+export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
 export EGM08_J2, EGM08_J3, EGM08_J4
 export JD_J2000
@@ -15,6 +15,13 @@ export JD_J2000
 ############################################################################################
 #                         General Parameters Related to the Earth
 ############################################################################################
+
+"""
+    const ASTRONOMICAL_UNIT
+
+The approximate distance between the Earth and the Sun [m].
+"""
+const ASTRONOMICAL_UNIT = 1.495978707e11
 
 """
     const GM_EARTH
