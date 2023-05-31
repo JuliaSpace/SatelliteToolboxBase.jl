@@ -99,7 +99,7 @@ function date_to_jd(
         else
             (D > 28) && throw(ArgumentError("Wrong day number given the year and the month."))
         end
-    elseif M in [4, 6, 9, 11]
+    elseif M in (4, 6, 9, 11)
         (D > 30) && throw(ArgumentError("Wrong day number given the year and the month."))
     end
 
@@ -113,8 +113,8 @@ function date_to_jd(
     a = div(Y, 100)
     b = div(a, 4)
     c = 2 - a + b
-    e = floor(Integer, 365.25 * (Y + 4716))
-    f = floor(Integer, 30.6001 * (M + 1))
+    e = floor(Int, 365.25 * (Y + 4716))
+    f = floor(Int, 30.6001 * (M + 1))
 
     # Compute the Julian Day considering the time of day.
     #
