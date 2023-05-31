@@ -1,6 +1,11 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.2
+-------------
+
+- ![Bugfix][badge-bugfix] We removed an unnecessary allocation in the function `date_to_jd`.
+
 Version 0.2.1
 -------------
 
