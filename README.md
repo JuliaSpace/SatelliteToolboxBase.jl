@@ -17,7 +17,7 @@ This package contains base functions and type definitions for the
 
 ``` julia
 julia> using Pkg
-julia> Pkg.install("SatelliteToolboxTimeBase")
+julia> Pkg.install("SatelliteToolboxBase")
 ```
 
 ## Usage
