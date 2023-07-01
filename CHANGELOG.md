@@ -1,6 +1,12 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.3
+-------------
+
+- ![Enhancement][badge-enhancement] **SnoopPrecompile.jl** was replaced by
+  **PrecompileTools.jl**.
+
 Version 0.2.2
 -------------
 
