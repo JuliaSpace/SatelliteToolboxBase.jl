@@ -26,17 +26,18 @@ julia> Pkg.install("SatelliteToolboxBase")
 
 We define and export the following constants in this package:
 
-| Constant              | Description                                                            |
-|:----------------------|:-----------------------------------------------------------------------|
-| `ASTRONOMICAL_UNIT`   | The approximate distance between the Earth and the Sun.                |
-| `GM_EARTH`            | Earth's standard gravitational parameter.                              |
-| `EARTH_ANGULAR_SPEED` | Earth's angular speed without LOD correction.                          |
-| `WGS84_ELLIPSOID`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
-| `WGS84_ELLIPSOID_F32` | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
-| `EGM08_J2`            | J2 perturbation term obtained from EGM-08 model.                       |
-| `EGM08_J3`            | J3 perturbation term obtained from EGM-08 model.                       |
-| `EGM08_J4`            | J4 perturbation term obtained from EGM-08 model.                       |
-| `JD_J2000`            | Julian Day of J2000.0 epoch (2000-01-01T12:00:00.000).                 |
+| Constant                  | Description                                                            |
+|:--------------------------|:-----------------------------------------------------------------------|
+| `ASTRONOMICAL_UNIT`       | The approximate distance between the Earth and the Sun.                |
+| `GM_EARTH`                | Earth's standard gravitational parameter.                              |
+| `EARTH_ANGULAR_SPEED`     | Earth's angular speed without LOD correction.                          |
+| `EARTH_ORBIT_MEAN_MOTION` | Earth's orbit mean motion.                                             |
+| `WGS84_ELLIPSOID`         | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
+| `WGS84_ELLIPSOID_F32`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
+| `EGM08_J2`                | J2 perturbation term obtained from EGM-08 model.                       |
+| `EGM08_J3`                | J3 perturbation term obtained from EGM-08 model.                       |
+| `EGM08_J4`                | J4 perturbation term obtained from EGM-08 model.                       |
+| `JD_J2000`                | Julian Day of J2000.0 epoch (2000-01-01T12:00:00.000).                 |
 
 ### Orbit
 
