@@ -1,6 +1,13 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.4
+-------------
+
+- ![Feature][badge-feature] We added an interface to Julia iterators for all orbit
+  representations.
+- ![Feature][badge-feature] We added the constant `EARTH_ORBIT_MEAN_MOTION`.
+
 Version 0.2.3
 -------------
 
