@@ -7,7 +7,7 @@ using LinearAlgebra
 using ReferenceFrameRotations
 using StaticArrays
 
-import Base: convert, show
+import Base: convert, iterate, length, eltype, show
 
 ############################################################################################
 #                                          Types
@@ -29,6 +29,8 @@ include("./constants.jl")
 ############################################################################################
 #                                         Includes
 ############################################################################################
+
+include("interfaces.jl")
 
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")

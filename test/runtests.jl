@@ -8,6 +8,10 @@ using StaticArrays
     include("./ellipsoid.jl")
 end
 
+@testset "Interfaces" verbose = true begin
+    include("./interfaces.jl")
+end
+
 @testset "Orbit" verbose = true begin
     @testset "Keplerian Elements" verbose = true begin
         include("./orbit/keplerian_elements.jl")
