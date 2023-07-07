@@ -16,7 +16,7 @@ Ellipsoid of rotation to be used for geocentric, geodetic and ECEF transformatio
 
 # Fields
 
-- `a::T : Semi-major axis [m].
+- `a::T` : Semi-major axis [m].
 - `f::T`: Flattening of the ellipsoid.
 - `b::T`: Semi-minor axis [m].
 - `e²::T`: Eccentricity squared.
