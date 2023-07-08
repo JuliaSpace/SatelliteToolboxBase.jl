@@ -43,6 +43,7 @@ include("./show/orbit.jl")
 
 include("./time/gmst.jl")
 include("./time/julian_day.jl")
+include("./time/scales.jl")
 
 include("precompile.jl")
 
