@@ -15,6 +15,7 @@ import Base: convert, iterate, length, eltype, show
 
 include("./types/ellipsoid.jl")
 include("./types/orbit.jl")
+include("./types/eop.jl")
 
 ############################################################################################
 #                                        Constants
