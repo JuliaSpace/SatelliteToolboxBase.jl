@@ -10,8 +10,8 @@ SatelliteToolboxBase.jl
 [![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
-This package contains base functions and type definitions for the
-**SatelliteToolbox.jl** ecosystem.
+This package contains base functions and type definitions for the **SatelliteToolbox.jl**
+ecosystem.
 
 > **Note**
 > This package contains only basic definitions used for other packages in the
@@ -42,6 +42,7 @@ We define and export the following constants in this package:
 | `EGM08_J2`                | J2 perturbation term obtained from EGM-08 model.                       |
 | `EGM08_J3`                | J3 perturbation term obtained from EGM-08 model.                       |
 | `EGM08_J4`                | J4 perturbation term obtained from EGM-08 model.                       |
+| `SUN_RADIUS`              | Sun radius.                                                            |
 | `JD_J2000`                | Julian Day of J2000.0 epoch (2000-01-01T12:00:00.000).                 |
 
 ### Orbit

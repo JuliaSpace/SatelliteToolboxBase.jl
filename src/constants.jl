@@ -10,6 +10,7 @@
 export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED, EARTH_ORBIT_MEAN_MOTION
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
 export EGM08_J2, EGM08_J3, EGM08_J4
+export SUN_RADIUS
 export JD_J2000
 
 ############################################################################################
@@ -101,6 +102,23 @@ J3 perturbation term obtained from EGM-08 model (`J₄ = -C₄`) [1].
     Microcosm Press, Hawthorne, CA.
 """
 const EGM08_J4 = -1.61989759991697e-6
+
+############################################################################################
+#                          General Parameters Related to the Sun
+############################################################################################
+
+"""
+    const SUN_RADIUS
+
+Sun radius [m] as obtained by **[1]** using measurements from the SOHO spacecraft.
+
+# References
+
+- **[1]** Emilio, M., Kuhn, J. R., Bush, R. I., Scholl, I. F (2012). Measuring the Solar
+    Radius From Space During the 2003 and 2006 Mercury Transits. The Astrophysical Journal,
+    v. 750, no. 2.
+"""
+const SUN_RADIUS = 6.96342e8
 
 ############################################################################################
 #                                           Time
