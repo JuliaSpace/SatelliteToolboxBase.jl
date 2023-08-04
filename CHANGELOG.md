@@ -1,6 +1,12 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.2.5
+-------------
+
+- ![Feature][badge-feature] We added the constants: `EARTH_EQUATORIAL_RADIUS`,
+  `EARTH_POLAR_RADIUS`, and `SUN_RADIUS`.
+
 Version 0.2.4
 -------------
 
