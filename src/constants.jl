@@ -7,7 +7,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED, EARTH_ORBIT_MEAN_MOTION
+export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED, EARTH_EQUATORIAL_RADIUS
+export EARTH_ORBIT_MEAN_MOTION, EARTH_POLAR_RADIUS
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
 export EGM08_J2, EGM08_J3, EGM08_J4
 export SUN_RADIUS
@@ -39,11 +40,25 @@ Earth's angular speed [rad / s] without LOD correction.
 const EARTH_ANGULAR_SPEED = 7.292_115_146_706_979e-5
 
 """
+    const EARTH_EQUATORIAL_RADIUS
+
+Earth's equatorial radius [m] (WGS-84).
+"""
+const EARTH_EQUATORIAL_RADIUS = 6378137.0
+
+"""
     const EARTH_ORBIT_MEAN_MOTION
 
 Earth's orbit mean motion [rad / s].
 """
 const EARTH_ORBIT_MEAN_MOTION = deg2rad(360.0 / 365.2421897) / 86400
+
+"""
+    const EARTH_POLAR_RADIUS
+
+Earth's polar radius [m] (WGS-84).
+"""
+const EARTH_POLAR_RADIUS = 6356752.3142
 
 ############################################################################################
 #                                        Ellipsoids

@@ -36,7 +36,9 @@ We define and export the following constants in this package:
 | `ASTRONOMICAL_UNIT`       | The approximate distance between the Earth and the Sun.                |
 | `GM_EARTH`                | Earth's standard gravitational parameter.                              |
 | `EARTH_ANGULAR_SPEED`     | Earth's angular speed without LOD correction.                          |
+| `EARTH_EQUATORIAL_RADIUS` | Earth's equatorial radius (WGS-84).                                    |
 | `EARTH_ORBIT_MEAN_MOTION` | Earth's orbit mean motion.                                             |
+| `EARTH_POLAR_RADIUS`      | Earth's polar radius (WGS-84).                                         |
 | `WGS84_ELLIPSOID`         | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
 | `WGS84_ELLIPSOID_F32`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
 | `EGM08_J2`                | J2 perturbation term obtained from EGM-08 model.                       |
