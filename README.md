@@ -22,7 +22,7 @@ ecosystem.
 
 ``` julia
 julia> using Pkg
-julia> Pkg.install("SatelliteToolboxBase")
+julia> Pkg.add("SatelliteToolboxBase")
 ```
 
 ## Usage
