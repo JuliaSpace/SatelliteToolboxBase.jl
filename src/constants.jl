@@ -10,7 +10,7 @@
 export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED, EARTH_EQUATORIAL_RADIUS
 export EARTH_ORBIT_MEAN_MOTION, EARTH_POLAR_RADIUS
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
-export EGM08_J2, EGM08_J3, EGM08_J4
+export EGM_2008_J2, EGM_2008_J3, EGM_2008_J4
 export SUN_RADIUS
 export JD_J2000
 
@@ -83,40 +83,25 @@ const WGS84_ELLIPSOID_F32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
 ############################################################################################
 
 """
-    const EGM08_J2
+    const EGM_2008_J2
 
-J2 perturbation term obtained from EGM-08 model (`J₂ = -C₂`) [1].
-
-# References
-
-- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorne, CA.
+J₂ perturbation term obtained from EGM-2008 model (`J₂ = -C₂,₀ * √5`) [1].
 """
-const EGM08_J2 = +1.08262617385222e-3
+const EGM_2008_J2 = +1.0826261738522227e-3
 
 """
-    const EGM08_J3
+    const EGM_2008_J3
 
-J3 perturbation term obtained from EGM-08 model (`J₃ = -C₃`) [1].
-
-# References
-
-- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorne, CA.
+J₃ perturbation term obtained from EGM-08 model (`J₃ = -C₃ * √7`) [1].
 """
-const EGM08_J3 = -2.53241051856772e-6
+const EGM_2008_J3 = -2.5324105185677225e-6
 
 """
-    const EGM08_J4
+    const EGM_2008_J4
 
-J3 perturbation term obtained from EGM-08 model (`J₄ = -C₄`) [1].
-
-# References
-
-- **[1]** Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-    Microcosm Press, Hawthorne, CA.
+J₄ perturbation term obtained from EGM-08 model (`J₄ = -C₄ * √9`) [1].
 """
-const EGM08_J4 = -1.61989759991697e-6
+const EGM_2008_J4 = -1.6198975999169731e-6
 
 ############################################################################################
 #                          General Parameters Related to the Sun
