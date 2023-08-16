@@ -41,9 +41,12 @@ We define and export the following constants in this package:
 | `EARTH_POLAR_RADIUS`      | Earth's polar radius (WGS-84).                                         |
 | `WGS84_ELLIPSOID`         | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float64}`. |
 | `WGS84_ELLIPSOID_F32`     | The WGS-84 ellipsoid defined using the structure `Ellipsoid{Float32}`. |
-| `EGM_2008_J2`             | J2 perturbation term obtained from EGM-08 model.                       |
-| `EGM_2008_J3`             | J3 perturbation term obtained from EGM-08 model.                       |
-| `EGM_2008_J4`             | J4 perturbation term obtained from EGM-08 model.                       |
+| `EGM_1996_J2`             | J2 perturbation term obtained from EGM-1996 model.                     |
+| `EGM_1996_J3`             | J3 perturbation term obtained from EGM-1996 model.                     |
+| `EGM_1996_J4`             | J4 perturbation term obtained from EGM-1996 model.                     |
+| `EGM_2008_J2`             | J2 perturbation term obtained from EGM-2008 model.                     |
+| `EGM_2008_J3`             | J3 perturbation term obtained from EGM-2008 model.                     |
+| `EGM_2008_J4`             | J4 perturbation term obtained from EGM-2008 model.                     |
 | `SUN_RADIUS`              | Sun radius.                                                            |
 | `JD_J2000`                | Julian Day of J2000.0 epoch (2000-01-01T12:00:00.000).                 |
 

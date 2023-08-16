@@ -10,6 +10,7 @@
 export ASTRONOMICAL_UNIT, GM_EARTH, EARTH_ANGULAR_SPEED, EARTH_EQUATORIAL_RADIUS
 export EARTH_ORBIT_MEAN_MOTION, EARTH_POLAR_RADIUS
 export WGS84_ELLIPSOID, WGS84_ELLIPSOID_F32
+export EGM_1996_J2, EGM_1996_J3, EGM_1996_J4
 export EGM_2008_J2, EGM_2008_J3, EGM_2008_J4
 export SUN_RADIUS
 export JD_J2000
@@ -81,6 +82,27 @@ const WGS84_ELLIPSOID_F32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
 ############################################################################################
 #                                    Perturbation Terms
 ############################################################################################
+
+"""
+    const EGM_1996_J2
+
+J₂ perturbation term obtained from EGM-1996 model (`J₂ = -C₂,₀ * √5`) [1].
+"""
+const EGM_1996_J2 = 1.0826266835531513e-3
+
+"""
+    const EGM_1996_J3
+
+J₃ perturbation term obtained from EGM-08 model (`J₃ = -C₃ * √7`) [1].
+"""
+const EGM_1996_J3 = -2.5326564853322355e-6
+
+"""
+    const EGM_1996_J4
+
+J₄ perturbation term obtained from EGM-08 model (`J₄ = -C₄ * √9`) [1].
+"""
+const EGM_1996_J4 = -1.619621591367e-6
 
 """
     const EGM_2008_J2
