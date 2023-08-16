@@ -28,9 +28,9 @@ const ASTRONOMICAL_UNIT = 1.495978707e11
 """
     const GM_EARTH
 
-Earth's standard gravitational parameter [m³ / s²].
+Earth's standard gravitational parameter (EGM-2008) [m³ / s²].
 """
-const GM_EARTH = 3.986004418e14
+const GM_EARTH = 3.986004415e14
 
 """
     const EARTH_ANGULAR_SPEED
