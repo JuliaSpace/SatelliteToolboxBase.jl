@@ -1,6 +1,14 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.3.0
+-------------
+
+- ![BREAKING][badge-breaking] We renamed the constants `EMG08_*` to `EGM_2008_*`.
+- ![Feature][badge-feature] We added the constants: `EGM_1996_J2`, `EGM_1996_J3`, and
+  `EGM_1996_J4`.
+- ![Bugfix][badge-bugfix] We fixed the value of `GM_EARTH` to match that of EGM-2008.
+
 Version 0.2.5
 -------------
 
