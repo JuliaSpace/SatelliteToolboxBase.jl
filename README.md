@@ -3,8 +3,7 @@
   <small><i>This package is part of the <a href="https://github.com/JuliaSpace/SatelliteToolbox.jl">SatelliteToolbox.jl</a> ecosystem.</i></small>
 </p>
 
-SatelliteToolboxBase.jl
-=======================
+# SatelliteToolboxBase.jl
 
 [![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
@@ -62,14 +61,14 @@ elements](https://en.wikipedia.org/wiki/Orbital_elements). This object is create
 function:
 
 ```julia
-function KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
+KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
 ```
 
 where it returns an orbit representation using Keplerian elements with semi-major axis `a`
 [m], eccentricity `e` [ ], inclination `i` [rad], right ascension of the ascending node `Ω`
 [rad], argument of perigee `ω` [rad], and true anomaly `f` [rad].
 
-```julia-repl
+```julia
 julia> orb = KeplerianElements(
            date_to_jd(1986, 6, 19, 18, 35, 0),
            7130.982e3,
@@ -94,7 +93,7 @@ vector](https://en.wikipedia.org/wiki/Orbital_state_vectors). This object is cre
 the function:
 
 ```julia
-function OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
+OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
 ```
 
 where it creates an orbit state vector with epoch `t` [Julian Day], position `r`
@@ -143,12 +142,12 @@ satellite in the orbit plane with respect to the argument of perigee:
 This package contains the following functions that can be used to convert one to another:
 
 ```julia
-function mean_to_eccentric_anomaly(e::Number, M::Number; kwargs...) -> T
-function mean_to_true_anomaly(e::Number, M::Number; kwargs...) -> T
-function eccentric_to_true_anomaly(e::Number, E::Number) -> T
-function eccentric_to_mean_anomaly(e::Number, E::Number) -> T
-function true_to_eccentric_anomaly(e::Number,f::Number) -> T
-function true_to_mean_anomaly(e::Number, f::Number) -> T
+mean_to_eccentric_anomaly(e::Number, M::Number; kwargs...) -> T
+mean_to_true_anomaly(e::Number, M::Number; kwargs...) -> T
+eccentric_to_true_anomaly(e::Number, E::Number) -> T
+eccentric_to_mean_anomaly(e::Number, E::Number) -> T
+true_to_eccentric_anomaly(e::Number,f::Number) -> T
+true_to_mean_anomaly(e::Number, f::Number) -> T
 ```
 
 where:
@@ -170,9 +169,10 @@ it:
     floating-point type obtained from the promotion of `T1` and `T2` to a float.
     (**Default** = `nothing`)
 - `max_iterations::Number`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10. (**Default** = 10)
+    algorithm. If it is lower than 1, then it is set to 10.
+    (**Default** = 10)
 
-```julia-repl
+```julia
 julia> mean_to_eccentric_anomaly(0.04, pi / 4)
 0.814493281928579
 
