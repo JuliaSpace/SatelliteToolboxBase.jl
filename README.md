@@ -8,6 +8,7 @@
 [![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
+[![DOI](https://zenodo.org/badge/622266307.svg)](https://zenodo.org/doi/10.5281/zenodo.11285923)
 
 This package contains base functions and type definitions for the **SatelliteToolbox.jl**
 ecosystem.
