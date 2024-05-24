@@ -1,25 +1,19 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Conversion from the Keplerian elements to position and velocity state vector.
 #
-#   Conversion from the Keplerian elements to position and velocity state vector.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Schwarz, R (2014). Memorandum No. 2: Cartesian State Vectors to Keplerian Orbit
+#     Elements. Available at www.rene-schwarz.com.
 #
-# References
-# ==========================================================================================
+#     https://downloads.rene-schwarz.com/dc/category/18
+#     (Accessed on 2017-08-09).
 #
-#   [1] Schwarz, R (2014). Memorandum No. 2: Cartesian State Vectors to Keplerian Orbit
-#       Elements. Available at www.rene-schwarz.com.
+# [2] Kuga, H. K., Carrara, V., Rao, K. R (2005). Introdução à Mecânica Orbital. 2ª ed.
+#     Instituto Nacional de Pesquisas Espaciais.
 #
-#           https://downloads.rene-schwarz.com/dc/category/18
-#           (Accessed on 2017-08-09).
-#
-#   [2] Kuga, H. K., Carrara, V., Rao, K. R (2005). Introdução à Mecânica Orbital. 2ª ed.
-#       Instituto Nacional de Pesquisas Espaciais.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export kepler_to_rv
 
@@ -30,6 +24,7 @@ Convert the Keplerian elements `ke` to a Cartesian representation (position vect
 and velocity vector `v` [m / s]).
 
 !!! note
+
     The returned vectors are represented in the same reference frame as the Keplerian
     elements.
 

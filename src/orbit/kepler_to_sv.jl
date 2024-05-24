@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Conversion from orbit state vector to Keplerian elements.
 #
-#   Conversion from orbit state vector to Keplerian elements.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export kepler_to_sv
 
@@ -15,6 +12,7 @@ export kepler_to_sv
 Convert the Keplerian elements `ke` to the orbit state vector.
 
 !!! note
+
     The acceleration in the orbit state vector will be set to 0.
 """
 function kepler_to_sv(ke::KeplerianElements)

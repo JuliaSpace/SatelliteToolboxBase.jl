@@ -1,21 +1,15 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Compute the Greenwich Mean Sideral Time (GMST).
 #
-#   Compute the Greenwich Mean Sideral Time (GMST).
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] http://www.navipedia.net/index.php/CEP_to_ITRF, accessed 2015-12-01.
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-#   [2] http://www.navipedia.net/index.php/CEP_to_ITRF, accessed 2015-12-01.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export j2000_to_gmst, jd_to_gmst
 
@@ -26,6 +20,7 @@ Compute the Greenwich Mean Sideral Time (GMST) \\[rad] given the instant `j2000_
 J2000.0 reference [UT1].
 
 !!! info
+
     The algorithm is based in **[1]**.
 
 # References
@@ -55,10 +50,10 @@ end
 """
     jd_to_gmst(jd_ut1::Number)
 
-Compute the Greenwich Mean Sideral Time (GMST) \\[rad] for the Julian Day
-`jd_ut1` [UT1].
+Compute the Greenwich Mean Sideral Time (GMST) \\[rad] for the Julian Day `jd_ut1` [UT1].
 
 !!! info
+
     The algorithm is based in **[1]**(p. 188).
 
 # References

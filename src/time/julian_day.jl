@@ -1,29 +1,19 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related to dates.
 #
-#   Functions related to dates.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
+# [2] https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
 #
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications.
-#       Microcosm Press, Hawthorn, CA, USA.
+# [3] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
 #
-#   [2] https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
+## Remarks #################################################################################
 #
-#   [3] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-# Remarks
-# ==========================================================================================
-#
-# Information about the Julian Day obtained from [2] (Accessed on 2018-04-11).
-# ------------------------------------------------------------------------------------------
+# -- Information about the Julian Day obtained from [2] (Accessed on 2018-04-11) -----------
 #
 # The Julian Day Count is a uniform count of days from a remote epoch in the past (-4712
 # January 1, 12 hours Greenwich Mean Time (Julian proleptic Calendar) = 4713 BCE January 1,
@@ -44,12 +34,12 @@
 # Cycle) and the 28-year Solar Cycle (the length of time for the old Julian Calendar to
 # repeat exactly).
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export date_to_jd, jd_to_date, is_leap_year
 
 ############################################################################################
-#                                        Functions
+#                                        Functions                                         #
 ############################################################################################
 
 """
@@ -186,6 +176,7 @@ The algorithm was obtained from \\[1] (accessed on 2022-07-20). In [1], there is
 following warning:
 
 !!! note
+
     This method will not give dates accurately on the Gregorian Proleptic Calendar, i.e.,
     the calendar you get by extending the Gregorian calendar backwards to years earlier than
     1582 using the Gregorian leap year rules. In particular, the method fails if Y < 400.

@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Conversion between the orbit representations using Julia built-in system.
 #
-#   Conversion between the orbit representations using Julia built-in system.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 function Base.convert(
     ::Type{KeplerianElements{Tepoch, T}},

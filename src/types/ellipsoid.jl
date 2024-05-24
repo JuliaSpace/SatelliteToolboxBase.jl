@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Definitions of types related to ellipsoids.
 #
-#   Definitions of types related to ellipsoids.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export Ellipsoid
 
@@ -23,14 +20,14 @@ Ellipsoid of rotation to be used for geocentric, geodetic and ECEF transformatio
 - `el²::T`: Second Eccentricity squared.
 """
 struct Ellipsoid{T <: Number}
-    # Main Variables
-    # ======================================================================================
+    # == Main Variables ====================================================================
 
     a::T # Semi-major axis in [m]
     f::T # Flattening of the ellipsoid
 
-    # Auxiliary variables, pre-computed for convenience
-    # ======================================================================================
+    # == Auxiliary variables ===============================================================
+    # 
+    # Those variables are computed for convenience.
 
     b::T # Semi-minor axis in [m]
     e²::T # Eccentricity squared

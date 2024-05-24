@@ -1,22 +1,16 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Conversion from position and velocity state vector to Keplerian elements.
 #
-#   Conversion from position and velocity state vector to Keplerian elements.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Schwarz, R (2014). Memorandum No. 2: Cartesian State Vectors to Keplerian Orbit
+#     Elements. Available at www.rene-schwarz.com.
 #
-# References
-# ==========================================================================================
+#     https://downloads.rene-schwarz.com/dc/category/18
+#     (Accessed on 2017-08-09).
 #
-#   [1] Schwarz, R (2014). Memorandum No. 2: Cartesian State Vectors to Keplerian Orbit
-#       Elements. Available at www.rene-schwarz.com.
-#
-#           https://downloads.rene-schwarz.com/dc/category/18
-#           (Accessed on 2017-08-09).
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export rv_to_kepler
 
@@ -28,6 +22,7 @@ Convert a Cartesian representation (position vector `r_i` [m] and velocity vecto
 elements using the parameter `t`. It it is omitted, then it defaults to 0.
 
 !!! note
+
     The output type `Tepoch` is obtained by converting `T3` to float, whereas the output
     type `T` is obtained by promoting `T1` and `T2` and converting the result to float.
 
@@ -94,13 +89,11 @@ function rv_to_kepler(
         # Orbit energy.
         ξ = v² / 2 - μ / r
 
-        # Eccentricity
-        # ==================================================================================
+        # == Eccentricity ==================================================================
 
         ecc = norm(e_i)
 
-        # Semi-major axis
-        # ==================================================================================
+        # == Semi-major axis ===============================================================
 
         if abs(ecc) <= 1 - 1e-6
             a = -μ / (2ξ)
@@ -111,33 +104,27 @@ function rv_to_kepler(
             ))
         end
 
-        # Inclination
-        # ==================================================================================
+        # == Inclination ===================================================================
 
         cos_i = h_i[3] / h
         cos_i = abs(cos_i) > 1 ? sign(cos_i) : cos_i
         i     = acos(cos_i)
 
-        # Check the type of the orbit to account for special cases
-        # ==================================================================================
+        # == Check the Type of the Orbit to Account for Special Cases ======================
 
-        # Equatorial
-        # ----------------------------------------------------------------------------------
+        # -- Equatorial --------------------------------------------------------------------
 
         if abs(n) <= 1e-6
 
-            # Right Ascension of the Ascending Node.
-            # ==============================================================================
+            # == Right Ascension of the Ascending Node. ====================================
 
             Ω = T(0)
 
-            # Equatorial and elliptical
-            # ------------------------------------------------------------------------------
+            # -- Equatorial and Elliptical -------------------------------------------------
 
             if abs(ecc) > 1e-6
 
-                # Argument of Perigee
-                # ==========================================================================
+                # == Argument of Perigee ===================================================
 
                 cos_ω = e_i[1] / ecc
                 cos_ω = abs(cos_ω) > 1 ? sign(cos_ω) : cos_ω
@@ -147,8 +134,7 @@ function rv_to_kepler(
                     ω = T(2π) - ω
                 end
 
-                # True anomaly
-                # ==========================================================================
+                # == True Anomaly ==========================================================
 
                 cos_f = dot(e_i, sr_i) / (ecc * r)
                 cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
@@ -158,17 +144,14 @@ function rv_to_kepler(
                     f = T(2π) - f
                 end
 
-            # Equatorial and circular
-            # ------------------------------------------------------------------------------
+            # -- Equatorial and Circular ---------------------------------------------------
 
             else
-                # Argument of Perigee
-                # ==========================================================================
+                # == Argument of Perigee ===================================================
 
                 ω = T(0)
 
-                # True anomaly
-                # ==========================================================================
+                # == True Anomaly ==========================================================
 
                 cos_f = sr_i[1] / r
                 cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
@@ -179,12 +162,10 @@ function rv_to_kepler(
                 end
             end
 
-        # Inclined
-        # ----------------------------------------------------------------------------------
+        # -- Inclined ----------------------------------------------------------------------
         else
 
-            # Right Ascension of the Ascending Node.
-            # ==============================================================================
+            # == Right Ascension of the Ascending Node =====================================
 
             cos_Ω = n_i[1] / n
             cos_Ω = abs(cos_Ω) > 1 ? sign(cos_Ω) : cos_Ω
@@ -194,18 +175,15 @@ function rv_to_kepler(
                 Ω = T(2π) - Ω
             end
 
-            # Circular and inclined
-            # ------------------------------------------------------------------------------
+            # -- Circular and Inclined -----------------------------------------------------
 
             if abs(ecc) < 1e-6
 
-                # Argument of Perigee
-                # ==========================================================================
+                # == Argument of Perigee ===================================================
 
                 ω = T(0)
 
-                # True anomaly
-                # ==========================================================================
+                # == True Anomaly ==========================================================
 
                 cos_f = dot(n_i, sr_i) / (n * r)
                 cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
@@ -216,8 +194,7 @@ function rv_to_kepler(
                 end
             else
 
-                # Argument of Perigee
-                # ==========================================================================
+                # == Argument of Perigee ===================================================
 
                 cos_ω = dot(n_i, e_i) / (n * ecc)
                 cos_ω = abs(cos_ω) > 1 ? sign(cos_ω) : cos_ω
@@ -227,8 +204,7 @@ function rv_to_kepler(
                     ω = T(2π) - ω
                 end
 
-                # True anomaly
-                # ==========================================================================
+                # == True Anomaly ==========================================================
 
                 cos_f = dot(e_i, sr_i) / (ecc * r)
                 cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f

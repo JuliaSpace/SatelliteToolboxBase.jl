@@ -1,28 +1,20 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Tests related to conversion between the orbit anomalies.
 #
-#   Tests related to conversion between the orbit anomalies.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
-# File: ./src/orbit/anomalies.jl
-# ==========================================================================================
+# == File: ./src/orbit/anomalies.jl ========================================================
 
-# Functions: mean_to_eccentric_anomaly and eccentric_to_mean_anomaly
-# ------------------------------------------------------------------------------------------
+# -- Functions: mean_to_eccentric_anomaly and eccentric_to_mean_anomaly --------------------
 
 ############################################################################################
-#                                       Test Results
+#                                       Test Results                                       #
 ############################################################################################
 #
 # Example 2-1: Using Kepler's Equation [1, p. 66].
@@ -53,8 +45,7 @@
     M = eccentric_to_mean_anomaly(e, E)
     @test M ≈ 235.4 |> deg2rad atol = 1e-14
 
-    # Types
-    # ======================================================================================
+    # == Types =============================================================================
 
     E = mean_to_eccentric_anomaly(0, 0.5)
     @test E isa Float64
@@ -75,11 +66,10 @@
     @test M isa Float32
 end
 
-# Functions: mean_to_true_anomaly and true_to_mean_anomaly
-# ------------------------------------------------------------------------------------------
+# -- Functions: mean_to_true_anomaly and true_to_mean_anomaly ------------------------------
 
 ############################################################################################
-#                                       Test Results
+#                                       Test Results                                       #
 ############################################################################################
 #
 # Values obtained from the old, validated code in SatelliteToolbox.jl.
@@ -110,8 +100,7 @@ end
     M = true_to_mean_anomaly(e, f)
     @test M ≈ 235.4 |> deg2rad atol = 1e-14
 
-    # Types
-    # ======================================================================================
+    # == Types =============================================================================
 
     f = mean_to_true_anomaly(0, 0.5)
     @test f isa Float64
@@ -132,11 +121,10 @@ end
     @test M isa Float32
 end
 
-# Functions: eccentric_to_true_anomaly and true_to_eccentric_anomaly
-# ------------------------------------------------------------------------------------------
+# -- Functions: eccentric_to_true_anomaly and true_to_eccentric_anomaly --------------------
 
 ############################################################################################
-#                                       Test Results
+#                                       Test Results                                       #
 ############################################################################################
 #
 # Values obtained from the old, validated code in SatelliteToolbox.jl.
@@ -164,8 +152,7 @@ end
     E = true_to_eccentric_anomaly(e, f)
     @test E ≈ 235.4 |> deg2rad atol = 1e-14
 
-    # Types
-    # ======================================================================================
+    # == Types =============================================================================
 
     f = eccentric_to_true_anomaly(0, 0.5)
     @test f isa Float64

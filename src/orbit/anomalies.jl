@@ -1,27 +1,21 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to convert anomalies related to the orbit.
 #
-#   Functions to convert anomalies related to the orbit.
+## References ##############################################################################
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
+#     Hawthorn, CA, USA.
 #
-# References
-# ==========================================================================================
-#
-#   [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm
-#       Press, Hawthorn, CA, USA.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export mean_to_eccentric_anomaly, mean_to_true_anomaly
 export eccentric_to_true_anomaly, eccentric_to_mean_anomaly
 export true_to_eccentric_anomaly, true_to_mean_anomaly
 
-################################################################################
-#                              From Mean Anomaly
-################################################################################
+############################################################################################
+#                                    From Mean Anomaly                                     #
+############################################################################################
 
 """
     mean_to_eccentric_anomaly(e::T1, M::T2; max_iterations::Integer = 10, tol::Union{Nothing, Number} = nothing) where {T1, T2} -> T
@@ -31,15 +25,18 @@ anomaly `M` [rad].
 
 This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 
 # Keywords
 
 - `tol::Union{Nothing, Number}`: Tolerance to accept the solution from Newton-Raphson
-    algorithm. If `tol` is `nothing`, it will be `eps(T)`. (**Default** = `nothing`)
+    algorithm. If `tol` is `nothing`, it will be `eps(T)`.
+    (**Default** = `nothing`)
 - `max_iterations::Number`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10.  (**Default** = 10)
+    algorithm. If it is lower than 1, then it is set to 10.
+    (**Default** = 10)
 """
 function mean_to_eccentric_anomaly(
     e::T1,
@@ -49,8 +46,7 @@ function mean_to_eccentric_anomaly(
 ) where {T1, T2}
     T = float(promote_type(T1, T2))
 
-    # Compute the eccentric anomaly using the Newton-Raphson method.
-    # ======================================================================================
+    # == Compute the Eccentric Anomaly Using the Newton-Raphson method =====================
 
     # Make sure that M is in the interval [0,2π].
     M = mod(M, T(2π))
@@ -89,15 +85,18 @@ Compute the true anomaly (0, 2π) [rad] given the orbit eccentricity `e` and the
 
 This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 
 # Keywords
 
 - `tol::Union{Nothing, Number}`: Tolerance to accept the solution from Newton-Raphson
-    algorithm. If `tol` is `nothing`, it will be `eps(T)`. (**Default** = `nothing`)
+    algorithm. If `tol` is `nothing`, it will be `eps(T)`.
+    (**Default** = `nothing`)
 - `max_iterations::Number`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10.  (**Default** = 10)
+    algorithm. If it is lower than 1, then it is set to 10.
+    (**Default** = 10)
 """
 function mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2}
     # Compute the eccentric anomaly.
@@ -108,7 +107,7 @@ function mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2}
 end
 
 ############################################################################################
-#                                  From Eccentric Anomaly
+#                                  From Eccentric Anomaly                                  #
 ############################################################################################
 
 """
@@ -117,7 +116,8 @@ end
 Compute the true anomaly (0, 2π) [rad] given the orbit eccentricity `e` and the eccentric
 anomaly `E` [rad].
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 """
 function eccentric_to_true_anomaly(e::T1, E::T2) where {T1, T2}
@@ -134,7 +134,8 @@ end
 Compute the mean anomaly (0, 2π) [rad] given the orbit eccentricity `e` and the eccentric
 anomaly `E` [rad].
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 """
 function eccentric_to_mean_anomaly(e::T1, E::T2) where {T1, T2}
@@ -143,7 +144,7 @@ function eccentric_to_mean_anomaly(e::T1, E::T2) where {T1, T2}
 end
 
 ############################################################################################
-#                                    From True Anomaly
+#                                    From True Anomaly                                     #
 ############################################################################################
 
 """
@@ -152,7 +153,8 @@ end
 Compute the eccentric anomaly (0, 2π) [rad] given the orbit eccentricity `e` and the true
 anomaly `f` [rad].
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 """
 function true_to_eccentric_anomaly(e::T1, f::T2) where {T1, T2}
@@ -168,7 +170,8 @@ end
 Compute the mean anomaly (0, 2π) [rad] given the orbit eccentricity `e` and the true anomaly
 `f` [rad].
 
-!!! Note
+!!! note
+
     The output type `T` is obtained by promoting `T1` and `T2` to float.
 """
 function true_to_mean_anomaly(e::T1, f::T2) where {T1, T2}
