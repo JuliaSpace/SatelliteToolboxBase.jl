@@ -1,6 +1,12 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 0.3.2
+-------------
+
+- ![Feature][badge-feature] We added some helpers to assist multi-threaded execution of the
+  functions in the SatelliteToolbox.jl ecosystem.
+
 Version 0.3.1
 -------------
 
