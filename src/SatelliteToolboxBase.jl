@@ -32,6 +32,8 @@ include("./constants.jl")
 
 include("interfaces.jl")
 
+include("helpers.jl")
+
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")
 include("./orbit/kepler_to_rv.jl")
