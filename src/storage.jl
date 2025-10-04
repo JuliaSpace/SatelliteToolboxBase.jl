@@ -19,11 +19,18 @@ end
 function Base.convert(::Type{M}, L::LowerTriangularStorage) where M <: Matrix{T} where T
     mat = zeros(T, size(L)...)
 
-    for (i, j) in eachindex(L)
+    @inbounds for i in 1:size(L, 1), j in 1:i
         mat[i, j] = L[i, j]
     end
 
     return mat
+end
+
+Base.eachindex(L::LowerTriangularStorage) = Base.OneTo(length(L.data))
+
+@inline @propagate_inbounds function Base.getindex(L::LowerTriangularStorage, i::Int)
+    @boundscheck (i < 1 || i > length(L.data)) && throw_boundserror(L, i)
+    return L.data[i]
 end
 
 @inline @propagate_inbounds function Base.getindex(L::LowerTriangularStorage, i::Int, j::Int)
@@ -31,6 +38,12 @@ end
         throw_boundserror(L, (i, j))
 
     return L.data[_axes_to_index(L, i, j)]
+end
+
+@inline @propagate_inbounds function Base.setindex!(L::LowerTriangularStorage, v, i::Int)
+    @boundscheck (i < 1 || i > length(L.data)) && throw_boundserror(L, i)
+    L.data[i] = v
+    return L
 end
 
 @inline @propagate_inbounds function Base.setindex!(L::LowerTriangularStorage, v, i::Int, j::Int)
@@ -71,23 +84,6 @@ function Base.replace_in_print_matrix(
     j == L.n && return rstrip(str)
     return str
 end
-
-# == LowerTriangularStorageIndex ===========================================================
-
-Base.eachindex(L::LowerTriangularStorage) = LowerTriangularStorageIndex(L.n)
-
-function Base.iterate(itr::LowerTriangularStorageIndex, state = (1, 1))
-    state[1] > itr.n && return nothing
-
-    current_element = state
-    next_state      = state[2] == state[1] ? (state[1] + 1, 1) : (state[1], state[2] + 1)
-
-    return (current_element, next_state)
-end
-
-Base.IteratorSize(::Type{<:LowerTriangularStorageIndex}) = Base.HasLength()
-
-Base.length(itr::LowerTriangularStorageIndex) = (itr.n * (itr.n + 1)) ÷ 2
 
 ############################################################################################
 #                                    Private Functions                                     #

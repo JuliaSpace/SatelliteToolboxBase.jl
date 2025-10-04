@@ -187,12 +187,3 @@ struct LowerTriangularStorage{Ta, Tt} <: AbstractMatrix{Tt}
         return LowerTriangularStorage{ColumnMajor, Float64}(n)
     end
 end
-
-"""
-    struct LowerTriangularStorageIndex
-
-Structure to define the iterator through the valid `LowerTriangularStorage` indices.
-"""
-struct LowerTriangularStorageIndex
-    n::Int
-end

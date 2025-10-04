@@ -52,8 +52,8 @@ end
     L = LowerTriangularStorage{SatelliteToolboxBase.RowMajor, Float32}(3)
 
     element = 1
-    for (i, j) in eachindex(L)
-        L[i, j] = element
+    for i in eachindex(L)
+        L[i] = element
         element += 1
     end
 
@@ -114,9 +114,8 @@ end
     L = LowerTriangularStorage{SatelliteToolboxBase.RowMajor, Float64}(3)
 
     element = 1
-    for (i, j) in eachindex(L)
-        j > i && continue
-        L[i, j] = element
+    for i in eachindex(L)
+        L[i] = element
         element += 1
     end
 
@@ -175,12 +174,20 @@ end
     @test L.data == zeros(Float32, 6)
 end
 
+@testset "Iterators" begin
+    L = zeros(LowerTriangularStorage{SatelliteToolboxBase.ColumnMajor, Float64}, 3)
+    @test eachindex(L) == Base.OneTo(6)
+
+    L = zeros(LowerTriangularStorage{SatelliteToolboxBase.RowMajor, Float64}, 3)
+    @test eachindex(L) == Base.OneTo(6)
+end
+
 @testset "Printing" begin
     L = LowerTriangularStorage{SatelliteToolboxBase.RowMajor, Float64}(3)
 
     element = 1
-    for (i, j) in eachindex(L)
-        L[i, j] = element
+    for i in eachindex(L)
+        L[i] = element
         element += 1
     end
 
