@@ -9,7 +9,7 @@
 ############################################################################################
 
 # There functions allow broadcast when using the orbit propagators.
-iterate(orb::Orbit) = (orb, nothing)
-iterate(orb::Orbit, ::Nothing) = nothing
-length(orb::Orbit) = 1
-eltype(orbp::T) where T<:Orbit = T
+Base.iterate(orb::Orbit) = (orb, nothing)
+Base.iterate(::Orbit, ::Nothing) = nothing
+Base.length(::Orbit) = 1
+Base.eltype(::T) where T<:Orbit = T

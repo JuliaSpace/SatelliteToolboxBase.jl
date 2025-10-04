@@ -8,7 +8,7 @@
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
-function show(io::IO, k::KeplerianElements{Tepoch, T}) where {Tepoch, T}
+function Base.show(io::IO, k::KeplerianElements{Tepoch, T}) where {Tepoch, T}
     compact   = get(io, :compact, true)
     epoch_str = sprint(print, k.t, context = :compact => compact)
     jd_str    = sprint(print, jd_to_date(DateTime, k.t))
@@ -18,7 +18,7 @@ function show(io::IO, k::KeplerianElements{Tepoch, T}) where {Tepoch, T}
     return nothing
 end
 
-function show(
+function Base.show(
     io::IO,
     mime::MIME"text/plain",
     k::KeplerianElements{Tepoch, T}
@@ -108,7 +108,7 @@ end
 #                                    Orbit State Vector                                    #
 ############################################################################################
 
-function show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
+function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
     compact   = get(io, :compact, true)
     epoch_str = sprint(print, sv.t, context = :compact => compact)
     jd_str    = sprint(print, jd_to_date(DateTime, sv.t))
@@ -118,7 +118,7 @@ function show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
     return nothing
 end
 
-function show(
+function Base.show(
     io::IO,
     mime::MIME"text/plain",
     sv::OrbitStateVector{Tepoch, T}

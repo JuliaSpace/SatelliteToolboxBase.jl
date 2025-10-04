@@ -34,6 +34,10 @@ end
     end
 end
 
+@testset "Storage" verbose = true begin
+    include("./storage.jl")
+end
+
 @testset "Time" verbose = true begin
     @testset "Julian Day" verbose = true begin
         include("./time/julian_day.jl")

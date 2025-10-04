@@ -7,13 +7,14 @@ using LinearAlgebra
 using ReferenceFrameRotations
 using StaticArrays
 
-import Base: convert, iterate, length, eltype, show
+import Base: throw_boundserror, @boundscheck, @propagate_inbounds
 
 ############################################################################################
 #                                          Types                                           #
 ############################################################################################
 
 include("./types/ellipsoid.jl")
+include("./types/storage.jl")
 include("./types/orbit.jl")
 
 ############################################################################################
@@ -33,6 +34,8 @@ include("./constants.jl")
 include("interfaces.jl")
 
 include("helpers.jl")
+
+include("storage.jl")
 
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")
