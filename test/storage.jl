@@ -48,6 +48,38 @@
     @test SatelliteToolboxBase._axes_to_index(L, 2, 2) == 3
 end
 
+@testset "Conversion" begin
+    L = LowerTriangularStorage{SatelliteToolboxBase.RowMajor, Float32}(3)
+
+    element = 1
+    for (i, j) in eachindex(L)
+        L[i, j] = element
+        element += 1
+    end
+
+    M = convert(Matrix, L)
+
+    expected = Float32[
+        1 0 0
+        2 3 0
+        4 5 6
+    ]
+
+    @test eltype(M) == Float32
+    @test M == expected
+
+    M = convert(Matrix{Float64}, L)
+
+    expected = Float64[
+        1 0 0
+        2 3 0
+        4 5 6
+    ]
+
+    @test eltype(M) == Float64
+    @test M == expected
+end
+
 @testset "Data Ordering" begin
     # == Column Major ======================================================================
 
