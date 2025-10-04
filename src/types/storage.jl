@@ -42,8 +42,8 @@ of the elements is defined by `Tt`.
 
     Although this type is a subtype of `AbstractMatrix`, it **does not** support all the
     operations defined for matrices in Julia since it was created for storage purposes only.
-    It is required to convert it to a standard matrix using `Matrix(L)` before performing
-    matrix operations.
+    It is required to convert it to a standard matrix using `convert(Matrix, L)` before
+    performing matrix operations.
 
 # Fields
 
