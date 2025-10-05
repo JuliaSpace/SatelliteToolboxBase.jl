@@ -1,6 +1,14 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 1.1.0
+-------------
+
+- ![Feature][badge-feature] The package now define a lower triangular storage type
+  `LowerTriangularMatrix`. This object can be used to store data that fits in a lower
+  triangular matrix, such as the Legendre coefficients of a spherical harmonics model. It
+  supports both row-major and column-major storage order.
+
 Version 1.0.0
 -------------
 
