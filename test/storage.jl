@@ -94,6 +94,7 @@ end
 
     for i in 1:6
         @test L.data[i] == i
+        @test L[i] == i
     end
 
     L = LowerTriangularStorage{SatelliteToolboxBase.ColumnMajor, Float64}(3)
@@ -107,6 +108,7 @@ end
 
     for i in 1:6
         @test L.data[i] == i
+        @test L[i] == i
     end
 
     # == Row Major =========================================================================
@@ -121,6 +123,7 @@ end
 
     for i in 1:6
         @test L.data[i] == i
+        @test L[i] == i
     end
 end
 
