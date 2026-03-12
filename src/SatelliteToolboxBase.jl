@@ -14,6 +14,7 @@ import Base: throw_boundserror, @boundscheck, @propagate_inbounds
 ############################################################################################
 
 include("./types/ellipsoid.jl")
+include("./types/jacobian.jl")
 include("./types/storage.jl")
 include("./types/orbit.jl")
 
