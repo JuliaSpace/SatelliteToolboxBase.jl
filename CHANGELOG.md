@@ -1,6 +1,13 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 1.2.0
+-------------
+
+- ![Feature][badge-feature] We added some definition of types to indicate which Jacobian
+  method should be used. Those objects are currently used to select how the Jacobian is
+  computed when fitting mean elements in orbit propagators.
+
 Version 1.1.0
 -------------
 
