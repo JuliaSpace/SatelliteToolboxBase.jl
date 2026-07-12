@@ -5,10 +5,10 @@
 
 # SatelliteToolboxBase.jl
 
-[![CI](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl/branch/main/graph/badge.svg?token=YADU7IB8CT)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
-[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
-[![DOI](https://zenodo.org/badge/622266307.svg)](https://zenodo.org/doi/10.5281/zenodo.11285923)
+[![CI](https://img.shields.io/github/actions/workflow/status/JuliaSpace/SatelliteToolboxBase.jl/ci.yml?style=flat-square&logo=githubactions&logoColor=white&labelColor=475569&label=CI)](https://github.com/JuliaSpace/SatelliteToolboxBase.jl/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/JuliaSpace/SatelliteToolboxBase.jl?token=YADU7IB8CT&style=flat-square&logo=codecov&logoColor=white&labelColor=475569)](https://codecov.io/gh/JuliaSpace/SatelliteToolboxBase.jl)
+[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495D1?style=flat-square&logo=julia&logoColor=white&labelColor=475569)](https://github.com/invenia/BlueStyle)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.11285923-DB2777?style=flat-square&logo=doi&logoColor=white&labelColor=475569)](https://zenodo.org/doi/10.5281/zenodo.11285923)
 
 This package contains base functions and type definitions for the **SatelliteToolbox.jl**
 ecosystem.
