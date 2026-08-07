@@ -15,7 +15,7 @@
 export rv_to_kepler
 
 """
-    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0) where {T1<:Number, T2<:Number, T3<:Number} -> KeplerianElements{Tepoch, T}
+    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; μ::Number = GM_EARTH) where {T1<:Number, T2<:Number, T3<:Number} -> KeplerianElements{Tepoch, T}
 
 Convert a Cartesian representation (position vector `r_i` [m] and velocity vector `v_i`
 [m / s]) to Keplerian elements. Optionally, the user can specify the epoch of the returned
@@ -25,6 +25,11 @@ elements using the parameter `t`. It it is omitted, then it defaults to 0.
 
     The output type `Tepoch` is obtained by converting `T3` to float, whereas the output
     type `T` is obtained by promoting `T1` and `T2` and converting the result to float.
+
+# Keywords
+
+- `μ::Number`: Standard gravitational parameter of the central body [m³ / s²].
+    (**Default** = `GM_EARTH`)
 
 # Returns
 
@@ -51,7 +56,8 @@ The special cases are treated as follows:
 function rv_to_kepler(
     r_i::AbstractVector{T1},
     v_i::AbstractVector{T2},
-    t::T3 = 0
+    t::T3 = 0;
+    μ::Number = GM_EARTH
 ) where {T1<:Number, T2<:Number, T3<:Number}
     # Check inputs.
     length(r_i) != 3 && error("The vector r_i must have 3 dimensions.")
@@ -73,7 +79,7 @@ function rv_to_kepler(
         v  = sqrt(v²)
         rv = dot(sr_i, sv_i)
 
-        μ  = T(GM_EARTH)
+        μ  = T(μ)
 
         # Angular momentum vector.
         h_i = sr_i × sv_i

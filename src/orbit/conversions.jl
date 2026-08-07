@@ -2,6 +2,10 @@
 #
 # Conversion between the orbit representations using Julia built-in system.
 #
+# `convert` takes no options, so the conversions between Keplerian elements and orbit state
+# vectors use the default central body (Earth). Call `kepler_to_sv` or `sv_to_kepler` with
+# the keyword `μ` for an orbit around another body.
+#
 ############################################################################################
 
 function Base.convert(

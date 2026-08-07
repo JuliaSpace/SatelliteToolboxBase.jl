@@ -223,6 +223,38 @@ end
     @test_throws ArgumentError rv_to_kepler(r_i, v_i)
 end
 
+@testset "Functions kepler_to_rv and rv_to_kepler (Custom Central Body)" begin
+    # A circular orbit has a constant speed of √(μ / a). We use that identity as the
+    # reference, so the test does not depend on the central body being the Earth. The orbit
+    # here is around the Moon, whose standard gravitational parameter is 4.902800118e12
+    # m³ / s² (DE440).
+    μ = 4.902800118e12
+
+    # == Float64 ===========================================================================
+
+    let
+        a  = 1837.4e3
+        ke = KeplerianElements(0.0, a, 0.0, 85 |> deg2rad, 30 |> deg2rad, 0.0, 0.0)
+
+        r_i, v_i = kepler_to_rv(ke; μ)
+
+        @test norm(v_i) ≈ √(μ / a)
+        @test rv_to_kepler(r_i, v_i, ke.t; μ).a ≈ a
+    end
+
+    # == Float32 ===========================================================================
+
+    let
+        a  = 1837.4f3
+        ke = KeplerianElements(0.0f0, a, 0.0f0, 85f0 |> deg2rad, 0.0f0, 0.0f0, 0.0f0)
+
+        _, v_i = kepler_to_rv(ke; μ)
+
+        @test norm(v_i) ≈ √(Float32(μ) / a)
+        @test eltype(v_i) == Float32
+    end
+end
+
 # == Files: ./src/orbit/kepler_to_sv.jl and ./src/orbit/sv_to_kepler.jl ====================
 
 # -- Functions: kepler_to_sv and sv_to_kepler ----------------------------------------------
@@ -367,6 +399,17 @@ end
         @test f * 180 / π    ≈ 92.335    atol = 1e-3
         @test ke isa KeplerianElements{Float32, Float32}
     end
+end
+
+@testset "Functions kepler_to_sv and sv_to_kepler (Custom Central Body)" begin
+    μ  = 4.902800118e12
+    a  = 1837.4e3
+    ke = KeplerianElements(0.0, a, 0.0, 85 |> deg2rad, 30 |> deg2rad, 0.0, 0.0)
+
+    sv = kepler_to_sv(ke; μ)
+
+    @test sv.v ≈ last(kepler_to_rv(ke; μ))
+    @test sv_to_kepler(sv; μ).a ≈ a
 end
 
 # == Files: ./src/orbit/conversions.jl =====================================================
