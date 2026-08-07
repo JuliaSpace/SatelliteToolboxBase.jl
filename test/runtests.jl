@@ -1,6 +1,7 @@
 using Test
 
 using Dates
+using LinearAlgebra
 using SatelliteToolboxBase
 using StaticArrays
 

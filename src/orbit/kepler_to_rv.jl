@@ -18,7 +18,7 @@
 export kepler_to_rv
 
 """
-    kepler_to_rv(ke::KeplerianElements{Tepoch, T}) where {Tepoch <: Number, T <: Number} -> SVector{3, T}, SVector{3, T}
+    kepler_to_rv(ke::KeplerianElements{Tepoch, T}; μ::Number = GM_EARTH) where {Tepoch <: Number, T <: Number} -> SVector{3, T}, SVector{3, T}
 
 Convert the Keplerian elements `ke` to a Cartesian representation (position vector `r` [m]
 and velocity vector `v` [m / s]).
@@ -28,10 +28,15 @@ and velocity vector `v` [m / s]).
     The returned vectors are represented in the same reference frame as the Keplerian
     elements.
 
+# Keywords
+
+- `μ::Number`: Standard gravitational parameter of the central body [m³ / s²].
+    (**Default** = `GM_EARTH`)
+
 # Returns
 
 - `SVector{3, T}`: The position vector represented in the inertial reference frame [m].
-- `SVector{3, T}`: The velocity vector represented in the inertial reference frame [m].
+- `SVector{3, T}`: The velocity vector represented in the inertial reference frame [m / s].
 
 # Remarks
 
@@ -44,7 +49,10 @@ This algorithm was adapted from **[1]** and **[2]**(p. 37-38).
 - **[2]**: Kuga, H. K., Carrara, V., Rao, K. R (2005). Introdução à Mecânica Orbital. 2ª ed.
     Instituto Nacional de Pesquisas Espaciais.
 """
-function kepler_to_rv(ke::KeplerianElements{Tepoch, T}) where {Tepoch <: Number, T <: Number}
+function kepler_to_rv(
+    ke::KeplerianElements{Tepoch, T};
+    μ::Number = GM_EARTH
+) where {Tepoch <: Number, T <: Number}
     # Unpack.
     a = ke.a
     e = ke.e
@@ -60,7 +68,7 @@ function kepler_to_rv(ke::KeplerianElements{Tepoch, T}) where {Tepoch <: Number,
     sin_f, cos_f = sincos(f)
     e² = e * e
 
-    # Compute the geocentric distance.
+    # Compute the distance to the center of the central body.
     r = a * (1 - e²) / (1 + e * cos_f)
 
     # Compute the position vector in the orbit plane, defined as:
@@ -70,7 +78,7 @@ function kepler_to_rv(ke::KeplerianElements{Tepoch, T}) where {Tepoch <: Number,
     r_o = SVector{3, T}(r * cos_f, r * sin_f, 0)
 
     # Compute the velocity vector in the orbit plane without perturbations.
-    n₀  = √(T(GM_EARTH) / T(a)^3)
+    n₀  = √(T(μ) / T(a)^3)
     v_o = n₀ * a / sqrt(1 - e²) * SVector{3, T}(-sin_f, e + cos_f, 0)
 
     # Compute the matrix that rotates the orbit reference frame into the inertial reference
