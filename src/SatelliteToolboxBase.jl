@@ -1,11 +1,11 @@
 module SatelliteToolboxBase
 
-using Crayons
 using Dates
 using Printf
 using LinearAlgebra
 using ReferenceFrameRotations
 using StaticArrays
+using StyledStrings
 
 import Base: throw_boundserror, @boundscheck, @propagate_inbounds
 
@@ -22,10 +22,6 @@ include("./types/orbit.jl")
 ############################################################################################
 #                                        Constants                                         #
 ############################################################################################
-
-# Colors.
-const _CRAYON_RESET = Crayon(reset = true)
-const _CRAYON_BOLD  = crayon"bold"
 
 include("./constants.jl")
 

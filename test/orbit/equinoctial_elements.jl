@@ -123,5 +123,5 @@ EquinoctialElements{Float64, Float64}:
 
     str = sprint(show, MIME("text/plain"), ee; context = :color => true)
     @test occursin("\e[1m", str)
-    @test occursin("\e[0m", str)
+    @test occursin("\e[22m", str)
 end

@@ -45,6 +45,7 @@ PrecompileTools.@compile_workload begin
     for k in (ke, ke_f32, ke_E, ke_E_f32, ke_M, ke_M_f32)
         show(IOBuffer(), k)
         show(IOBuffer(), MIME("text/plain"), k)
+        show(IOContext(IOBuffer(), :color => true), MIME("text/plain"), k)
 
         true_anomaly(k)
         eccentric_anomaly(k)

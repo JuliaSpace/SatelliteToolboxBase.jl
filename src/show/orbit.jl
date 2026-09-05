@@ -26,12 +26,19 @@ function _append_unit(str::String, max_length::Int, unit::String)
     return str * " "^(max_length - length(str)) * " " * unit
 end
 
-# Return the colored bold and reset prefixes if `io` supports color.
-function _show_colors(io::IO)
-    color = get(io, :color, false)::Bool
-    b = color ? string(_CRAYON_BOLD)  : ""
-    r = color ? string(_CRAYON_RESET) : ""
-    return b, r
+# Print the field `label` in bold followed by the values `xs...` and a newline. The bold
+# decoration is rendered only if `io` supports color.
+function _println_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    println(io, xs...)
+    return nothing
+end
+
+# Same as `_println_field` but without the trailing newline.
+function _print_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    print(io, xs...)
+    return nothing
 end
 
 # Print `x` to a string honoring the `:compact` property in `io`.
@@ -65,8 +72,6 @@ function Base.show(
     ::MIME"text/plain",
     ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
-    b, r = _show_colors(io)
-
     # Convert the data to string.
     date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
     epoch_str = _compact_string(io, ke.epoch)
@@ -117,13 +122,13 @@ function Base.show(
 
     # Print the Keplerian elements.
     println(io, "KeplerianElements{", Tanomaly, ", ", Tepoch, ", ", T, "}:")
-    println(io, "$b             Epoch : $r", epoch_str, " (", date_str, ")")
-    println(io, "$b   Semi-major axis : $r", a_str)
-    println(io, "$b      Eccentricity : $r", e_str)
-    println(io, "$b       Inclination : $r", i_str)
-    println(io, "$b              RAAN : $r", Ω_str)
-    println(io, "$b Arg. of Periapsis : $r", ω_str)
-    print(io,   "$b $anomaly_type Anomaly : $r", f_str)
+    _println_field(io, "             Epoch : ", epoch_str, " (", date_str, ")")
+    _println_field(io, "   Semi-major axis : ", a_str)
+    _println_field(io, "      Eccentricity : ", e_str)
+    _println_field(io, "       Inclination : ", i_str)
+    _println_field(io, "              RAAN : ", Ω_str)
+    _println_field(io, " Arg. of Periapsis : ", ω_str)
+    _print_field(io, " " * anomaly_type * " Anomaly : ", f_str)
 
     return nothing
 end
@@ -150,8 +155,6 @@ function Base.show(
     ::MIME"text/plain",
     ee::EquinoctialElements{Tepoch, T}
 ) where {Tepoch, T}
-    b, r = _show_colors(io)
-
     # Convert the data to string.
     date_str  = sprint(print, jd_to_date(DateTime, ee.epoch))
     epoch_str = _compact_string(io, ee.epoch)
@@ -188,13 +191,13 @@ function Base.show(
 
     # Print the equinoctial elements.
     println(io, "EquinoctialElements{", Tepoch, ", ", T, "}:")
-    println(io, "$b           Epoch : $r", epoch_str, " (", date_str, ")")
-    println(io, "$b Semi-major axis : $r", a_str)
-    println(io, "$b               h : $r", h_str)
-    println(io, "$b               k : $r", k_str)
-    println(io, "$b               p : $r", p_str)
-    println(io, "$b               q : $r", q_str)
-    print(io,   "$b  Mean Longitude : $r", λ_str)
+    _println_field(io, "           Epoch : ", epoch_str, " (", date_str, ")")
+    _println_field(io, " Semi-major axis : ", a_str)
+    _println_field(io, "               h : ", h_str)
+    _println_field(io, "               k : ", k_str)
+    _println_field(io, "               p : ", p_str)
+    _println_field(io, "               q : ", q_str)
+    _print_field(io, "  Mean Longitude : ", λ_str)
 
     return nothing
 end
@@ -217,8 +220,6 @@ function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
 end
 
 function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
-    b, r = _show_colors(io)
-
     epoch_str = _compact_string(io, sv.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
     r_str     = _compact_string(io, sv.r ./ 1000)
@@ -231,9 +232,9 @@ function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector{Tepoch, T}) 
     v_str = _append_unit(v_str, max_length, "km/s")
 
     println(io, "OrbitStateVector{", Tepoch, ", ", T, "}:")
-    println(io, "$b  epoch :$r ", epoch_str, " (", date_str, ")")
-    println(io, "$b      r :$r ", r_str)
-    print(io,   "$b      v :$r ", v_str)
+    _println_field(io, "  epoch :", " ", epoch_str, " (", date_str, ")")
+    _println_field(io, "      r :", " ", r_str)
+    _print_field(io, "      v :", " ", v_str)
 
     return nothing
 end
