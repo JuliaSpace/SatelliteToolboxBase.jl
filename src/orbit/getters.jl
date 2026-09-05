@@ -10,73 +10,105 @@ export eccentric_anomaly, mean_anomaly, true_anomaly
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
-# == Old API ===============================================================================
+# == Property Aliases ======================================================================
 #
-# Those getters are kept for backward compatibility. They are not recommended for new code.
+# Those aliases are kept for backward compatibility. They are not recommended for new code.
 
 function Base.getproperty(orbit::KeplerianElements, sym::Symbol)
-    sym == :t && return orbit.epoch
-    sym == :a && return orbit.semi_major_axis
-    sym == :e && return orbit.eccentricity
-    sym == :i && return orbit.inclination
-    sym == :Ω && return orbit.raan
-    sym == :ω && return orbit.argument_of_periapsis
-    sym == :f && return orbit.anomaly
+    sym === :t && return getfield(orbit, :epoch)
+    sym === :a && return getfield(orbit, :semi_major_axis)
+    sym === :e && return getfield(orbit, :eccentricity)
+    sym === :i && return getfield(orbit, :inclination)
+    sym === :Ω && return getfield(orbit, :raan)
+    sym === :ω && return getfield(orbit, :argument_of_periapsis)
+    sym === :f && return true_anomaly(orbit)
     return getfield(orbit, sym)
 end
 
+function Base.propertynames(::KeplerianElements, private::Bool = false)
+    return (fieldnames(KeplerianElements)..., :t, :a, :e, :i, :Ω, :ω, :f)
+end
+
 # == Anomalies =============================================================================
+#
+# All getters accept `kwargs...`, which are forwarded to the Newton-Raphson solver of the
+# Kepler's equation when the conversion from the mean anomaly is required. Otherwise, they
+# are ignored.
 
 # -- Eccentric Anomaly ---------------------------------------------------------------------
 
 """
-    eccentric_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+    eccentric_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}; kwargs...) -> T
 
-Return the eccentric anomaly of the orbit. This function will convert the anomaly to
+Return the eccentric anomaly [rad] of the `orbit`. This function will convert the anomaly to
 eccentric anomaly if it is not already in that form.
-"""
-eccentric_anomaly(orbit::KeplerianElements{EccentricAnomaly}) = orbit.anomaly
 
-function eccentric_anomaly(orbit::KeplerianElements{MeanAnomaly})
-    return mean_to_eccentric_anomaly(orbit.eccentricity, orbit.anomaly)
+If `Tanomaly` is `MeanAnomaly`, the keywords `kwargs...` are forwarded to
+[`mean_to_eccentric_anomaly`](@ref). Otherwise, they are ignored.
+"""
+eccentric_anomaly(orbit::KeplerianElements{EccentricAnomaly}; kwargs...) = orbit.anomaly
+
+function eccentric_anomaly(orbit::KeplerianElements{MeanAnomaly}; kwargs...)
+    return mean_to_eccentric_anomaly(orbit.eccentricity, orbit.anomaly; kwargs...)
 end
 
-function eccentric_anomaly(orbit::KeplerianElements{TrueAnomaly})
+function eccentric_anomaly(orbit::KeplerianElements{TrueAnomaly}; kwargs...)
     return true_to_eccentric_anomaly(orbit.eccentricity, orbit.anomaly)
 end
 
 # -- Mean Anomaly --------------------------------------------------------------------------
 
 """
-    mean_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+    mean_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}; kwargs...) -> T
 
-Return the mean anomaly of the orbit. This function will convert the anomaly to mean anomaly
-if it is not already in that form.
+Return the mean anomaly [rad] of the `orbit`. This function will convert the anomaly to mean
+anomaly if it is not already in that form.
+
+The keywords `kwargs...` are ignored. They exist so that all anomaly getters share the same
+signature.
 """
-function mean_anomaly(orbit::KeplerianElements{EccentricAnomaly})
+function mean_anomaly(orbit::KeplerianElements{EccentricAnomaly}; kwargs...)
     return eccentric_to_mean_anomaly(orbit.eccentricity, orbit.anomaly)
 end
 
-mean_anomaly(orbit::KeplerianElements{MeanAnomaly}) = orbit.anomaly
+mean_anomaly(orbit::KeplerianElements{MeanAnomaly}; kwargs...) = orbit.anomaly
 
-function mean_anomaly(orbit::KeplerianElements{TrueAnomaly})
+function mean_anomaly(orbit::KeplerianElements{TrueAnomaly}; kwargs...)
     return true_to_mean_anomaly(orbit.eccentricity, orbit.anomaly)
 end
 
 # -- True Anomaly --------------------------------------------------------------------------
 
 """
-    true_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+    true_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}; kwargs...) -> T
 
-Return the true anomaly of the orbit. This function will convert the anomaly to true anomaly
-if it is not already in that form.
+Return the true anomaly [rad] of the `orbit`. This function will convert the anomaly to true
+anomaly if it is not already in that form.
+
+If `Tanomaly` is `MeanAnomaly`, the keywords `kwargs...` are forwarded to
+[`mean_to_true_anomaly`](@ref). Otherwise, they are ignored.
 """
-function true_anomaly(orbit::KeplerianElements{EccentricAnomaly})
+function true_anomaly(orbit::KeplerianElements{EccentricAnomaly}; kwargs...)
     return eccentric_to_true_anomaly(orbit.eccentricity, orbit.anomaly)
 end
 
-function true_anomaly(orbit::KeplerianElements{MeanAnomaly})
-    return mean_to_true_anomaly(orbit.eccentricity, orbit.anomaly)
+function true_anomaly(orbit::KeplerianElements{MeanAnomaly}; kwargs...)
+    return mean_to_true_anomaly(orbit.eccentricity, orbit.anomaly; kwargs...)
 end
 
-true_anomaly(orbit::KeplerianElements{TrueAnomaly}) = orbit.anomaly
+true_anomaly(orbit::KeplerianElements{TrueAnomaly}; kwargs...) = orbit.anomaly
+
+############################################################################################
+#                                    Orbit State Vector                                    #
+############################################################################################
+
+# == Property Aliases ======================================================================
+
+function Base.getproperty(sv::OrbitStateVector, sym::Symbol)
+    sym === :t && return getfield(sv, :epoch)
+    return getfield(sv, sym)
+end
+
+function Base.propertynames(::OrbitStateVector, private::Bool = false)
+    return (fieldnames(OrbitStateVector)..., :t)
+end
