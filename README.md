@@ -277,8 +277,8 @@ it:
     algorithm. If `tol` is `nothing`, then it will be `eps(T)`, where `T` is a
     floating-point type obtained from the promotion of `T1` and `T2` to a float.
     (**Default** = `nothing`)
-- `max_iterations::Number`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10.
+- `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
+    algorithm. It must be greater than or equal to 1, otherwise an `ArgumentError` is thrown.
     (**Default** = 10)
 
 ```julia

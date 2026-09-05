@@ -37,8 +37,8 @@
     E = mean_to_eccentric_anomaly(e, M)
     @test E ≈ 220.512_074_767_522 |> deg2rad atol = 1e-14
 
-    E = mean_to_eccentric_anomaly(e, M; max_iterations = -1)
-    @test E ≈ 220.512_074_767_522 |> deg2rad atol = 1e-14
+    @test_throws ArgumentError mean_to_eccentric_anomaly(e, M; max_iterations = 0)
+    @test_throws ArgumentError mean_to_eccentric_anomaly(e, M; max_iterations = -1)
 
     E = 220.512_074_767_522 |> deg2rad
 
@@ -92,8 +92,8 @@ end
     f = mean_to_true_anomaly(e, M)
     @test f ≈ 207.163_991_769_213_96 |> deg2rad atol = 1e-14
 
-    f = mean_to_true_anomaly(e, M; max_iterations = -1)
-    @test f ≈ 207.163_991_769_213_96 |> deg2rad atol = 1e-14
+    @test_throws ArgumentError mean_to_true_anomaly(e, M; max_iterations = 0)
+    @test_throws ArgumentError mean_to_true_anomaly(e, M; max_iterations = -1)
 
     f = 207.163_991_769_213_96 |> deg2rad
 

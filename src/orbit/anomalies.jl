@@ -36,12 +36,21 @@ algorithm.
     can be resolved in `T` given the magnitude of `M`.
     (**Default**: `nothing`)
 - `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10.
+    algorithm. It must be greater than or equal to 1.
     (**Default**: 10)
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: If `max_iterations` is lower than 1.
 """
 function mean_to_eccentric_anomaly(
     e::T1, M::T2; max_iterations::Integer = 10, tol::Union{Nothing, Number} = nothing
 ) where {T1, T2}
+    max_iterations < 1 &&
+        throw(ArgumentError("The maximum number of iterations must be greater than 0."))
+
     T = float(promote_type(T1, T2))
 
     # == Compute the Eccentric Anomaly Using the Newton-Raphson Method =====================
@@ -63,11 +72,6 @@ function mean_to_eccentric_anomaly(
     # in `T`. Hence, we scale the default tolerance by the magnitude of `M`, which avoids
     # spending iterations that cannot improve the solution.
     δ = isnothing(tol) ? eps(T) * max(one(T), M) : T(tol)
-
-    # Check the maximum number of iterations.
-    if max_iterations < 1
-        max_iterations = 10
-    end
 
     # Newton-Raphson iterations.
     for _ in 1:max_iterations
@@ -100,8 +104,14 @@ algorithm.
     can be resolved in `T` given the magnitude of `M`.
     (**Default**: `nothing`)
 - `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
-    algorithm. If it is lower than 1, then it is set to 10.
+    algorithm. It must be greater than or equal to 1.
     (**Default**: 10)
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: If `max_iterations` is lower than 1.
 """
 function mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2}
     # Compute the eccentric anomaly.
