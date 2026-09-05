@@ -4,8 +4,6 @@
 #
 ############################################################################################
 
-import PrecompileTools
-
 # The formatter does not honor the `#! format: off` markers inside the workload block, so
 # the entire block is excluded from formatting to keep the hand-aligned numeric columns.
 #! format: off

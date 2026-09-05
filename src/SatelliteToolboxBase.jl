@@ -8,6 +8,7 @@ using ReferenceFrameRotations
 using StaticArrays
 
 import Base: throw_boundserror, @boundscheck, @propagate_inbounds
+import PrecompileTools
 
 ############################################################################################
 #                                          Types                                           #
@@ -29,11 +30,11 @@ include("./constants.jl")
 #                                         Includes                                         #
 ############################################################################################
 
-include("./interfaces.jl")
-
 include("./helpers.jl")
-
+include("./interfaces.jl")
 include("./storage.jl")
+
+# == Orbit =================================================================================
 
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")
@@ -43,10 +44,16 @@ include("./orbit/kepler_to_sv.jl")
 include("./orbit/rv_to_kepler.jl")
 include("./orbit/sv_to_kepler.jl")
 
+# == Show ==================================================================================
+
 include("./show/orbit.jl")
+
+# == Time ==================================================================================
 
 include("./time/gmst.jl")
 include("./time/julian_day.jl")
+
+# == Precompilation ========================================================================
 
 include("./precompile.jl")
 
