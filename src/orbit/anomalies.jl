@@ -18,7 +18,7 @@ export true_to_eccentric_anomaly, true_to_mean_anomaly
 ############################################################################################
 
 """
-    mean_to_eccentric_anomaly(e::T1, M::T2; kwargs...) where {T1, T2} -> T
+    mean_to_eccentric_anomaly(e::T1, M::T2; kwargs...) -> T
 
 Compute the eccentric anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e`
 [-] and the mean anomaly `M` [rad]. The Kepler's equation is solved using the Newton-Raphson
@@ -86,7 +86,7 @@ function mean_to_eccentric_anomaly(
 end
 
 """
-    mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2} -> T
+    mean_to_true_anomaly(e::T1, M::T2; kwargs...) -> T
 
 Compute the true anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
 and the mean anomaly `M` [rad]. The Kepler's equation is solved using the Newton-Raphson
@@ -126,7 +126,7 @@ end
 ############################################################################################
 
 """
-    eccentric_to_true_anomaly(e::T1, E::T2) where {T1, T2} -> T
+    eccentric_to_true_anomaly(e::T1, E::T2) -> T
 
 Compute the true anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
 and the eccentric anomaly `E` [rad].
@@ -144,7 +144,7 @@ function eccentric_to_true_anomaly(e::T1, E::T2) where {T1, T2}
 end
 
 """
-    eccentric_to_mean_anomaly(e::T1, E::T2) where {T1, T2} -> T
+    eccentric_to_mean_anomaly(e::T1, E::T2) -> T
 
 Compute the mean anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
 and the eccentric anomaly `E` [rad].
@@ -163,7 +163,7 @@ end
 ############################################################################################
 
 """
-    true_to_eccentric_anomaly(e::T1, f::T2) where {T1, T2} -> T
+    true_to_eccentric_anomaly(e::T1, f::T2) -> T
 
 Compute the eccentric anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e`
 [-] and the true anomaly `f` [rad].
@@ -180,7 +180,7 @@ function true_to_eccentric_anomaly(e::T1, f::T2) where {T1, T2}
 end
 
 """
-    true_to_mean_anomaly(e::T1, f::T2) where {T1, T2} -> T
+    true_to_mean_anomaly(e::T1, f::T2) -> T
 
 Compute the mean anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
 and the true anomaly `f` [rad].
@@ -202,7 +202,7 @@ end
 ############################################################################################
 
 """
-    _wrap_to_2π(x::T) where {T <: Number} -> T
+    _wrap_to_2π(x::T) -> T
 
 Wrap the angle `x` [rad] to the interval [0, 2π).
 

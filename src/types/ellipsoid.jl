@@ -38,7 +38,7 @@ struct Ellipsoid{T <: Number}
 end
 
 """
-    Ellipsoid(a::T1, f::T2) where {T1 <: Number, T2 <: Number} -> Ellipsoid{T}
+    Ellipsoid(a::T1, f::T2) -> Ellipsoid{T}
 
 Construct an ellipsoid (see [`Ellipsoid`](@ref)) with semi-major axis `a` [m] and flattening
 `f` [-]. The other elements in the structure are computed automatically. The semi-major axis

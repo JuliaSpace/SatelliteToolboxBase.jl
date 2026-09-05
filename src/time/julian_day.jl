@@ -38,7 +38,8 @@ export date_to_jd, jd_to_date, is_leap_year
 ############################################################################################
 
 """
-    date_to_jd(Y::Integer, M::Integer, D::Integer[, h::Integer, m::Integer, s::Number]) -> Float64
+    date_to_jd(Y::Integer, M::Integer, D::Integer) -> Float64
+    date_to_jd(Y::Integer, M::Integer, D::Integer, h::Integer, m::Integer, s::Number) -> Float64
 
 Convert a date represented using the Gregorian Calendar (Year = `Y`, Month = `M` (1-12), Day
 = `D`, Hour = `h` (0-23), minute = `m`, and second = `s`) to Julian Day. The date must be

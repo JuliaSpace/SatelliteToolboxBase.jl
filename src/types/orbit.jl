@@ -42,7 +42,7 @@ package does not convert between time scales.
 - `argument_of_periapsis::T`: Argument of periapsis [rad].
 - `anomaly::T`: Anomaly [rad], where the type depends on the parameter `Tanomaly`.
 
-# Property Aliases
+# Remarks
 
 For backward compatibility, the following short property names are also available: `t`
 (epoch), `a` (semi-major axis), `e` (eccentricity), `i` (inclination), `Ω` (RAAN), `ω`
@@ -469,7 +469,7 @@ package does not convert between time scales.
 - `v::SVector{3, T}`: Velocity vector [m/s].
 - `a::SVector{3, T}`: Acceleration vector [m/s²].
 
-# Property Aliases
+# Remarks
 
 For backward compatibility, the property `t` is an alias for `epoch`.
 

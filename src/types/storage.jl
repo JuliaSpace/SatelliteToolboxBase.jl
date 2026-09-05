@@ -56,13 +56,19 @@ of the elements is defined by `Tt`.
 
 # Constructors
 
-    LowerTriangularStorage{[Ta,][ Tt]}(n::Int) where {Ta <: AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
+    LowerTriangularStorage{Ta, Tt}(n::Int) -> LowerTriangularStorage{Ta, Tt}
+    LowerTriangularStorage{Ta}(n::Int) -> LowerTriangularStorage{Ta, Float64}
+    LowerTriangularStorage{Tt}(n::Int) -> LowerTriangularStorage{ColumnMajor, Tt}
+    LowerTriangularStorage(n::Int) -> LowerTriangularStorage{ColumnMajor, Float64}
 
 Create a lower triangular storage of size `n x n`, with data alignment `Ta` and element type
 `Tt`. If `Ta` is not provided, it defaults to `ColumnMajor`. If `Tt` is not provided, it
-defaults to `Float64`.
+defaults to `Float64`. The size `n` must be positive.
 
-    zeros(::Type{LowerTriangularStorage{[Ta], [Tt]}}, n::Int) where {Ta <: AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
+    zeros(::Type{LowerTriangularStorage{Ta, Tt}}, n::Int) -> LowerTriangularStorage{Ta, Tt}
+    zeros(::Type{LowerTriangularStorage{Ta}}, n::Int) -> LowerTriangularStorage{Ta, Float64}
+    zeros(::Type{LowerTriangularStorage{Tt}}, n::Int) -> LowerTriangularStorage{ColumnMajor, Tt}
+    zeros(::Type{LowerTriangularStorage}, n::Int) -> LowerTriangularStorage{ColumnMajor, Float64}
 
 Create a lower triangular storage of size `n x n`, with data alignment `Ta` and element type
 `Tt`, with all elements initialized to zero. If `Ta` is not provided, it defaults to
@@ -83,6 +89,10 @@ Create a lower triangular storage of size `n x n`, with data alignment `Ta` and 
     initialized to zero (see the constructors above).
 
 When printed, the elements of the upper triangular part are shown as `×`.
+
+## Throws
+
+- `ArgumentError`: If the size `n` passed to a constructor is not positive.
 
 ## Examples
 
