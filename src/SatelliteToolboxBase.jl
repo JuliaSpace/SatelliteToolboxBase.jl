@@ -2,9 +2,10 @@ module SatelliteToolboxBase
 
 using Dates
 using LinearAlgebra
+using StyledStrings
+
 using ReferenceFrameRotations
 using StaticArrays
-using StyledStrings
 
 import Base: throw_boundserror, @boundscheck, @propagate_inbounds
 
@@ -28,11 +29,11 @@ include("./constants.jl")
 #                                         Includes                                         #
 ############################################################################################
 
-include("interfaces.jl")
+include("./interfaces.jl")
 
-include("helpers.jl")
+include("./helpers.jl")
 
-include("storage.jl")
+include("./storage.jl")
 
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")
@@ -47,6 +48,6 @@ include("./show/orbit.jl")
 include("./time/gmst.jl")
 include("./time/julian_day.jl")
 
-include("precompile.jl")
+include("./precompile.jl")
 
 end # module SatelliteToolboxBase

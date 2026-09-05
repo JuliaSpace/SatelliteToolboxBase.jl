@@ -47,11 +47,17 @@ necessary).
 struct KeplerianElements{Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number} <:
        Orbit{Tepoch, T}
     epoch::Tepoch
+
     semi_major_axis::T
+
     eccentricity::T
+
     inclination::T
+
     raan::T
+
     argument_of_periapsis::T
+
     anomaly::T
 end
 
@@ -158,12 +164,20 @@ This set is non-singular for circular (`e = 0`) and equatorial (`i = 0`) orbits.
 """
 struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     epoch::Tepoch
+
     semi_major_axis::T
+
     h::T
+
     k::T
+
     p::T
+
     q::T
+
     mean_longitude::T
+
+    # == Constructors ======================================================================
 
     # This inner constructor avoids the automatic outer constructor, which would bypass the
     # float promotion when all the elements have the same type.
@@ -222,9 +236,14 @@ For backward compatibility, the property `t` is an alias for `epoch`.
 """
 struct OrbitStateVector{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     epoch::Tepoch
+
     r::SVector{3, T}
+
     v::SVector{3, T}
+
     a::SVector{3, T}
+
+    # == Constructors ======================================================================
 
     # This inner constructor avoids the automatic outer constructor, which would bypass the
     # float promotion when all the vectors are `SVector`s with the same element type.

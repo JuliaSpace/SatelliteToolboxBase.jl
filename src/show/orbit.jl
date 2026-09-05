@@ -5,49 +5,6 @@
 ############################################################################################
 
 ############################################################################################
-#                                     Private Functions                                    #
-############################################################################################
-
-# Return the strings in `strs` left-padded so that their decimal points are aligned. Strings
-# without a decimal point are treated as if the point were right after the last character.
-function _align_on_decimal(strs::Vararg{String, N}) where {N}
-    Δs = map(strs) do s
-        Δ = findfirst('.', s)
-        return isnothing(Δ) ? length(s) + 1 : Δ
-    end
-
-    dp_pos = maximum(Δs)
-
-    return map((s, Δ) -> " "^(dp_pos - Δ) * s, strs, Δs)
-end
-
-# Return `str` right-padded to `max_length` characters followed by ` unit`.
-function _append_unit(str::String, max_length::Int, unit::String)
-    return str * " "^(max_length - length(str)) * " " * unit
-end
-
-# Print the field `label` in bold followed by the values `xs...` and a newline. The bold
-# decoration is rendered only if `io` supports color.
-function _println_field(io::IO, label::String, xs...)
-    print(io, styled"{bold:$label}")
-    println(io, xs...)
-    return nothing
-end
-
-# Same as `_println_field` but without the trailing newline.
-function _print_field(io::IO, label::String, xs...)
-    print(io, styled"{bold:$label}")
-    print(io, xs...)
-    return nothing
-end
-
-# Print `x` to a string honoring the `:compact` property in `io`.
-function _compact_string(io::IO, x)
-    compact = get(io, :compact, true)::Bool
-    return sprint(print, x; context = :compact => compact)
-end
-
-############################################################################################
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
@@ -248,4 +205,47 @@ function Base.show(
     _print_field(io, "      v :", " ", v_str)
 
     return nothing
+end
+
+############################################################################################
+#                                     Private Functions                                    #
+############################################################################################
+
+# Return the strings in `strs` left-padded so that their decimal points are aligned. Strings
+# without a decimal point are treated as if the point were right after the last character.
+function _align_on_decimal(strs::Vararg{String, N}) where {N}
+    Δs = map(strs) do s
+        Δ = findfirst('.', s)
+        return isnothing(Δ) ? length(s) + 1 : Δ
+    end
+
+    dp_pos = maximum(Δs)
+
+    return map((s, Δ) -> " "^(dp_pos - Δ) * s, strs, Δs)
+end
+
+# Return `str` right-padded to `max_length` characters followed by ` unit`.
+function _append_unit(str::String, max_length::Int, unit::String)
+    return str * " "^(max_length - length(str)) * " " * unit
+end
+
+# Print the field `label` in bold followed by the values `xs...` and a newline. The bold
+# decoration is rendered only if `io` supports color.
+function _println_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    println(io, xs...)
+    return nothing
+end
+
+# Same as `_println_field` but without the trailing newline.
+function _print_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    print(io, xs...)
+    return nothing
+end
+
+# Print `x` to a string honoring the `:compact` property in `io`.
+function _compact_string(io::IO, x)
+    compact = get(io, :compact, true)::Bool
+    return sprint(print, x; context = :compact => compact)
 end

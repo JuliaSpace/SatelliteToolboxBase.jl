@@ -22,16 +22,19 @@ Ellipsoid of rotation to be used for geocentric, geodetic and ECEF transformatio
 struct Ellipsoid{T <: Number}
     # == Main Variables ====================================================================
 
-    a::T # Semi-major axis in [m]
-    f::T # Flattening of the ellipsoid
+    a::T
 
-    # == Auxiliary variables ===============================================================
-    # 
+    f::T
+
+    # == Auxiliary Variables ===============================================================
+    #
     # Those variables are computed for convenience.
 
-    b::T # Semi-minor axis in [m]
-    e²::T # Eccentricity squared
-    el²::T # Second eccentricity squared
+    b::T
+
+    e²::T
+
+    el²::T
 end
 
 """

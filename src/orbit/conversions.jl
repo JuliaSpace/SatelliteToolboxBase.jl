@@ -14,59 +14,6 @@
 ############################################################################################
 
 ############################################################################################
-#                                     Private Functions                                    #
-############################################################################################
-
-# Convert the equinoctial elements to Keplerian elements with mean anomaly. All the angles
-# are returned in the interval [0, 2π).
-function _equinoctial_to_keplerian(ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
-    a = ee.semi_major_axis
-    h = ee.h
-    k = ee.k
-    p = ee.p
-    q = ee.q
-    λ = ee.mean_longitude
-
-    e = hypot(h, k)
-    i = 2atan(hypot(p, q))
-    Ω = _wrap_to_2π(atan(p, q))
-    ω = _wrap_to_2π(atan(h, k) - Ω)
-    M = _wrap_to_2π(λ - Ω - ω)
-
-    return KeplerianElements{MeanAnomaly, Tepoch, T}(ee.epoch, a, e, i, Ω, ω, M)
-end
-
-# Convert the Keplerian elements (any anomaly) to equinoctial elements.
-function _keplerian_to_equinoctial(
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    a = ke.semi_major_axis
-    e = ke.eccentricity
-    i = ke.inclination
-    Ω = ke.raan
-    ω = ke.argument_of_periapsis
-    M = mean_anomaly(ke)
-
-    sin_Ω₊ω, cos_Ω₊ω = sincos(Ω + ω)
-    sin_Ω, cos_Ω     = sincos(Ω)
-    tan_io2          = tan(i / 2)
-
-    # The elements `p` and `q` are singular at i = π. In floating point, `tan(i / 2)` does
-    # not overflow at `i = π`, but it exceeds `1 / eps(T)`, where `p` and `q` lose all the
-    # fractional precision. We use this threshold to detect the singularity.
-    abs(tan_io2) < 1 / eps(T) ||
-        throw(ArgumentError("The equinoctial elements are singular at i = π."))
-
-    h = e * sin_Ω₊ω
-    k = e * cos_Ω₊ω
-    p = tan_io2 * sin_Ω
-    q = tan_io2 * cos_Ω
-    λ = Ω + ω + M
-
-    return EquinoctialElements{Tepoch, T}(ke.epoch, a, h, k, p, q, λ)
-end
-
-############################################################################################
 #                                     Julia Conversions                                    #
 ############################################################################################
 
@@ -209,4 +156,57 @@ function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, sv::OrbitStateVector
 ) where {Tepoch, T}
     return OrbitStateVector{Tepoch, T}(sv.epoch, sv.r, sv.v, sv.a)
+end
+
+############################################################################################
+#                                     Private Functions                                    #
+############################################################################################
+
+# Convert the equinoctial elements to Keplerian elements with mean anomaly. All the angles
+# are returned in the interval [0, 2π).
+function _equinoctial_to_keplerian(ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    a = ee.semi_major_axis
+    h = ee.h
+    k = ee.k
+    p = ee.p
+    q = ee.q
+    λ = ee.mean_longitude
+
+    e = hypot(h, k)
+    i = 2atan(hypot(p, q))
+    Ω = _wrap_to_2π(atan(p, q))
+    ω = _wrap_to_2π(atan(h, k) - Ω)
+    M = _wrap_to_2π(λ - Ω - ω)
+
+    return KeplerianElements{MeanAnomaly, Tepoch, T}(ee.epoch, a, e, i, Ω, ω, M)
+end
+
+# Convert the Keplerian elements (any anomaly) to equinoctial elements.
+function _keplerian_to_equinoctial(
+    ke::KeplerianElements{Tanomaly, Tepoch, T}
+) where {Tanomaly, Tepoch, T}
+    a = ke.semi_major_axis
+    e = ke.eccentricity
+    i = ke.inclination
+    Ω = ke.raan
+    ω = ke.argument_of_periapsis
+    M = mean_anomaly(ke)
+
+    sin_Ω₊ω, cos_Ω₊ω = sincos(Ω + ω)
+    sin_Ω, cos_Ω     = sincos(Ω)
+    tan_io2          = tan(i / 2)
+
+    # The elements `p` and `q` are singular at i = π. In floating point, `tan(i / 2)` does
+    # not overflow at `i = π`, but it exceeds `1 / eps(T)`, where `p` and `q` lose all the
+    # fractional precision. We use this threshold to detect the singularity.
+    abs(tan_io2) < 1 / eps(T) ||
+        throw(ArgumentError("The equinoctial elements are singular at i = π."))
+
+    h = e * sin_Ω₊ω
+    k = e * cos_Ω₊ω
+    p = tan_io2 * sin_Ω
+    q = tan_io2 * cos_Ω
+    λ = Ω + ω + M
+
+    return EquinoctialElements{Tepoch, T}(ke.epoch, a, h, k, p, q, λ)
 end
