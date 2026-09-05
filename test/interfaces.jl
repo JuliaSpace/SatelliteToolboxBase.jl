@@ -17,10 +17,25 @@
          123.456 |> deg2rad,
     )
 
-    @test eltype(orb) === KeplerianElements{Float64, Float64}
+    @test eltype(orb) === KeplerianElements{TrueAnomaly, Float64, Float64}
     @test length(orb) === 1
     @test iterate(orb) === (orb, nothing)
     @test iterate(orb, nothing) === nothing
+
+    orb_M = convert(KeplerianElements{MeanAnomaly}, orb)
+
+    @test eltype(orb_M) === KeplerianElements{MeanAnomaly, Float64, Float64}
+    @test length(orb_M) === 1
+    @test iterate(orb_M) === (orb_M, nothing)
+
+    # == Equinoctial Elements ==============================================================
+
+    ee = convert(EquinoctialElements, orb)
+
+    @test eltype(ee) === EquinoctialElements{Float64, Float64}
+    @test length(ee) === 1
+    @test iterate(ee) === (ee, nothing)
+    @test iterate(ee, nothing) === nothing
 
     # == Orbit State Vector ================================================================
 
@@ -34,4 +49,8 @@
     @test length(sv) === 1
     @test iterate(sv) === (sv, nothing)
     @test iterate(sv, nothing) === nothing
+
+    # Broadcasting treats an orbit as a collection with one element.
+    @test true_anomaly.(orb) == [true_anomaly(orb)]
+    @test mean_anomaly.(ee |> x -> convert(KeplerianElements{MeanAnomaly}, x)) == [mean_anomaly(orb_M)]
 end

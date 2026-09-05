@@ -41,6 +41,31 @@
 
     @test sv isa OrbitStateVector{Int64, Float32}
     @test sv.a == SVector{3, Float32}(1, 2, 3)
+
+    # Integer inputs must be promoted to float.
+    sv = OrbitStateVector(Int64(123), [1, 2, 3], [4, 5, 6])
+    @test sv isa OrbitStateVector{Int64, Float64}
+    @test sv.r == SVector{3, Float64}(1, 2, 3)
+
+    sv = OrbitStateVector(Int64(123), [1, 2, 3], [4, 5, 6], [7, 8, 9])
+    @test sv isa OrbitStateVector{Int64, Float64}
+    @test sv.a == SVector{3, Float64}(7, 8, 9)
+
+    v  = @SVector [1, 2, 3]
+    sv = OrbitStateVector(Int64(123), v, v, v)
+    @test sv isa OrbitStateVector{Int64, Float64}
+end
+
+@testset "Property Aliases" begin
+    sv = OrbitStateVector(
+        date_to_jd(1986, 6, 19, 18, 35, 0),
+        [-3.107e3,  1.954e6, 6.110e6],
+        [ 6.337e3, -1.470e3, 3.684e3]
+    )
+
+    @test sv.t === sv.epoch
+    @test sv.epoch == date_to_jd(1986, 6, 19, 18, 35, 0)
+    @test propertynames(sv) == (:epoch, :r, :v, :a, :t)
 end
 
 @testset "Show" begin
@@ -79,4 +104,10 @@ OrbitStateVector{Float64, Float32}:
       v : Float32[6.337, -1.47, 3.684]     km/s"""
     str = sprint(show, MIME("text/plain"), sv_f32)
     @test str == expected
+
+    # == Color =============================================================================
+
+    str = sprint(show, MIME("text/plain"), sv; context = :color => true)
+    @test occursin("\e[1m", str)
+    @test occursin("\e[0m", str)
 end

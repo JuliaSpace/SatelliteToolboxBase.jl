@@ -22,6 +22,10 @@ end
         include("./orbit/keplerian_elements.jl")
     end
 
+    @testset "Equinoctial Elements" verbose = true begin
+        include("./orbit/equinoctial_elements.jl")
+    end
+
     @testset "Orbit State Vector" verbose = true begin
         include("./orbit/orbit_state_vector.jl")
     end
