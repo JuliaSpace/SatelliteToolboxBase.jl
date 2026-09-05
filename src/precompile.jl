@@ -15,6 +15,8 @@ PrecompileTools.@compile_workload begin
 
     # == Orbit =============================================================================
 
+    # -- Keplerian Elements ----------------------------------------------------------------
+
     ke = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -35,10 +37,45 @@ PrecompileTools.@compile_workload begin
          123.456f0 |> deg2rad,
     )
 
-    show(IOBuffer(), ke)
-    show(IOBuffer(), MIME("text/plain"), ke)
-    show(IOBuffer(), ke_f32)
-    show(IOBuffer(), MIME("text/plain"), ke_f32)
+    ke_E     = convert(KeplerianElements{EccentricAnomaly}, ke)
+    ke_E_f32 = convert(KeplerianElements{EccentricAnomaly}, ke_f32)
+    ke_M     = convert(KeplerianElements{MeanAnomaly}, ke)
+    ke_M_f32 = convert(KeplerianElements{MeanAnomaly}, ke_f32)
+
+    for k in (ke, ke_f32, ke_E, ke_E_f32, ke_M, ke_M_f32)
+        show(IOBuffer(), k)
+        show(IOBuffer(), MIME("text/plain"), k)
+
+        true_anomaly(k)
+        eccentric_anomaly(k)
+        mean_anomaly(k)
+
+        convert(KeplerianElements{TrueAnomaly}, k)
+        convert(KeplerianElements{EccentricAnomaly}, k)
+        convert(KeplerianElements{MeanAnomaly}, k)
+
+        kepler_to_rv(k)
+        kepler_to_sv(k)
+        convert(OrbitStateVector, k)
+    end
+
+    # -- Equinoctial Elements --------------------------------------------------------------
+
+    ee     = convert(EquinoctialElements, ke)
+    ee_f32 = convert(EquinoctialElements, ke_f32)
+
+    for e in (ee, ee_f32)
+        show(IOBuffer(), e)
+        show(IOBuffer(), MIME("text/plain"), e)
+
+        convert(KeplerianElements, e)
+        convert(KeplerianElements{TrueAnomaly}, e)
+        convert(KeplerianElements{EccentricAnomaly}, e)
+        convert(KeplerianElements{MeanAnomaly}, e)
+        convert(OrbitStateVector, e)
+    end
+
+    # -- Orbit State Vector ----------------------------------------------------------------
 
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
@@ -52,24 +89,18 @@ PrecompileTools.@compile_workload begin
         [ 6.337f3, -1.470f3, 3.684f3]
     )
 
-    show(IOBuffer(), sv)
-    show(IOBuffer(), MIME("text/plain"), sv)
-    show(IOBuffer(), sv_f32)
-    show(IOBuffer(), MIME("text/plain"), sv_f32)
+    for s in (sv, sv_f32)
+        show(IOBuffer(), s)
+        show(IOBuffer(), MIME("text/plain"), s)
 
-    # -- Conversions -----------------------------------------------------------------------
+        rv_to_kepler(s.r, s.v)
+        rv_to_kepler(s.r, s.v, 0.0)
+        sv_to_kepler(s)
 
-    kepler_to_rv(ke)
-    kepler_to_rv(ke_f32)
-    rv_to_kepler(sv.r, sv.v)
-    rv_to_kepler(sv.r, sv.v, 0.0)
-    rv_to_kepler(sv_f32.r, sv_f32.v)
-    rv_to_kepler(sv_f32.r, sv_f32.v, 0.0)
-
-    kepler_to_sv(ke)
-    kepler_to_sv(ke_f32)
-    sv_to_kepler(sv)
-    sv_to_kepler(sv_f32)
+        convert(KeplerianElements, s)
+        convert(KeplerianElements{MeanAnomaly}, s)
+        convert(EquinoctialElements, s)
+    end
 
     # == Time ==============================================================================
 
