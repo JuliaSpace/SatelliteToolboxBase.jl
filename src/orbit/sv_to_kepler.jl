@@ -17,5 +17,5 @@ Convert the orbit state vector `sv` to Keplerian elements.
     (**Default** = `GM_EARTH`)
 """
 function sv_to_kepler(sv::OrbitStateVector; μ::Number = GM_EARTH)
-    return rv_to_kepler(sv.r, sv.v, sv.t; μ)
+    return rv_to_kepler(sv.r, sv.v, sv.epoch; μ)
 end
