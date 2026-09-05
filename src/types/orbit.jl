@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export Orbit, KeplerianElements, OrbitStateVector
+export Orbit, KeplerianElements, EquinoctialElements, OrbitStateVector
 
 """
     abstract type Orbit{Tepoch<:Number, T<:Number}
@@ -173,7 +173,15 @@ function EquinoctialElements(
     T6<:Number
 }
     T = promote_type(T1, T2, T3, T4, T5, T6) |> float
-    return KeplerianElements{typeof(t), T}(t, a, e, i, Ω, ω, f)
+    return EquinoctialElements{typeof(epoch), T}(
+        epoch,
+        semi_major_axis,
+        h,
+        k,
+        p,
+        q,
+        longitude,
+    )
 end
 
 """

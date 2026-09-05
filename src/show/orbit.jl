@@ -217,11 +217,11 @@ function Base.show(
     println(io, "EquinoctialElements{", Tepoch, ", ", T, "}:")
     println(io, "$b           Epoch : $r", epoch_str, " (", date_str, ")");
     println(io, "$b Semi-major axis : $r", a_str)
-    println(io, "$b    Eccentricity : $r", e_str)
-    println(io, "$b     Inclination : $r", i_str)
-    println(io, "$b            RAAN : $r", Ω_str)
-    println(io, "$b Arg. of Perigee : $r", ω_str)
-    print(io,   "$b    True Anomaly : $r", f_str)
+    println(io, "$b               h : $r", h_str)
+    println(io, "$b               k : $r", k_str)
+    println(io, "$b               p : $r", p_str)
+    println(io, "$b               q : $r", q_str)
+    print(io,   "$b       Longiture : $r", l_str)
 
     return nothing
 end
