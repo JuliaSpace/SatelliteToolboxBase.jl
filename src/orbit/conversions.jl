@@ -17,209 +17,154 @@
 #                                     Julia Conversions                                    #
 ############################################################################################
 
+# The docstrings of the orbit representations describe the conversions. The identity
+# conversions are handled by `Base.convert(::Type{T}, x::T)`, which is more specific than
+# every method below.
+
+# == Type Parameters Taken from the Input ==================================================
+
+function Base.convert(
+    ::Type{EquinoctialElements}, orbit::Orbit{Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
+    return convert(EquinoctialElements{Tepoch, T}, orbit)
+end
+
+function Base.convert(
+    ::Type{AlternateEquinoctialElements}, orbit::Orbit{Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
+    return convert(AlternateEquinoctialElements{Tepoch, T}, orbit)
+end
+
+function Base.convert(
+    ::Type{KeplerianElements}, orbit::Orbit{Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
+    return convert(KeplerianElements{TrueAnomaly, Tepoch, T}, orbit)
+end
+
+function Base.convert(
+    ::Type{KeplerianElements{Tanomaly}}, orbit::Orbit{Tepoch, T}
+) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, orbit)
+end
+
+function Base.convert(
+    ::Type{OrbitStateVector}, orbit::Orbit{Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
+    return convert(OrbitStateVector{Tepoch, T}, orbit)
+end
+
 # == To Equinoctial Elements ===============================================================
 
-# See the docstring of `EquinoctialElements` for the description of the conversions.
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, ee::EquinoctialElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return EquinoctialElements{Tepoch, T}(
         ee.epoch, ee.semi_major_axis, ee.h, ee.k, ee.p, ee.q, ee.mean_longitude
     )
 end
 
-function Base.convert(::Type{EquinoctialElements}, aee::AlternateEquinoctialElements)
-    return _alternate_equinoctial_to_equinoctial(aee)
-end
-
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, aee::AlternateEquinoctialElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(
         EquinoctialElements{Tepoch, T}, _alternate_equinoctial_to_equinoctial(aee)
     )
 end
 
-function Base.convert(::Type{EquinoctialElements}, ke::KeplerianElements)
-    return _keplerian_to_equinoctial(ke)
-end
-
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, ke::KeplerianElements
-) where {Tepoch, T}
-    return convert(EquinoctialElements{Tepoch, T}, _keplerian_to_equinoctial(ke))
-end
-
-function Base.convert(
-    ::Type{EquinoctialElements}, sv::OrbitStateVector{Tepoch, T}
-) where {Tepoch, T}
-    return convert(EquinoctialElements{Tepoch, T}, sv)
+) where {Tepoch <: Number, T <: Number}
+    return convert(
+        EquinoctialElements{Tepoch, T}, _keplerian_to_equinoctial(EquinoctialElements, ke)
+    )
 end
 
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, sv::OrbitStateVector
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(EquinoctialElements{Tepoch, T}, sv_to_kepler(sv))
 end
 
 # == To Alternate Equinoctial Elements =====================================================
 
-# See the docstring of `AlternateEquinoctialElements` for the description of the
-# conversions.
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, aee::AlternateEquinoctialElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return AlternateEquinoctialElements{Tepoch, T}(
         aee.epoch, aee.semi_major_axis, aee.h, aee.k, aee.p, aee.q, aee.mean_longitude
     )
 end
 
-function Base.convert(::Type{AlternateEquinoctialElements}, ee::EquinoctialElements)
-    return _equinoctial_to_alternate_equinoctial(ee)
-end
-
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, ee::EquinoctialElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(
         AlternateEquinoctialElements{Tepoch, T}, _equinoctial_to_alternate_equinoctial(ee)
     )
 end
 
-function Base.convert(::Type{AlternateEquinoctialElements}, ke::KeplerianElements)
-    return _keplerian_to_alternate_equinoctial(ke)
-end
-
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, ke::KeplerianElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(
-        AlternateEquinoctialElements{Tepoch, T}, _keplerian_to_alternate_equinoctial(ke)
+        AlternateEquinoctialElements{Tepoch, T},
+        _keplerian_to_equinoctial(AlternateEquinoctialElements, ke),
     )
 end
 
 function Base.convert(
-    ::Type{AlternateEquinoctialElements}, sv::OrbitStateVector{Tepoch, T}
-) where {Tepoch, T}
-    return convert(AlternateEquinoctialElements{Tepoch, T}, sv)
-end
-
-function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, sv::OrbitStateVector
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(AlternateEquinoctialElements{Tepoch, T}, sv_to_kepler(sv))
 end
 
 # == To Keplerian Elements =================================================================
 
-# See the docstring of `KeplerianElements` for the description of the conversions.
 function Base.convert(
-    ::Type{KeplerianElements{Tanomaly}}, ke::KeplerianElements{<:AbstractAnomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    return convert(KeplerianElements{Tanomaly, Tepoch, T}, ke)
-end
-
-for (Tanomaly, getter) in (
-    (:EccentricAnomaly, :eccentric_anomaly),
-    (:MeanAnomaly, :mean_anomaly),
-    (:TrueAnomaly, :true_anomaly),
-)
-    @eval function Base.convert(
-        ::Type{KeplerianElements{$Tanomaly, Tepoch, T}}, ke::KeplerianElements
-    ) where {Tepoch, T}
-        return KeplerianElements{$Tanomaly, Tepoch, T}(
-            ke.epoch,
-            ke.semi_major_axis,
-            ke.eccentricity,
-            ke.inclination,
-            ke.raan,
-            ke.argument_of_periapsis,
-            $getter(ke),
-        )
-    end
-end
-
-# The conversions from both equinoctial sets share the same structure.
-for (Torbit, helper) in (
-    (:EquinoctialElements, :_equinoctial_to_keplerian),
-    (:AlternateEquinoctialElements, :_alternate_equinoctial_to_keplerian),
-)
-    @eval begin
-        function Base.convert(
-            ::Type{KeplerianElements}, orbit::$Torbit{Tepoch, T}
-        ) where {Tepoch, T}
-            return convert(KeplerianElements{TrueAnomaly, Tepoch, T}, orbit)
-        end
-
-        function Base.convert(
-            ::Type{KeplerianElements{Tanomaly}}, orbit::$Torbit{Tepoch, T}
-        ) where {Tanomaly, Tepoch, T}
-            return convert(KeplerianElements{Tanomaly, Tepoch, T}, orbit)
-        end
-
-        function Base.convert(
-            ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, orbit::$Torbit
-        ) where {Tanomaly, Tepoch, T}
-            return convert(KeplerianElements{Tanomaly, Tepoch, T}, $helper(orbit))
-        end
-    end
+    ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, ke::KeplerianElements
+) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
+    return KeplerianElements{Tanomaly, Tepoch, T}(
+        ke.epoch,
+        ke.semi_major_axis,
+        ke.eccentricity,
+        ke.inclination,
+        ke.raan,
+        ke.argument_of_periapsis,
+        _anomaly(Tanomaly, ke),
+    )
 end
 
 function Base.convert(
-    ::Type{KeplerianElements}, sv::OrbitStateVector{Tepoch, T}
-) where {Tepoch, T}
-    return convert(KeplerianElements{TrueAnomaly, Tepoch, T}, sv)
-end
-
-function Base.convert(
-    ::Type{KeplerianElements{Tanomaly}}, sv::OrbitStateVector{Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv)
+    ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, orbit::AbstractEquinoctialElements
+) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, _equinoctial_to_keplerian(orbit))
 end
 
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, sv::OrbitStateVector
-) where {Tanomaly, Tepoch, T}
+) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
     return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv_to_kepler(sv))
 end
 
 # == To Orbit State Vector =================================================================
 
-# See the docstring of `OrbitStateVector` for the description of the conversions.
 function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, sv::OrbitStateVector
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return OrbitStateVector{Tepoch, T}(sv.epoch, sv.r, sv.v, sv.a)
 end
 
 function Base.convert(
-    ::Type{OrbitStateVector}, ke::KeplerianElements{<:AbstractAnomaly, Tepoch, T}
-) where {Tepoch, T}
-    return convert(OrbitStateVector{Tepoch, T}, ke)
-end
-
-function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, ke::KeplerianElements
-) where {Tepoch, T}
+) where {Tepoch <: Number, T <: Number}
     return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(ke))
 end
 
-# The conversions from both equinoctial sets go through the Keplerian elements.
-for Torbit in (:EquinoctialElements, :AlternateEquinoctialElements)
-    @eval begin
-        function Base.convert(
-            ::Type{OrbitStateVector}, orbit::$Torbit{Tepoch, T}
-        ) where {Tepoch, T}
-            return convert(OrbitStateVector{Tepoch, T}, orbit)
-        end
-
-        function Base.convert(
-            ::Type{OrbitStateVector{Tepoch, T}}, orbit::$Torbit
-        ) where {Tepoch, T}
-            ke = convert(KeplerianElements{TrueAnomaly, Tepoch, T}, orbit)
-            return convert(OrbitStateVector{Tepoch, T}, ke)
-        end
-    end
+function Base.convert(
+    ::Type{OrbitStateVector{Tepoch, T}}, orbit::AbstractEquinoctialElements
+) where {Tepoch <: Number, T <: Number}
+    ke = _equinoctial_to_keplerian(orbit)
+    return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(ke))
 end
 
 ############################################################################################
@@ -227,54 +172,22 @@ end
 ############################################################################################
 
 """
-    _equinoctial_to_keplerian(ee::EquinoctialElements{Tepoch, T}) -> KeplerianElements{MeanAnomaly, Tepoch, T}
+    _equinoctial_to_keplerian(orbit::AbstractEquinoctialElements{Tepoch, T}) -> KeplerianElements{MeanAnomaly, Tepoch, T}
 
-Convert the equinoctial elements `ee` to Keplerian elements storing the mean anomaly. The
-RAAN, the argument of periapsis, and the mean anomaly are returned in the interval [0, 2π).
-"""
-function _equinoctial_to_keplerian(ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
-    i = 2atan(hypot(ee.p, ee.q))
-    return _equinoctial_like_to_keplerian(ee, i)
-end
-
-"""
-    _alternate_equinoctial_to_keplerian(aee::AlternateEquinoctialElements{Tepoch, T}) -> KeplerianElements{MeanAnomaly, Tepoch, T}
-
-Convert the alternate equinoctial elements `aee` to Keplerian elements storing the mean
+Convert the equinoctial elements `orbit`, of any set, to Keplerian elements storing the mean
 anomaly. The RAAN, the argument of periapsis, and the mean anomaly are returned in the
-interval [0, 2π). The conversion fails if `p² + q² > 1`, which does not represent an orbit.
+interval [0, 2π). The conversion fails if the alternate equinoctial elements satisfy
+`p² + q² > 1`, which does not represent an orbit.
 
 # Extended help
 
 ## Throws
 
-- `ArgumentError`: If `p² + q² > 1` beyond the floating-point rounding error.
+- `ArgumentError`: If `orbit` is an `AlternateEquinoctialElements` with `p² + q² > 1` beyond
+    the floating-point rounding error.
 """
-function _alternate_equinoctial_to_keplerian(
-    aee::AlternateEquinoctialElements{Tepoch, T}
-) where {Tepoch, T}
-    sin_io2 = hypot(aee.p, aee.q)
-
-    # `sin(i / 2)` cannot exceed 1. We tolerate the rounding error of the conversion from
-    # the Keplerian elements of a retrograde equatorial orbit, where `sin(i / 2) = 1`.
-    sin_io2 ≤ 1 + 10eps(T) ||
-        throw(ArgumentError("The alternate equinoctial elements must satisfy p² + q² ≤ 1."))
-
-    i = 2asin(min(sin_io2, one(T)))
-    return _equinoctial_like_to_keplerian(aee, i)
-end
-
-"""
-    _equinoctial_like_to_keplerian(orbit::Union{EquinoctialElements{Tepoch, T}, AlternateEquinoctialElements{Tepoch, T}}, i::T) -> KeplerianElements{MeanAnomaly, Tepoch, T}
-
-Convert the elements `h`, `k`, `p`, `q`, and `mean_longitude` of `orbit`, together with the
-inclination `i` [rad] already recovered from `p` and `q`, to Keplerian elements storing the
-mean anomaly. The RAAN, the argument of periapsis, and the mean anomaly are returned in the
-interval [0, 2π).
-"""
-function _equinoctial_like_to_keplerian(
-    orbit::Union{EquinoctialElements{Tepoch, T}, AlternateEquinoctialElements{Tepoch, T}},
-    i::T,
+function _equinoctial_to_keplerian(
+    orbit::AbstractEquinoctialElements{Tepoch, T}
 ) where {Tepoch, T}
     h = orbit.h
     k = orbit.k
@@ -283,6 +196,7 @@ function _equinoctial_like_to_keplerian(
     λ = orbit.mean_longitude
 
     e = hypot(h, k)
+    i = _equinoctial_inclination(orbit)
     Ω = _wrap_to_2π(atan(p, q))
     ω = _wrap_to_2π(atan(h, k) - Ω)
     M = _wrap_to_2π(λ - Ω - ω)
@@ -293,70 +207,52 @@ function _equinoctial_like_to_keplerian(
 end
 
 """
-    _keplerian_to_equinoctial(ke::KeplerianElements{Tanomaly, Tepoch, T}) -> EquinoctialElements{Tepoch, T}
+    _equinoctial_inclination(ee::EquinoctialElements{Tepoch, T}) -> T
+    _equinoctial_inclination(aee::AlternateEquinoctialElements{Tepoch, T}) -> T
 
-Convert the Keplerian elements `ke`, with any anomaly type, to equinoctial elements. The
-conversion fails for retrograde equatorial orbits (`i = π`), where the equinoctial elements
-are singular.
+Recover the inclination [rad] from the elements `p` and `q` of the equinoctial set. For the
+alternate set, the conversion fails if `p² + q² > 1`, which does not represent an orbit.
 
 # Extended help
 
 ## Throws
 
-- `ArgumentError`: If the inclination is so close to `π` that `tan(i / 2)` exceeds
-    `1 / eps(T)`.
+- `ArgumentError`: If the alternate equinoctial elements satisfy `p² + q² > 1` beyond the
+    floating-point rounding error.
+"""
+_equinoctial_inclination(ee::EquinoctialElements) = 2atan(hypot(ee.p, ee.q))
+
+function _equinoctial_inclination(
+    aee::AlternateEquinoctialElements{Tepoch, T}
+) where {Tepoch, T}
+    sin_io2 = hypot(aee.p, aee.q)
+
+    # `sin(i / 2)` cannot exceed 1. We tolerate the rounding error of the conversion from
+    # the Keplerian elements of a retrograde equatorial orbit, where `sin(i / 2) = 1`.
+    sin_io2 ≤ 1 + 10eps(T) ||
+        throw(ArgumentError("The alternate equinoctial elements must satisfy p² + q² ≤ 1."))
+
+    return 2asin(min(sin_io2, one(T)))
+end
+
+"""
+    _keplerian_to_equinoctial(::Type{EquinoctialElements}, ke::KeplerianElements{Tanomaly, Tepoch, T}) -> EquinoctialElements{Tepoch, T}
+    _keplerian_to_equinoctial(::Type{AlternateEquinoctialElements}, ke::KeplerianElements{Tanomaly, Tepoch, T}) -> AlternateEquinoctialElements{Tepoch, T}
+
+Convert the Keplerian elements `ke`, with any anomaly type, to the equinoctial set selected
+by the first argument. The conversion to `EquinoctialElements` fails for retrograde
+equatorial orbits (`i = π`), where that set is singular.
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: If the target is `EquinoctialElements` and the inclination is so close to
+    `π` that `tan(i / 2)` exceeds `1 / eps(T)`.
 """
 function _keplerian_to_equinoctial(
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    h, k, λ, sin_Ω, cos_Ω = _keplerian_to_equinoctial_common(ke)
-    tan_io2 = tan(ke.inclination / 2)
-
-    # The elements `p` and `q` are singular at i = π. In floating point, `tan(i / 2)` does
-    # not overflow at `i = π`, but it exceeds `1 / eps(T)`, where `p` and `q` lose all the
-    # fractional precision. We use this threshold to detect the singularity.
-    _check_equinoctial_singularity(tan_io2)
-
-    p = tan_io2 * sin_Ω
-    q = tan_io2 * cos_Ω
-
-    return EquinoctialElements{Tepoch, T}(ke.epoch, ke.semi_major_axis, h, k, p, q, λ)
-end
-
-"""
-    _keplerian_to_alternate_equinoctial(ke::KeplerianElements{Tanomaly, Tepoch, T}) -> AlternateEquinoctialElements{Tepoch, T}
-
-Convert the Keplerian elements `ke`, with any anomaly type, to alternate equinoctial
-elements.
-"""
-function _keplerian_to_alternate_equinoctial(
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    h, k, λ, sin_Ω, cos_Ω = _keplerian_to_equinoctial_common(ke)
-    sin_io2 = sin(ke.inclination / 2)
-
-    p = sin_io2 * sin_Ω
-    q = sin_io2 * cos_Ω
-
-    return AlternateEquinoctialElements{Tepoch, T}(
-        ke.epoch, ke.semi_major_axis, h, k, p, q, λ
-    )
-end
-
-"""
-    _keplerian_to_equinoctial_common(ke::KeplerianElements{Tanomaly, Tepoch, T}) -> T, T, T, T, T
-
-Compute the elements shared by both equinoctial sets from the Keplerian elements `ke`.
-
-# Returns
-
-- `T`: Element `h = e * sin(ω + Ω)` [-].
-- `T`: Element `k = e * cos(ω + Ω)` [-].
-- `T`: Mean longitude `λ = Ω + ω + M` [rad].
-- `T`: `sin(Ω)` [-].
-- `T`: `cos(Ω)` [-].
-"""
-function _keplerian_to_equinoctial_common(ke::KeplerianElements)
+    ::Type{Tequinoctial}, ke::KeplerianElements{Tanomaly, Tepoch, T}
+) where {Tequinoctial <: AbstractEquinoctialElements, Tanomaly, Tepoch, T}
     e = ke.eccentricity
     Ω = ke.raan
     ω = ke.argument_of_periapsis
@@ -369,8 +265,42 @@ function _keplerian_to_equinoctial_common(ke::KeplerianElements)
     k = e * cos_Ω₊ω
     λ = Ω + ω + M
 
-    return h, k, λ, sin_Ω, cos_Ω
+    # The sets differ only in the factor that encodes the inclination in `p` and `q`.
+    s = _inclination_factor(Tequinoctial, ke.inclination)
+    p = s * sin_Ω
+    q = s * cos_Ω
+
+    return Tequinoctial{Tepoch, T}(ke.epoch, ke.semi_major_axis, h, k, p, q, λ)
 end
+
+"""
+    _inclination_factor(::Type{EquinoctialElements}, i::T) -> T
+    _inclination_factor(::Type{AlternateEquinoctialElements}, i::T) -> T
+
+Compute the factor that multiplies `sin(Ω)` and `cos(Ω)` in the elements `p` and `q` of the
+selected equinoctial set given the inclination `i` [rad]: `tan(i / 2)` for
+`EquinoctialElements` and `sin(i / 2)` for `AlternateEquinoctialElements`. The former fails
+for retrograde equatorial orbits (`i = π`), where the equinoctial elements are singular.
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: If the target is `EquinoctialElements` and the inclination is so close to
+    `π` that `tan(i / 2)` exceeds `1 / eps(T)`.
+"""
+function _inclination_factor(::Type{EquinoctialElements}, i::Number)
+    tan_io2 = tan(i / 2)
+
+    # The elements `p` and `q` are singular at i = π. In floating point, `tan(i / 2)` does
+    # not overflow at `i = π`, but it exceeds `1 / eps(T)`, where `p` and `q` lose all the
+    # fractional precision. We use this threshold to detect the singularity.
+    _check_equinoctial_singularity(tan_io2)
+
+    return tan_io2
+end
+
+_inclination_factor(::Type{AlternateEquinoctialElements}, i::Number) = sin(i / 2)
 
 """
     _equinoctial_to_alternate_equinoctial(ee::EquinoctialElements{Tepoch, T}) -> AlternateEquinoctialElements{Tepoch, T}

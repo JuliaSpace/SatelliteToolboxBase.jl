@@ -121,3 +121,20 @@ end
 function Base.propertynames(::OrbitStateVector, private::Bool = false)
     return (fieldnames(OrbitStateVector)..., :t)
 end
+
+############################################################################################
+#                                    Private Functions                                     #
+############################################################################################
+
+"""
+    _anomaly(::Type{EccentricAnomaly}, orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+    _anomaly(::Type{MeanAnomaly}, orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+    _anomaly(::Type{TrueAnomaly}, orbit::KeplerianElements{Tanomaly, Tepoch, T}) -> T
+
+Return the anomaly [rad] of the `orbit` selected by the marker type in the first argument,
+converting the stored anomaly if necessary using the default settings of the Kepler's
+equation solver.
+"""
+_anomaly(::Type{EccentricAnomaly}, orbit::KeplerianElements) = eccentric_anomaly(orbit)
+_anomaly(::Type{MeanAnomaly}, orbit::KeplerianElements) = mean_anomaly(orbit)
+_anomaly(::Type{TrueAnomaly}, orbit::KeplerianElements) = true_anomaly(orbit)
