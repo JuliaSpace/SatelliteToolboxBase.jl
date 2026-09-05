@@ -35,6 +35,7 @@ Version 2.0.0
   `OrbitStateVector`.
 - ![Enhancement][badge-enhancement] The decorations in the `show` methods now use
   **StyledStrings.jl** instead of **Crayons.jl**, which is no longer a dependency.
+- ![Enhancement][badge-enhancement] The unused dependency **Printf.jl** was removed.
 - ![Enhancement][badge-enhancement] The default tolerance of the Newton-Raphson solver in
   `mean_to_eccentric_anomaly` is now scaled by the magnitude of the mean anomaly, avoiding
   iterations that cannot improve the solution.

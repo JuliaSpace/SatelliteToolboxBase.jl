@@ -1,7 +1,6 @@
 module SatelliteToolboxBase
 
 using Dates
-using Printf
 using LinearAlgebra
 using ReferenceFrameRotations
 using StaticArrays
