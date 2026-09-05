@@ -13,16 +13,14 @@
 # -- Conversion ----------------------------------------------------------------------------
 
 # The interface is described in the docstring of `LowerTriangularStorage`.
-function Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix}
-    return convert(M{eltype(L.data)}, L)
-end
+Base.convert(::Type{Matrix}, L::LowerTriangularStorage) = convert(Matrix{eltype(L)}, L)
 
-function Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix{T}} where {T}
-    mat = zeros(T, size(L)...)
+function Base.convert(::Type{Matrix{T}}, L::LowerTriangularStorage) where {T}
+    mat = zeros(T, size(L))
 
     # The indices are within the bounds of `mat` and `L` by construction, so we can skip the
-    # bounds checking.
-    @inbounds for i in 1:size(L, 1), j in 1:i
+    # bounds checking. The loop follows the column-major layout of `mat`.
+    @inbounds for j in 1:size(L, 2), i in j:size(L, 1)
         mat[i, j] = L[i, j]
     end
 
