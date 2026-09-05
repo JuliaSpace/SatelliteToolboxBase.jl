@@ -28,10 +28,10 @@ J2000.0 reference [UT1].
 - **[1]** http://www.navipedia.net/index.php/CEP_to_ITRF, accessed 2015-12-01.
 """
 function j2000_to_gmst(j2000_ut1::Number)
-	# Julian centuries elapsed from the epoch J2000.0.
-	t_ut1 = j2000_ut1 / 36525
+    # Julian centuries elapsed from the epoch J2000.0.
+    t_ut1 = j2000_ut1 / 36525
 
-	# Greenwich Mean Sidereal Time at t_ut1 [s].
+    # Greenwich Mean Sidereal Time at t_ut1 [s].
     θ_gmst = @evalpoly(
         t_ut1,
         + 67310.54841,

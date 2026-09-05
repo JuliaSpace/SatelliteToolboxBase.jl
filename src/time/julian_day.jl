@@ -241,26 +241,8 @@ end
 jd_to_date(::Type{DateTime}, JD::Number) = julian2datetime(JD)
 
 """
-    is_leap_year(year::Integer)
+    is_leap_year(year::Integer) -> Bool
 
-Return `true` if `year` is a leap year, or `false` otherwise.
+Return `true` if `year` is a leap year in the Gregorian calendar, or `false` otherwise.
 """
-function is_leap_year(year::Integer)
-    # Check if `year` is positive. This algorithm does not handle negative
-    # years.
-    (year < 0) && throw(ArgumentError("The year must be positive."))
-
-    if (year % 4) == 0
-        if (year % 100) == 0
-            if (year % 400) == 0
-                return true
-            else
-                return false
-            end
-        else
-            return true
-        end
-    else
-        return false
-    end
-end
+is_leap_year(year::Integer) = Dates.isleapyear(year)

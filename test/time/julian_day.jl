@@ -153,8 +153,9 @@ end
     @test is_leap_year(2020) == true
     @test is_leap_year(2200) == false
     @test is_leap_year(2400) == true
-end
 
-@testset "Function is_leap_year [ERRORS]" begin
-    @test_throws ArgumentError is_leap_year(-1)
+    # Negative years follow the proleptic Gregorian rules (delegated to `Dates`).
+    @test is_leap_year(0)  == true
+    @test is_leap_year(-1) == false
+    @test is_leap_year(-4) == true
 end
