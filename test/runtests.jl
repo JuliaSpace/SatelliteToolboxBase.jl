@@ -8,6 +8,9 @@ using Test
 
 using Dates
 using LinearAlgebra
+
+using Aqua
+using JET
 using SatelliteToolboxBase
 using StaticArrays
 
@@ -69,4 +72,8 @@ end
 
 @testset "Issues" verbose = true begin
     include("./issues.jl")
+end
+
+@testset "Quality" verbose = true begin
+    include("./quality.jl")
 end
