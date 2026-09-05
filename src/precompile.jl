@@ -66,6 +66,8 @@ PrecompileTools.@compile_workload begin
         kepler_to_rv(k)
         kepler_to_sv(k)
         convert(OrbitStateVector, k)
+        convert(EquinoctialElements, k)
+        convert(AlternateEquinoctialElements, k)
     end
 
     # -- Equinoctial Elements --------------------------------------------------------------
@@ -74,7 +76,8 @@ PrecompileTools.@compile_workload begin
     ee     = convert(EquinoctialElements, ke)
     ee_f32 = convert(EquinoctialElements, ke_f32)
 
-    # Printing and conversions to the Keplerian elements and to the orbit state vector.
+    # Printing and conversions to the Keplerian elements, to the alternate equinoctial
+    # elements, and to the orbit state vector.
     for e in (ee, ee_f32)
         show(IOBuffer(), e)
         show(IOBuffer(), MIME("text/plain"), e)
@@ -83,6 +86,27 @@ PrecompileTools.@compile_workload begin
         convert(KeplerianElements{TrueAnomaly}, e)
         convert(KeplerianElements{EccentricAnomaly}, e)
         convert(KeplerianElements{MeanAnomaly}, e)
+        convert(AlternateEquinoctialElements, e)
+        convert(OrbitStateVector, e)
+    end
+
+    # -- Alternate Equinoctial Elements ----------------------------------------------------
+
+    # Conversion from the Keplerian elements.
+    aee     = convert(AlternateEquinoctialElements, ke)
+    aee_f32 = convert(AlternateEquinoctialElements, ke_f32)
+
+    # Printing and conversions to the Keplerian elements, to the equinoctial elements, and
+    # to the orbit state vector.
+    for e in (aee, aee_f32)
+        show(IOBuffer(), e)
+        show(IOBuffer(), MIME("text/plain"), e)
+
+        convert(KeplerianElements, e)
+        convert(KeplerianElements{TrueAnomaly}, e)
+        convert(KeplerianElements{EccentricAnomaly}, e)
+        convert(KeplerianElements{MeanAnomaly}, e)
+        convert(EquinoctialElements, e)
         convert(OrbitStateVector, e)
     end
 
@@ -113,6 +137,7 @@ PrecompileTools.@compile_workload begin
         convert(KeplerianElements, s)
         convert(KeplerianElements{MeanAnomaly}, s)
         convert(EquinoctialElements, s)
+        convert(AlternateEquinoctialElements, s)
     end
 
     # == Time ==============================================================================

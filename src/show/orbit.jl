@@ -12,11 +12,7 @@
 function Base.show(
     io::IO, ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
-    epoch_str = _compact_string(io, ke.epoch)
-    date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
-
-    print(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}: Epoch = $epoch_str ($date_str)")
-
+    _print_compact(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}", ke.epoch)
     return nothing
 end
 
@@ -83,55 +79,30 @@ end
 ############################################################################################
 
 function Base.show(io::IO, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
-    epoch_str = _compact_string(io, ee.epoch)
-    date_str  = sprint(print, jd_to_date(DateTime, ee.epoch))
-
-    print(io, "EquinoctialElements{$Tepoch, $T}: Epoch = $epoch_str ($date_str)")
-
+    _print_compact(io, "EquinoctialElements{$Tepoch, $T}", ee.epoch)
     return nothing
 end
 
 function Base.show(
     io::IO, ::MIME"text/plain", ee::EquinoctialElements{Tepoch, T}
 ) where {Tepoch, T}
-    # Convert the data to string.
-    date_str  = sprint(print, jd_to_date(DateTime, ee.epoch))
-    epoch_str = _compact_string(io, ee.epoch)
-    a_str     = _compact_string(io, ee.semi_major_axis / 1000)
-    h_str     = _compact_string(io, ee.h)
-    k_str     = _compact_string(io, ee.k)
-    p_str     = _compact_string(io, ee.p)
-    q_str     = _compact_string(io, ee.q)
-    λ_str     = _compact_string(io, rad2deg(ee.mean_longitude))
+    _show_equinoctial(io, "EquinoctialElements{$Tepoch, $T}", ee)
+    return nothing
+end
 
-    # Padding to align in the floating point.
-    epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str = _align_on_decimal(
-        epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str
-    )
+############################################################################################
+#                              Alternate Equinoctial Elements                              #
+############################################################################################
 
-    max_length = max(
-        length(a_str),
-        length(h_str),
-        length(k_str),
-        length(p_str),
-        length(q_str),
-        length(λ_str),
-    )
+function Base.show(io::IO, aee::AlternateEquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    _print_compact(io, "AlternateEquinoctialElements{$Tepoch, $T}", aee.epoch)
+    return nothing
+end
 
-    # Add the units.
-    a_str = _append_unit(a_str, max_length, "km")
-    λ_str = _append_unit(λ_str, max_length, "°")
-
-    # Print the equinoctial elements.
-    println(io, "EquinoctialElements{$Tepoch, $T}:")
-    _println_field(io, "           Epoch : ", epoch_str, " (", date_str, ")")
-    _println_field(io, " Semi-major axis : ", a_str)
-    _println_field(io, "               h : ", h_str)
-    _println_field(io, "               k : ", k_str)
-    _println_field(io, "               p : ", p_str)
-    _println_field(io, "               q : ", q_str)
-    _print_field(io, "  Mean Longitude : ", λ_str)
-
+function Base.show(
+    io::IO, ::MIME"text/plain", aee::AlternateEquinoctialElements{Tepoch, T}
+) where {Tepoch, T}
+    _show_equinoctial(io, "AlternateEquinoctialElements{$Tepoch, $T}", aee)
     return nothing
 end
 
@@ -140,11 +111,7 @@ end
 ############################################################################################
 
 function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
-    epoch_str = _compact_string(io, sv.epoch)
-    date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
-
-    print(io, "OrbitStateVector{$Tepoch, $T}: Epoch = $epoch_str ($date_str)")
-
+    _print_compact(io, "OrbitStateVector{$Tepoch, $T}", sv.epoch)
     return nothing
 end
 
@@ -211,6 +178,19 @@ function _compact_string(io::IO, x)
 end
 
 """
+    _print_compact(io::IO, name::String, epoch::Number) -> Nothing
+
+Print to `io` the compact representation of an orbit whose type is described by `name`: the
+`name` followed by the `epoch` as a Julian Day and as a date.
+"""
+function _print_compact(io::IO, name::String, epoch::Number)
+    epoch_str = _compact_string(io, epoch)
+    date_str  = sprint(print, jd_to_date(DateTime, epoch))
+    print(io, name, ": Epoch = ", epoch_str, " (", date_str, ")")
+    return nothing
+end
+
+"""
     _println_field(io::IO, label::String, xs...) -> Nothing
 
 Print the field `label` in bold to `io`, followed by the values `xs...` and a newline. The
@@ -231,5 +211,55 @@ newline. The bold decoration is rendered only if `io` supports color.
 function _print_field(io::IO, label::String, xs...)
     print(io, styled"{bold:$label}")
     print(io, xs...)
+    return nothing
+end
+
+"""
+    _show_equinoctial(io::IO, name::String, orbit::Union{EquinoctialElements, AlternateEquinoctialElements}) -> Nothing
+
+Print to `io` the rich representation of `orbit`, which must be one of the equinoctial sets,
+using `name` as the header. Both sets share the same fields, so they share the layout.
+"""
+function _show_equinoctial(
+    io::IO, name::String, orbit::Union{EquinoctialElements, AlternateEquinoctialElements}
+)
+    # Convert the data to string.
+    date_str  = sprint(print, jd_to_date(DateTime, orbit.epoch))
+    epoch_str = _compact_string(io, orbit.epoch)
+    a_str     = _compact_string(io, orbit.semi_major_axis / 1000)
+    h_str     = _compact_string(io, orbit.h)
+    k_str     = _compact_string(io, orbit.k)
+    p_str     = _compact_string(io, orbit.p)
+    q_str     = _compact_string(io, orbit.q)
+    λ_str     = _compact_string(io, rad2deg(orbit.mean_longitude))
+
+    # Padding to align in the floating point.
+    epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str = _align_on_decimal(
+        epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str
+    )
+
+    max_length = max(
+        length(a_str),
+        length(h_str),
+        length(k_str),
+        length(p_str),
+        length(q_str),
+        length(λ_str),
+    )
+
+    # Add the units.
+    a_str = _append_unit(a_str, max_length, "km")
+    λ_str = _append_unit(λ_str, max_length, "°")
+
+    # Print the elements.
+    println(io, name, ":")
+    _println_field(io, "           Epoch : ", epoch_str, " (", date_str, ")")
+    _println_field(io, " Semi-major axis : ", a_str)
+    _println_field(io, "               h : ", h_str)
+    _println_field(io, "               k : ", k_str)
+    _println_field(io, "               p : ", p_str)
+    _println_field(io, "               q : ", q_str)
+    _print_field(io, "  Mean Longitude : ", λ_str)
+
     return nothing
 end

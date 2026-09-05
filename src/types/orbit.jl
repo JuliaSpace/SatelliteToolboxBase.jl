@@ -4,7 +4,8 @@
 #
 ############################################################################################
 
-export Orbit, KeplerianElements, EquinoctialElements, OrbitStateVector
+export Orbit, KeplerianElements, EquinoctialElements, AlternateEquinoctialElements
+export OrbitStateVector
 
 """
     abstract type Orbit{Tepoch <: Number, T <: Number}
@@ -58,6 +59,7 @@ The Julia built-in function `convert` accepts the following targets:
     of the Kepler's equation solver.
 - `EquinoctialElements` and `EquinoctialElements{Tepoch, T}`: Throw an `ArgumentError` for
     retrograde equatorial orbits (`i = π`), where the equinoctial elements are singular.
+- `AlternateEquinoctialElements` and `AlternateEquinoctialElements{Tepoch, T}`.
 - `OrbitStateVector` and `OrbitStateVector{Tepoch, T}`: Use [`kepler_to_sv`](@ref) with the
     Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
     the keyword `μ` for an orbit around another central body.
@@ -219,6 +221,8 @@ package does not convert between time scales.
 The Julia built-in function `convert` accepts the following targets:
 
 - `EquinoctialElements{Tepoch, T}`: Change the numeric types.
+- `AlternateEquinoctialElements` and `AlternateEquinoctialElements{Tepoch, T}`: Replace
+    `tan(i / 2)` by `sin(i / 2)` in `p` and `q` without solving the Kepler's equation.
 - `KeplerianElements`, `KeplerianElements{Tanomaly}`, and
     `KeplerianElements{Tanomaly, Tepoch, T}`: Store the anomaly `Tanomaly` (`TrueAnomaly` if
     omitted) and return the RAAN, the argument of periapsis, and the anomaly in the interval
@@ -301,6 +305,135 @@ function EquinoctialElements(
 end
 
 ############################################################################################
+#                              Alternate Equinoctial Elements                              #
+############################################################################################
+
+"""
+    struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+
+Orbit representation in terms of the alternate equinoctial elements, which differ from the
+equinoctial elements (see [`EquinoctialElements`](@ref)) only in the inclination elements,
+where `sin(i / 2)` replaces `tan(i / 2)`. Given the Keplerian elements `a`, `e`, `i`, `Ω`,
+`ω`, and the mean anomaly `M`, the alternate equinoctial elements are:
+
+    h = e * sin(ω + Ω)
+    k = e * cos(ω + Ω)
+    p = sin(i / 2) * sin(Ω)
+    q = sin(i / 2) * cos(Ω)
+    λ = Ω + ω + M
+
+This set is non-singular for circular (`e = 0`) and equatorial (`i = 0`) orbits. Unlike the
+equinoctial elements, `p` and `q` are bounded (`p² + q² ≤ 1`) and finite for every
+inclination, including `i = π`. Notice, however, that the RAAN and the argument of periapsis
+of a retrograde equatorial orbit remain degenerate. This set is called "Alternate
+Equinoctial" in GMAT and "Nonsingular Keplerian" in FreeFlyer.
+
+The time scale of `epoch` is the one adopted by the caller (typically UTC), since this
+package does not convert between time scales.
+
+# Fields
+
+- `epoch::Tepoch`: Epoch [Julian Day].
+- `semi_major_axis::T`: Semi-major axis [m].
+- `h::T`: h = e * sin(ω + Ω) [-].
+- `k::T`: k = e * cos(ω + Ω) [-].
+- `p::T`: p = sin(i / 2) * sin(Ω) [-].
+- `q::T`: q = sin(i / 2) * cos(Ω) [-].
+- `mean_longitude::T`: Mean longitude λ = Ω + ω + M [rad].
+
+# Extended help
+
+## Conversions
+
+The Julia built-in function `convert` accepts the following targets:
+
+- `AlternateEquinoctialElements{Tepoch, T}`: Change the numeric types.
+- `EquinoctialElements` and `EquinoctialElements{Tepoch, T}`: Replace `sin(i / 2)` by
+    `tan(i / 2)` in `p` and `q` without solving the Kepler's equation. Throw an
+    `ArgumentError` for retrograde equatorial orbits (`i = π`), where the equinoctial
+    elements are singular.
+- `KeplerianElements`, `KeplerianElements{Tanomaly}`, and
+    `KeplerianElements{Tanomaly, Tepoch, T}`: Store the anomaly `Tanomaly` (`TrueAnomaly` if
+    omitted) and return the RAAN, the argument of periapsis, and the anomaly in the interval
+    [0, 2π). Throw an `ArgumentError` if `p² + q² > 1`, which does not represent an orbit.
+- `OrbitStateVector` and `OrbitStateVector{Tepoch, T}`: Use [`kepler_to_sv`](@ref) with the
+    Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
+    the keyword `μ` for an orbit around another central body.
+
+Omitted type parameters are taken from the input.
+
+## Printing
+
+`show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
+with its unit, aligned at the decimal point, with the labels in bold if `io` supports color.
+
+## Iteration
+
+The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
+are defined), so it can be used in broadcasting.
+"""
+struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+    epoch::Tepoch
+
+    semi_major_axis::T
+
+    h::T
+
+    k::T
+
+    p::T
+
+    q::T
+
+    mean_longitude::T
+
+    # == Constructors ======================================================================
+
+    # This inner constructor avoids the automatic outer constructor, which would bypass the
+    # float promotion when all the elements have the same type.
+    function AlternateEquinoctialElements{Tepoch, T}(
+        epoch, semi_major_axis, h, k, p, q, mean_longitude
+    ) where {Tepoch <: Number, T <: Number}
+        return new{Tepoch, T}(epoch, semi_major_axis, h, k, p, q, mean_longitude)
+    end
+end
+
+"""
+    AlternateEquinoctialElements(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        h::T2,
+        k::T3,
+        p::T4,
+        q::T5,
+        mean_longitude::T6,
+    ) -> AlternateEquinoctialElements{Tepoch, T}
+
+Create an alternate equinoctial elements object with `epoch` [Julian Day], `semi_major_axis`
+[m], `h`, `k`, `p`, `q` [-], and `mean_longitude` [rad].
+
+The object type `T` is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6` to
+float.
+"""
+function AlternateEquinoctialElements(
+    epoch::Tepoch, semi_major_axis::T1, h::T2, k::T3, p::T4, q::T5, mean_longitude::T6
+) where {
+    Tepoch <: Number,
+    T1 <: Number,
+    T2 <: Number,
+    T3 <: Number,
+    T4 <: Number,
+    T5 <: Number,
+    T6 <: Number,
+}
+    T = float(promote_type(T1, T2, T3, T4, T5, T6))
+    return AlternateEquinoctialElements{Tepoch, T}(
+        epoch, semi_major_axis, h, k, p, q, mean_longitude
+    )
+end
+
+############################################################################################
 #                                    Orbit State Vector                                    #
 ############################################################################################
 
@@ -334,6 +467,7 @@ The Julia built-in function `convert` accepts the following targets:
     `KeplerianElements{Tanomaly, Tepoch, T}`: Store the anomaly `Tanomaly` (`TrueAnomaly` if
     omitted).
 - `EquinoctialElements` and `EquinoctialElements{Tepoch, T}`.
+- `AlternateEquinoctialElements` and `AlternateEquinoctialElements{Tepoch, T}`.
 
 The conversions to the orbital elements use [`sv_to_kepler`](@ref) with the Earth's standard
 gravitational parameter `GM_EARTH`. Call that function directly with the keyword `μ` for an
