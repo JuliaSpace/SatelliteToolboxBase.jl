@@ -4,120 +4,73 @@
 #
 ############################################################################################
 
-############################################################################################
-#                                    Keplerian Elements                                    #
-############################################################################################
-
 # The printing formats are described in the docstrings of the orbit representations.
-function Base.show(
-    io::IO, ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    _print_compact(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}", ke.epoch)
+
+############################################################################################
+#                                      Compact Format                                      #
+############################################################################################
+
+function Base.show(io::IO, orbit::Orbit)
+    _print_compact(io, _orbit_type_name(orbit), orbit.epoch)
     return nothing
 end
 
+############################################################################################
+#                                       Rich Format                                        #
+############################################################################################
+
+# == Keplerian Elements ====================================================================
+
 function Base.show(
-    io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    # Convert the data to string.
-    date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
-    epoch_str = _compact_string(io, ke.epoch)
-    a_str     = _compact_string(io, ke.semi_major_axis / 1000)
-    e_str     = _compact_string(io, ke.eccentricity)
-    i_str     = _compact_string(io, rad2deg(ke.inclination))
-    Ω_str     = _compact_string(io, rad2deg(ke.raan))
-    ω_str     = _compact_string(io, rad2deg(ke.argument_of_periapsis))
-    f_str     = _compact_string(io, rad2deg(ke.anomaly))
-
-    # Current anomaly type.
-    anomaly_type = if Tanomaly <: TrueAnomaly
-        "     True"
-    elseif Tanomaly <: EccentricAnomaly
-        "Eccentric"
-    elseif Tanomaly <: MeanAnomaly
-        "     Mean"
-    else
-        "  Unknown"
-    end
-
-    # Padding to align in the floating point.
-    epoch_str, a_str, e_str, i_str, Ω_str, ω_str, f_str = _align_on_decimal(
-        epoch_str, a_str, e_str, i_str, Ω_str, ω_str, f_str
+    io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly}
+) where {Tanomaly <: AbstractAnomaly}
+    labels = (
+        "Semi-major axis",
+        "Eccentricity",
+        "Inclination",
+        "RAAN",
+        "Arg. of Periapsis",
+        _anomaly_label(Tanomaly),
     )
 
-    max_length = max(
-        length(a_str),
-        length(e_str),
-        length(i_str),
-        length(Ω_str),
-        length(ω_str),
-        length(f_str),
+    values = (
+        _compact_string(io, ke.semi_major_axis / 1000),
+        _compact_string(io, ke.eccentricity),
+        _compact_string(io, rad2deg(ke.inclination)),
+        _compact_string(io, rad2deg(ke.raan)),
+        _compact_string(io, rad2deg(ke.argument_of_periapsis)),
+        _compact_string(io, rad2deg(ke.anomaly)),
     )
 
-    # Add the units.
-    a_str = _append_unit(a_str, max_length, "km")
-    i_str = _append_unit(i_str, max_length, "°")
-    Ω_str = _append_unit(Ω_str, max_length, "°")
-    ω_str = _append_unit(ω_str, max_length, "°")
-    f_str = _append_unit(f_str, max_length, "°")
+    units = ("km", "", "°", "°", "°", "°")
 
-    # Print the Keplerian elements.
-    println(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}:")
-    _println_field(io, "             Epoch : ", epoch_str, " (", date_str, ")")
-    _println_field(io, "   Semi-major axis : ", a_str)
-    _println_field(io, "      Eccentricity : ", e_str)
-    _println_field(io, "       Inclination : ", i_str)
-    _println_field(io, "              RAAN : ", Ω_str)
-    _println_field(io, " Arg. of Periapsis : ", ω_str)
-    _print_field(io, " " * anomaly_type * " Anomaly : ", f_str)
-
+    _print_elements(io, _orbit_type_name(ke), ke.epoch, labels, values, units)
     return nothing
 end
 
-############################################################################################
-#                                   Equinoctial Elements                                   #
-############################################################################################
+# == Equinoctial Elements ==================================================================
 
-function Base.show(io::IO, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
-    _print_compact(io, "EquinoctialElements{$Tepoch, $T}", ee.epoch)
+function Base.show(io::IO, ::MIME"text/plain", orbit::AbstractEquinoctialElements)
+    labels = ("Semi-major axis", "h", "k", "p", "q", "Mean Longitude")
+
+    values = (
+        _compact_string(io, orbit.semi_major_axis / 1000),
+        _compact_string(io, orbit.h),
+        _compact_string(io, orbit.k),
+        _compact_string(io, orbit.p),
+        _compact_string(io, orbit.q),
+        _compact_string(io, rad2deg(orbit.mean_longitude)),
+    )
+
+    units = ("km", "", "", "", "", "°")
+
+    _print_elements(io, _orbit_type_name(orbit), orbit.epoch, labels, values, units)
     return nothing
 end
 
-function Base.show(
-    io::IO, ::MIME"text/plain", ee::EquinoctialElements{Tepoch, T}
-) where {Tepoch, T}
-    _show_equinoctial(io, "EquinoctialElements{$Tepoch, $T}", ee)
-    return nothing
-end
+# == Orbit State Vector ====================================================================
 
-############################################################################################
-#                              Alternate Equinoctial Elements                              #
-############################################################################################
-
-function Base.show(io::IO, aee::AlternateEquinoctialElements{Tepoch, T}) where {Tepoch, T}
-    _print_compact(io, "AlternateEquinoctialElements{$Tepoch, $T}", aee.epoch)
-    return nothing
-end
-
-function Base.show(
-    io::IO, ::MIME"text/plain", aee::AlternateEquinoctialElements{Tepoch, T}
-) where {Tepoch, T}
-    _show_equinoctial(io, "AlternateEquinoctialElements{$Tepoch, $T}", aee)
-    return nothing
-end
-
-############################################################################################
-#                                    Orbit State Vector                                    #
-############################################################################################
-
-function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
-    _print_compact(io, "OrbitStateVector{$Tepoch, $T}", sv.epoch)
-    return nothing
-end
-
-function Base.show(
-    io::IO, ::MIME"text/plain", sv::OrbitStateVector{Tepoch, T}
-) where {Tepoch, T}
+function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector)
     epoch_str = _compact_string(io, sv.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
     r_str     = _compact_string(io, sv.r ./ 1000)
@@ -129,7 +82,7 @@ function Base.show(
     r_str = _append_unit(r_str, max_length, "km")
     v_str = _append_unit(v_str, max_length, "km/s")
 
-    println(io, "OrbitStateVector{$Tepoch, $T}:")
+    println(io, _orbit_type_name(sv), ":")
     _println_field(io, "  epoch :", " ", epoch_str, " (", date_str, ")")
     _println_field(io, "      r :", " ", r_str)
     _print_field(io, "      v :", " ", v_str)
@@ -142,7 +95,7 @@ end
 ############################################################################################
 
 """
-    _align_on_decimal(strs::Vararg{String, N}) where {N} -> NTuple{N, String}
+    _align_on_decimal(strs::Vararg{String, N}) -> NTuple{N, String}
 
 Return the strings `strs` left-padded so that their decimal points are aligned. Strings
 without a decimal point are treated as if the point were right after the last character.
@@ -157,6 +110,17 @@ function _align_on_decimal(strs::Vararg{String, N}) where {N}
 
     return map((s, Δ) -> " "^(dp_pos - Δ) * s, strs, Δs)
 end
+
+"""
+    _anomaly_label(::Type{Tanomaly}) -> String
+
+Return the label of the anomaly selected by the marker type `Tanomaly` for the rich
+representation of the Keplerian elements.
+"""
+_anomaly_label(::Type{<:AbstractAnomaly}) = "Anomaly"
+_anomaly_label(::Type{<:EccentricAnomaly}) = "Eccentric Anomaly"
+_anomaly_label(::Type{<:MeanAnomaly}) = "Mean Anomaly"
+_anomaly_label(::Type{<:TrueAnomaly}) = "True Anomaly"
 
 """
     _append_unit(str::String, max_length::Int, unit::String) -> String
@@ -178,6 +142,17 @@ function _compact_string(io::IO, x)
 end
 
 """
+    _orbit_type_name(orbit::Orbit) -> String
+
+Return the name of the type of `orbit` with its parameters, as used in the headers of the
+printed representations.
+"""
+function _orbit_type_name(orbit::Orbit)
+    Torbit = typeof(orbit)
+    return string(nameof(Torbit), "{", join(Torbit.parameters, ", "), "}")
+end
+
+"""
     _print_compact(io::IO, name::String, epoch::Number) -> Nothing
 
 Print to `io` the compact representation of an orbit whose type is described by `name`: the
@@ -187,6 +162,58 @@ function _print_compact(io::IO, name::String, epoch::Number)
     epoch_str = _compact_string(io, epoch)
     date_str  = sprint(print, jd_to_date(DateTime, epoch))
     print(io, name, ": Epoch = ", epoch_str, " (", date_str, ")")
+    return nothing
+end
+
+"""
+    _print_elements(io::IO, header::String, epoch::Number, labels::NTuple{N, String}, values::NTuple{N, String}, units::NTuple{N, String}) -> Nothing
+
+Print to `io` the rich representation of an orbit: the `header` followed by a colon, a line
+with the `epoch` [Julian Day] and its date, and one line per element with its label, value,
+and unit, taken from `labels`, `values`, and `units`. The values, the epoch included, are
+aligned at the decimal point, and the non-empty units are aligned after the longest value.
+The labels are right-aligned, and printed in bold if `io` supports color. The last line has
+no trailing newline.
+"""
+function _print_elements(
+    io::IO,
+    header::String,
+    epoch::Number,
+    labels::NTuple{N, String},
+    values::NTuple{N, String},
+    units::NTuple{N, String},
+) where {N}
+    epoch_str = _compact_string(io, epoch)
+    date_str  = sprint(print, jd_to_date(DateTime, epoch))
+
+    # Align all the values at the decimal point.
+    aligned   = _align_on_decimal(epoch_str, values...)
+    epoch_str = first(aligned)
+    values    = Base.tail(aligned)
+
+    # Pad the values with a unit so that the units are aligned.
+    max_length = maximum(length, values)
+
+    values = map(values, units) do value, unit
+        return isempty(unit) ? value : _append_unit(value, max_length, unit)
+    end
+
+    # Right-align the labels, leaving one space before the longest one.
+    label_width = maximum(length, ("Epoch", labels...)) + 1
+
+    println(io, header, ":")
+    _println_field(io, lpad("Epoch", label_width) * " : ", epoch_str, " (", date_str, ")")
+
+    for k in 1:N
+        label = lpad(labels[k], label_width) * " : "
+
+        if k < N
+            _println_field(io, label, values[k])
+        else
+            _print_field(io, label, values[k])
+        end
+    end
+
     return nothing
 end
 
@@ -211,53 +238,5 @@ newline. The bold decoration is rendered only if `io` supports color.
 function _print_field(io::IO, label::String, xs...)
     print(io, styled"{bold:$label}")
     print(io, xs...)
-    return nothing
-end
-
-"""
-    _show_equinoctial(io::IO, name::String, orbit::AbstractEquinoctialElements) -> Nothing
-
-Print to `io` the rich representation of `orbit`, which must be one of the equinoctial sets,
-using `name` as the header. All the sets share the same fields, so they share the layout.
-"""
-function _show_equinoctial(io::IO, name::String, orbit::AbstractEquinoctialElements)
-    # Convert the data to string.
-    date_str  = sprint(print, jd_to_date(DateTime, orbit.epoch))
-    epoch_str = _compact_string(io, orbit.epoch)
-    a_str     = _compact_string(io, orbit.semi_major_axis / 1000)
-    h_str     = _compact_string(io, orbit.h)
-    k_str     = _compact_string(io, orbit.k)
-    p_str     = _compact_string(io, orbit.p)
-    q_str     = _compact_string(io, orbit.q)
-    λ_str     = _compact_string(io, rad2deg(orbit.mean_longitude))
-
-    # Padding to align in the floating point.
-    epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str = _align_on_decimal(
-        epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str
-    )
-
-    max_length = max(
-        length(a_str),
-        length(h_str),
-        length(k_str),
-        length(p_str),
-        length(q_str),
-        length(λ_str),
-    )
-
-    # Add the units.
-    a_str = _append_unit(a_str, max_length, "km")
-    λ_str = _append_unit(λ_str, max_length, "°")
-
-    # Print the elements.
-    println(io, name, ":")
-    _println_field(io, "           Epoch : ", epoch_str, " (", date_str, ")")
-    _println_field(io, " Semi-major axis : ", a_str)
-    _println_field(io, "               h : ", h_str)
-    _println_field(io, "               k : ", k_str)
-    _println_field(io, "               p : ", p_str)
-    _println_field(io, "               q : ", q_str)
-    _print_field(io, "  Mean Longitude : ", λ_str)
-
     return nothing
 end
