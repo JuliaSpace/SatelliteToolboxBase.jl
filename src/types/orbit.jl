@@ -4,7 +4,8 @@
 #
 ############################################################################################
 
-export Orbit, KeplerianElements, EquinoctialElements, AlternateEquinoctialElements
+export Orbit, KeplerianElements
+export AbstractEquinoctialElements, EquinoctialElements, AlternateEquinoctialElements
 export OrbitStateVector
 
 """
@@ -177,7 +178,18 @@ end
 ############################################################################################
 
 """
-    struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+    abstract type AbstractEquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+
+Abstract type of the orbit representations based on the equinoctial elements, which share
+the fields `epoch`, `semi_major_axis`, `h`, `k`, `p`, `q`, and `mean_longitude`. The
+concrete sets differ only in how `p` and `q` encode the inclination. See
+[`EquinoctialElements`](@ref) and [`AlternateEquinoctialElements`](@ref).
+"""
+abstract type AbstractEquinoctialElements{Tepoch <: Number, T <: Number} <:
+              Orbit{Tepoch, T} end
+
+"""
+    struct EquinoctialElements{Tepoch <: Number, T <: Number} <: AbstractEquinoctialElements{Tepoch, T}
 
 Orbit representation in terms of the equinoctial elements **[1]**. Given the Keplerian
 elements `a`, `e`, `i`, `Ω`, `ω`, and the mean anomaly `M`, the equinoctial elements are:
@@ -244,7 +256,8 @@ with its unit, aligned at the decimal point, with the labels in bold if `io` sup
 The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
 are defined), so it can be used in broadcasting.
 """
-struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+struct EquinoctialElements{Tepoch <: Number, T <: Number} <:
+       AbstractEquinoctialElements{Tepoch, T}
     epoch::Tepoch
 
     semi_major_axis::T
@@ -309,7 +322,7 @@ end
 ############################################################################################
 
 """
-    struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+    struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <: AbstractEquinoctialElements{Tepoch, T}
 
 Orbit representation in terms of the alternate equinoctial elements, which differ from the
 equinoctial elements (see [`EquinoctialElements`](@ref)) only in the inclination elements,
@@ -373,7 +386,8 @@ with its unit, aligned at the decimal point, with the labels in bold if `io` sup
 The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
 are defined), so it can be used in broadcasting.
 """
-struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+struct AlternateEquinoctialElements{Tepoch <: Number, T <: Number} <:
+       AbstractEquinoctialElements{Tepoch, T}
     epoch::Tepoch
 
     semi_major_axis::T

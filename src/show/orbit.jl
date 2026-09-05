@@ -215,14 +215,12 @@ function _print_field(io::IO, label::String, xs...)
 end
 
 """
-    _show_equinoctial(io::IO, name::String, orbit::Union{EquinoctialElements, AlternateEquinoctialElements}) -> Nothing
+    _show_equinoctial(io::IO, name::String, orbit::AbstractEquinoctialElements) -> Nothing
 
 Print to `io` the rich representation of `orbit`, which must be one of the equinoctial sets,
-using `name` as the header. Both sets share the same fields, so they share the layout.
+using `name` as the header. All the sets share the same fields, so they share the layout.
 """
-function _show_equinoctial(
-    io::IO, name::String, orbit::Union{EquinoctialElements, AlternateEquinoctialElements}
-)
+function _show_equinoctial(io::IO, name::String, orbit::AbstractEquinoctialElements)
     # Convert the data to string.
     date_str  = sprint(print, jd_to_date(DateTime, orbit.epoch))
     epoch_str = _compact_string(io, orbit.epoch)

@@ -167,6 +167,9 @@ Hence, `p = sin(i / 2) * sin(Ω)` and `q = sin(i / 2) * cos(Ω)` are bounded (`p
 and finite for every inclination, including retrograde equatorial orbits (`i = π`). This set
 is called "Alternate Equinoctial" in GMAT and "Nonsingular Keplerian" in FreeFlyer.
 
+Both equinoctial sets are subtypes of `AbstractEquinoctialElements{Tepoch, T}`, which can be
+used to write code that accepts either of them.
+
 ```julia
 julia> convert(AlternateEquinoctialElements, orb)
 AlternateEquinoctialElements{Float64, Float64}:

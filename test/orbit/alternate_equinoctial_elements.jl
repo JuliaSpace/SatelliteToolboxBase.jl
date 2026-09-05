@@ -18,6 +18,8 @@
     #! format: on
 
     @test aee isa AlternateEquinoctialElements{Float64, Float64}
+    @test aee isa AbstractEquinoctialElements{Float64, Float64}
+    @test aee isa Orbit{Float64, Float64}
     #! format: off
     @test aee.epoch           ≈ date_to_jd(1986, 6, 19, 18, 35, 0)
     @test aee.semi_major_axis ≈ 7130.982e3
