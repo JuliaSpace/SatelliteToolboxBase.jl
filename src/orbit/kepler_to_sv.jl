@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Conversion from orbit state vector to Keplerian elements.
+# Conversion from the Keplerian elements to orbit state vector.
 #
 ############################################################################################
 
