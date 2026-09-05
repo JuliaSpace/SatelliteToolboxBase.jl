@@ -4,41 +4,43 @@ SatelliteToolboxBase.jl Changelog
 Version 2.0.0
 -------------
 
-- ![BREAKING][badge-breaking] `KeplerianElements` now has three type parameters:
-  `KeplerianElements{Tanomaly, Tepoch, T}`, where `Tanomaly` selects the anomaly stored in
-  the object (`TrueAnomaly`, `EccentricAnomaly`, or `MeanAnomaly`). Code that referred to
-  `KeplerianElements{Tepoch, T}` must be updated.
-- ![BREAKING][badge-breaking] The fields of `KeplerianElements` were renamed to `epoch`,
+- ![BREAKING][badge-breaking] Add the type parameter `Tanomaly` to `KeplerianElements`,
+  which now is `KeplerianElements{Tanomaly, Tepoch, T}`, to select the anomaly stored in the
+  object (`TrueAnomaly`, `EccentricAnomaly`, or `MeanAnomaly`). Update the code that refers
+  to `KeplerianElements{Tepoch, T}`.
+- ![BREAKING][badge-breaking] Rename the fields of `KeplerianElements` to `epoch`,
   `semi_major_axis`, `eccentricity`, `inclination`, `raan`, `argument_of_periapsis`, and
-  `anomaly`. The old names (`t`, `a`, `e`, `i`, `Ω`, `ω`, and `f`) are still available as
-  property aliases, where `f` always returns the true anomaly.
-- ![BREAKING][badge-breaking] The field `t` of `OrbitStateVector` was renamed to `epoch`. The
-  old name is still available as a property alias.
-- ![BREAKING][badge-breaking] The element type of `OrbitStateVector` is now obtained by
-  promoting the input types to float, as it already happened with `KeplerianElements`.
-  Hence, integer inputs no longer create an `OrbitStateVector` with integer elements.
-- ![BREAKING][badge-breaking] `rv_to_kepler` throws `DimensionMismatch` instead of
-  `ErrorException` when the input vectors do not have three elements.
-- ![BREAKING][badge-breaking] `is_leap_year` now delegates to `Dates.isleapyear` and no longer
+  `anomaly`. Keep the old names (`t`, `a`, `e`, `i`, `Ω`, `ω`, and `f`) as property aliases,
+  where `f` always returns the true anomaly.
+- ![BREAKING][badge-breaking] Rename the field `t` of `OrbitStateVector` to `epoch`. Keep
+  the old name as a property alias.
+- ![BREAKING][badge-breaking] Promote the inputs of `OrbitStateVector` to float when
+  obtaining the element type, as `KeplerianElements` already does. Hence, integer inputs no
+  longer create an `OrbitStateVector` with integer elements.
+- ![BREAKING][badge-breaking] Throw `DimensionMismatch` instead of `ErrorException` in
+  `rv_to_kepler` when the input vectors do not have three elements.
+- ![BREAKING][badge-breaking] Delegate `is_leap_year` to `Dates.isleapyear`, which no longer
   throws for negative years.
-- ![Feature][badge-feature] `KeplerianElements` can store the true, eccentric, or mean
-  anomaly, selected by the new type parameter `Tanomaly`. The constructor
-  `KeplerianElements{Tanomaly}(...)` creates an object with the desired anomaly, and the
+- ![Feature][badge-feature] Support the true, eccentric, or mean anomaly in
+  `KeplerianElements`, selected by the new type parameter `Tanomaly`. Use the constructor
+  `KeplerianElements{Tanomaly}(...)` to create an object with the desired anomaly. The
   default remains the true anomaly.
-- ![Feature][badge-feature] We added the getters `true_anomaly`, `eccentric_anomaly`, and
+- ![Feature][badge-feature] Add the getters `true_anomaly`, `eccentric_anomaly`, and
   `mean_anomaly`, which return the desired anomaly of a `KeplerianElements` object,
-  converting it if necessary. The keywords of the Newton-Raphson solver (`tol` and
-  `max_iterations`) can be passed to those functions.
-- ![Feature][badge-feature] We added the orbit representation `EquinoctialElements`.
-- ![Feature][badge-feature] The Julia built-in conversion system (`convert`) now supports all
-  the conversions between `KeplerianElements` (with any anomaly), `EquinoctialElements`, and
-  `OrbitStateVector`.
-- ![Enhancement][badge-enhancement] The decorations in the `show` methods now use
-  **StyledStrings.jl** instead of **Crayons.jl**, which is no longer a dependency.
-- ![Enhancement][badge-enhancement] The unused dependency **Printf.jl** was removed.
-- ![Enhancement][badge-enhancement] The default tolerance of the Newton-Raphson solver in
-  `mean_to_eccentric_anomaly` is now scaled by the magnitude of the mean anomaly, avoiding
-  iterations that cannot improve the solution.
+  converting it if necessary. Pass the keywords of the Newton-Raphson solver (`tol` and
+  `max_iterations`) to those functions when the conversion starts from the mean anomaly.
+- ![Feature][badge-feature] Add the orbit representation `EquinoctialElements`.
+- ![Feature][badge-feature] Support all the conversions between `KeplerianElements` (with
+  any anomaly), `EquinoctialElements`, and `OrbitStateVector` in the Julia built-in
+  conversion system (`convert`).
+- ![Enhancement][badge-enhancement] Use **StyledStrings.jl** instead of **Crayons.jl** for
+  the decorations in the `show` methods. **Crayons.jl** is no longer a dependency.
+- ![Enhancement][badge-enhancement] Remove the unused dependency **Printf.jl**.
+- ![Enhancement][badge-enhancement] Scale the default tolerance of the Newton-Raphson solver
+  in `mean_to_eccentric_anomaly` by the magnitude of the mean anomaly, avoiding iterations
+  that cannot improve the solution.
+- ![Info][badge-info] Add the `.JuliaFormatter.toml` configuration and format the code base
+  according to the coding style.
 
 Version 1.2.0
 -------------
