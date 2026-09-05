@@ -41,8 +41,12 @@
 #
 ############################################################################################
 
-# Helper that checks the Cartesian state against the Scenario 01 values.
-function _test_scenario_01_rv(r_i, v_i)
+"""
+    _test_scenario_01_rv(r_i::AbstractVector, v_i::AbstractVector) -> Nothing
+
+Test the position `r_i` [m] and velocity `v_i` [m/s] against the Scenario 01 values.
+"""
+function _test_scenario_01_rv(r_i::AbstractVector, v_i::AbstractVector)
     @test r_i[1] / 1000 ≈ +6525.344 atol = 5e-2
     @test r_i[2] / 1000 ≈ +6861.535 atol = 5e-2
     @test r_i[3] / 1000 ≈ +6449.125 atol = 5e-2
@@ -52,7 +56,11 @@ function _test_scenario_01_rv(r_i, v_i)
     return nothing
 end
 
-# Helper that checks the Keplerian elements against the Scenario 01 values.
+"""
+    _test_scenario_01_kepler(ke::KeplerianElements) -> Nothing
+
+Test the Keplerian elements `ke` against the Scenario 01 values.
+"""
 function _test_scenario_01_kepler(ke::KeplerianElements)
     a, e, i, RAAN, w, f = ke.a, ke.e, ke.i, ke.Ω, ke.ω, ke.f
     p = a * (1 - e^2)
@@ -68,8 +76,13 @@ function _test_scenario_01_kepler(ke::KeplerianElements)
     return nothing
 end
 
-# Keplerian elements of the Scenario 01 with element type `T`.
-function _scenario_01_kepler(::Type{T}, epoch = zero(T)) where {T}
+"""
+    _scenario_01_kepler(::Type{T}, epoch::Number = zero(T)) -> KeplerianElements{TrueAnomaly, typeof(epoch), T}
+
+Return the Keplerian elements of the Scenario 01 with element type `T` and `epoch` [Julian
+Day].
+"""
+function _scenario_01_kepler(::Type{T}, epoch::Number = zero(T)) where {T}
     p    = T(11067.790) * 1000
     e    = T(0.83285)
     i    = T(87.87) * T(π / 180)
@@ -81,7 +94,11 @@ function _scenario_01_kepler(::Type{T}, epoch = zero(T)) where {T}
     return KeplerianElements(epoch, a, e, i, RAAN, w, f)
 end
 
-# Cartesian state of the Scenario 01 with element type `T`.
+"""
+    _scenario_01_rv(::Type{T}) -> Vector{T}, Vector{T}
+
+Return the position [m] and velocity [m/s] vectors of the Scenario 01 with element type `T`.
+"""
 function _scenario_01_rv(::Type{T}) where {T}
     r_i = T[6525.344; 6861.535; 6449.125] * 1000
     v_i = T[4.902276; 5.533124; -1.975709] * 1000
