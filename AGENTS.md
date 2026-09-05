@@ -7,9 +7,9 @@ SatelliteToolboxBase.jl holds the constants, types, and base functions shared by
 - Single package. Requires Julia 1.10 or newer (`[compat] julia = "1.10"`).
 - `src/SatelliteToolboxBase.jl` is the module entrypoint and holds every `using`/`import` plus the `include` order: `types/` first, then `constants.jl`, then `helpers.jl`, `interfaces.jl`, `storage.jl`, `orbit/`, `show/`, `time/`, and `precompile.jl` last. New code may only reference symbols defined in files included before it.
 - `src/precompile.jl` holds a `PrecompileTools.@compile_workload`; extend it when adding a public code path. The whole block sits under `#! format: off` to keep its hand-aligned numeric columns.
-- Runtime dependencies (`[deps]`): Dates, LinearAlgebra, PrecompileTools, ReferenceFrameRotations, StaticArrays, StyledStrings. Test-only dependencies are declared in `[extras]` + `[targets]` of `Project.toml` (only `Test`). There is no `test/Project.toml`.
+- Runtime dependencies (`[deps]`): Dates, LinearAlgebra, PrecompileTools, ReferenceFrameRotations, StaticArrays, StyledStrings. Test-only dependencies are declared in `[extras]` + `[targets]` of `Project.toml`: `Test`, `Aqua`, and `JET`. There is no `test/Project.toml`.
 - No package extensions (`ext/`), no `deps/build.jl`, no committed `Manifest.toml`.
-- Tests are included unconditionally from `test/runtests.jl`, one nested `@testset "Name" verbose = true` per file. The layout does not mirror `src/` one-to-one: `test/orbit/{keplerian,equinoctial,alternate_equinoctial}_elements.jl` and `test/orbit/orbit_state_vector.jl` cover the types in `src/types/orbit.jl` and the `show` methods in `src/show/orbit.jl`; `test/orbit/conversions.jl` covers `src/orbit/{conversions,kepler_to_rv,kepler_to_sv,rv_to_kepler,sv_to_kepler}.jl`; `test/orbit/anomalies.jl` covers `src/orbit/anomalies.jl` and `src/orbit/getters.jl` is covered by the Keplerian elements tests. `src/constants.jl` and `src/types/jacobian.jl` have no dedicated tests. Regression tests for reported issues live in `test/issues.jl` and `test/time/issues.jl`.
+- Tests are included unconditionally from `test/runtests.jl`, one nested `@testset "Name" verbose = true` per file. The layout does not mirror `src/` one-to-one: `test/orbit/{keplerian,equinoctial,alternate_equinoctial}_elements.jl` and `test/orbit/orbit_state_vector.jl` cover the types in `src/types/orbit.jl` and the `show` methods in `src/show/orbit.jl`; `test/orbit/conversions.jl` covers `src/orbit/{conversions,kepler_to_rv,kepler_to_sv,rv_to_kepler,sv_to_kepler}.jl`; `test/orbit/anomalies.jl` covers `src/orbit/anomalies.jl` and `src/orbit/getters.jl` is covered by the Keplerian elements tests. `src/constants.jl` and `src/types/jacobian.jl` have no dedicated tests. Regression tests for reported issues live in `test/issues.jl` and `test/time/issues.jl`. `test/quality.jl` runs `Aqua.test_all` and `JET.test_package` (JET is skipped on prerelease Julia).
 
 ## Commands
 
@@ -17,7 +17,7 @@ SatelliteToolboxBase.jl holds the constants, types, and base functions shared by
 - Full test suite: `julia --project=. -e 'using Pkg; Pkg.test()'` (about one minute; the first run precompiles and prints little, so use generous timeouts).
 - Focused test file: `julia --project=. -e 'using SatelliteToolboxBase, Test, Dates, LinearAlgebra, StaticArrays; include("test/orbit/conversions.jl")'` (this `using` list matches `test/runtests.jl` and is enough for every test file). There is no test-name selector.
 - CI (`.github/workflows/ci.yml`) builds with `julia-actions/julia-buildpkg` and then runs the tests on Julia 1.10 and the latest stable 1.x, on Ubuntu x64, macOS arm64, and Windows x64, and uploads coverage to Codecov. `ci-nightly.yml` runs the same matrix on Julia nightly. `Pkg.test()` alone reproduces CI.
-- Method ambiguity check used during development: `julia --project=. -e 'using Test, SatelliteToolboxBase; println(Test.detect_ambiguities(SatelliteToolboxBase))'` (must print an empty vector).
+- Quality checks (Aqua and JET) run inside `Pkg.test()`; they are test-only dependencies, so a plain `--project=.` session cannot load them. To run only `test/quality.jl`, use TestEnv.jl from the default environment: `julia --project=. -e 'using TestEnv; TestEnv.activate(); using SatelliteToolboxBase, Test, Aqua, JET; include("test/quality.jl")'`.
 
 ## Code Style
 
@@ -36,7 +36,7 @@ SatelliteToolboxBase.jl holds the constants, types, and base functions shared by
 - Units are SI: distances in meters, velocities in m/s, angles in radians, epochs in Julian Days (no time scale conversion is performed; the caller's scale is kept). Never change these conventions or the `GM_EARTH` default of the conversions.
 - Numeric code is generic over the element type: use `float(promote_type(...))`, never hard-code `Float64`; `Float32` inputs must give `Float32` results (the tests check it). Autodiff scalars are `Number` but not `AbstractFloat`, so constrain on `Number`.
 - The orbit hot paths (`kepler_to_rv`, `rv_to_kepler`, `kepler_to_sv`, `sv_to_kepler`, the anomaly solvers, and every `convert` between orbit representations) are allocation-free and type-stable; verify with `@allocated` and `Base.return_types` after touching them. `@inbounds`, `@inline`, and similar pragmas need a justifying comment.
-- Conversions between different orbit representations are computed in `promote_type` of the input and target element types (see `_promote_element_type` in `src/orbit/conversions.jl`); identity conversions are left to `Base.convert(::Type{T}, ::T)`, so never define a `convert` that would be ambiguous with it (run the ambiguity check above).
+- Conversions between different orbit representations are computed in `promote_type` of the input and target element types (see `_promote_element_type` in `src/orbit/conversions.jl`); identity conversions are left to `Base.convert(::Type{T}, ::T)`, so never define a `convert` that would be ambiguous with it (the Aqua ambiguity check in the test suite catches it).
 - `KeplerianElements{Tanomaly, Tepoch, T}` stores one anomaly selected by `Tanomaly`; use `true_anomaly`, `eccentric_anomaly`, or `mean_anomaly` instead of reading `anomaly` when the type is not known. The property aliases `t`, `a`, `e`, `i`, `Ω`, `ω`, `f` (Keplerian) and `t` (state vector) are kept for backward compatibility and must keep working.
 - `rv_to_kepler` keeps its absolute special-case thresholds (`1e-6` on the node vector norm and on the eccentricity); do not change them without a maintainer decision.
 - Input validation uses guard clauses throwing `ArgumentError` (or `DimensionMismatch` for vector sizes) with complete sentences; no `error()` and no `@assert`.
@@ -45,4 +45,4 @@ SatelliteToolboxBase.jl holds the constants, types, and base functions shared by
 
 ## Not Configured
 
-- No Documenter build (`docs/` holds only the logo), no linter, no pre-commit hooks, no Aqua/JET jobs, and no format check in CI; do not invent them.
+- No Documenter build (`docs/` holds only the logo), no linter, no pre-commit hooks, and no format check in CI; do not invent them.
