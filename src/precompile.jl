@@ -22,7 +22,7 @@ PrecompileTools.@compile_workload begin
     # -- Keplerian Elements ----------------------------------------------------------------
 
     # Construction with `Float64` and `Float32` elements.
-    ke = KeplerianElements(
+    ke_f64 = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
            0.0001111,
@@ -43,77 +43,77 @@ PrecompileTools.@compile_workload begin
     )
 
     # Conversion between the anomaly types.
-    ke_E     = convert(KeplerianElements{EccentricAnomaly}, ke)
+    ke_E     = convert(KeplerianElements{EccentricAnomaly}, ke_f64)
     ke_E_f32 = convert(KeplerianElements{EccentricAnomaly}, ke_f32)
-    ke_M     = convert(KeplerianElements{MeanAnomaly}, ke)
+    ke_M     = convert(KeplerianElements{MeanAnomaly}, ke_f64)
     ke_M_f32 = convert(KeplerianElements{MeanAnomaly}, ke_f32)
 
     # Printing, anomaly getters, anomaly conversions, and conversion to the Cartesian state
     # for each anomaly type and element type.
-    for k in (ke, ke_f32, ke_E, ke_E_f32, ke_M, ke_M_f32)
-        show(IOBuffer(), k)
-        show(IOBuffer(), MIME("text/plain"), k)
-        show(IOContext(IOBuffer(), :color => true), MIME("text/plain"), k)
+    for ke in (ke_f64, ke_f32, ke_E, ke_E_f32, ke_M, ke_M_f32)
+        show(IOBuffer(), ke)
+        show(IOBuffer(), MIME("text/plain"), ke)
+        show(IOContext(IOBuffer(), :color => true), MIME("text/plain"), ke)
 
-        true_anomaly(k)
-        eccentric_anomaly(k)
-        mean_anomaly(k)
+        true_anomaly(ke)
+        eccentric_anomaly(ke)
+        mean_anomaly(ke)
 
-        convert(KeplerianElements{TrueAnomaly}, k)
-        convert(KeplerianElements{EccentricAnomaly}, k)
-        convert(KeplerianElements{MeanAnomaly}, k)
+        convert(KeplerianElements{TrueAnomaly}, ke)
+        convert(KeplerianElements{EccentricAnomaly}, ke)
+        convert(KeplerianElements{MeanAnomaly}, ke)
 
-        kepler_to_rv(k)
-        kepler_to_sv(k)
-        convert(OrbitStateVector, k)
-        convert(EquinoctialElements, k)
-        convert(AlternateEquinoctialElements, k)
+        kepler_to_rv(ke)
+        kepler_to_sv(ke)
+        convert(OrbitStateVector, ke)
+        convert(EquinoctialElements, ke)
+        convert(AlternateEquinoctialElements, ke)
     end
 
     # -- Equinoctial Elements --------------------------------------------------------------
 
     # Conversion from the Keplerian elements.
-    ee     = convert(EquinoctialElements, ke)
-    ee_f32 = convert(EquinoctialElements, ke_f32)
+    ee_f64  = convert(EquinoctialElements, ke_f64)
+    ee_f32  = convert(EquinoctialElements, ke_f32)
 
     # Printing and conversions to the Keplerian elements, to the alternate equinoctial
     # elements, and to the orbit state vector.
-    for e in (ee, ee_f32)
-        show(IOBuffer(), e)
-        show(IOBuffer(), MIME("text/plain"), e)
+    for ee in (ee_f64, ee_f32)
+        show(IOBuffer(), ee)
+        show(IOBuffer(), MIME("text/plain"), ee)
 
-        convert(KeplerianElements, e)
-        convert(KeplerianElements{TrueAnomaly}, e)
-        convert(KeplerianElements{EccentricAnomaly}, e)
-        convert(KeplerianElements{MeanAnomaly}, e)
-        convert(AlternateEquinoctialElements, e)
-        convert(OrbitStateVector, e)
+        convert(KeplerianElements, ee)
+        convert(KeplerianElements{TrueAnomaly}, ee)
+        convert(KeplerianElements{EccentricAnomaly}, ee)
+        convert(KeplerianElements{MeanAnomaly}, ee)
+        convert(AlternateEquinoctialElements, ee)
+        convert(OrbitStateVector, ee)
     end
 
     # -- Alternate Equinoctial Elements ----------------------------------------------------
 
     # Conversion from the Keplerian elements.
-    aee     = convert(AlternateEquinoctialElements, ke)
+    aee_f64 = convert(AlternateEquinoctialElements, ke_f64)
     aee_f32 = convert(AlternateEquinoctialElements, ke_f32)
 
     # Printing and conversions to the Keplerian elements, to the equinoctial elements, and
     # to the orbit state vector.
-    for e in (aee, aee_f32)
-        show(IOBuffer(), e)
-        show(IOBuffer(), MIME("text/plain"), e)
+    for aee in (aee_f64, aee_f32)
+        show(IOBuffer(), aee)
+        show(IOBuffer(), MIME("text/plain"), aee)
 
-        convert(KeplerianElements, e)
-        convert(KeplerianElements{TrueAnomaly}, e)
-        convert(KeplerianElements{EccentricAnomaly}, e)
-        convert(KeplerianElements{MeanAnomaly}, e)
-        convert(EquinoctialElements, e)
-        convert(OrbitStateVector, e)
+        convert(KeplerianElements, aee)
+        convert(KeplerianElements{TrueAnomaly}, aee)
+        convert(KeplerianElements{EccentricAnomaly}, aee)
+        convert(KeplerianElements{MeanAnomaly}, aee)
+        convert(EquinoctialElements, aee)
+        convert(OrbitStateVector, aee)
     end
 
     # -- Orbit State Vector ----------------------------------------------------------------
 
     # Construction with `Float64` and `Float32` elements.
-    sv = OrbitStateVector(
+    sv_f64 = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107e3,  1.954e6, 6.110e6],
         [ 6.337e3, -1.470e3, 3.684e3],
@@ -126,18 +126,18 @@ PrecompileTools.@compile_workload begin
     )
 
     # Printing and conversions to the Keplerian and equinoctial elements.
-    for s in (sv, sv_f32)
-        show(IOBuffer(), s)
-        show(IOBuffer(), MIME("text/plain"), s)
+    for sv in (sv_f64, sv_f32)
+        show(IOBuffer(), sv)
+        show(IOBuffer(), MIME("text/plain"), sv)
 
-        rv_to_kepler(s.r, s.v)
-        rv_to_kepler(s.r, s.v, 0.0)
-        sv_to_kepler(s)
+        rv_to_kepler(sv.r, sv.v)
+        rv_to_kepler(sv.r, sv.v, 0.0)
+        sv_to_kepler(sv)
 
-        convert(KeplerianElements, s)
-        convert(KeplerianElements{MeanAnomaly}, s)
-        convert(EquinoctialElements, s)
-        convert(AlternateEquinoctialElements, s)
+        convert(KeplerianElements, sv)
+        convert(KeplerianElements{MeanAnomaly}, sv)
+        convert(EquinoctialElements, sv)
+        convert(AlternateEquinoctialElements, sv)
     end
 
     # == Time ==============================================================================
