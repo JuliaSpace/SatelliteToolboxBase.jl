@@ -15,12 +15,11 @@
 export rv_to_kepler
 
 """
-    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; kwargs...) -> KeplerianElements{TrueAnomaly, Tepoch, T}
+    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, epoch::T3 = 0; kwargs...) -> KeplerianElements{TrueAnomaly, Tepoch, T}
 
 Convert a Cartesian representation (position vector `r_i` [m] and velocity vector `v_i`
-[m/s]) to Keplerian elements. Optionally, the user can specify the epoch of the returned
-elements [Julian Day] using the parameter `t`. If it is omitted, then it defaults to 0. The
-vectors must have three elements, and the orbit must be elliptical.
+[m/s]) to Keplerian elements with the `epoch` [Julian Day], which defaults to 0. The vectors
+must have three elements, and the orbit must be elliptical.
 
 !!! note
 
@@ -63,7 +62,7 @@ The special cases are treated as follows:
     elliptical.
 """
 function rv_to_kepler(
-    r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; μ::Number = GM_EARTH
+    r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, epoch::T3 = 0; μ::Number = GM_EARTH
 ) where {T1 <: Number, T2 <: Number, T3 <: Number}
     # Check inputs.
     length(r_i) != 3 && throw(DimensionMismatch("The vector r_i must have 3 elements."))
@@ -73,163 +72,105 @@ function rv_to_kepler(
     Tepoch = float(T3)
     T      = float(promote_type(T1, T2))
 
-    # All the accesses below use fixed indices of 3-element `SVector`s, whose lengths were
-    # checked above. Hence, we can skip the bounds checking.
-    @inbounds begin
-        # Convert the input vectors to `SVector` with the correct type.
-        sr_i = SVector{3, T}(r_i[0 + begin], r_i[1 + begin], r_i[2 + begin])
-        sv_i = SVector{3, T}(v_i[0 + begin], v_i[1 + begin], v_i[2 + begin])
+    # Convert the input vectors to `SVector` with the correct type. The lengths were checked
+    # above, so we can skip the bounds checking.
+    sr_i = @inbounds SVector{3, T}(r_i[begin], r_i[begin + 1], r_i[begin + 2])
+    sv_i = @inbounds SVector{3, T}(v_i[begin], v_i[begin + 1], v_i[begin + 2])
 
-        # Position and velocity vector norms and auxiliary dot products.
-        r² = dot(sr_i, sr_i)
-        v² = dot(sv_i, sv_i)
-        r  = sqrt(r²)
-        v  = sqrt(v²)
-        rv = dot(sr_i, sv_i)
+    # Position vector norm, velocity squared norm, and auxiliary dot product.
+    r  = sqrt(dot(sr_i, sr_i))
+    v² = dot(sv_i, sv_i)
+    rv = dot(sr_i, sv_i)
 
-        μ = T(μ)
+    μ = T(μ)
 
-        # Angular momentum vector.
-        h_i = sr_i × sv_i
-        h   = norm(h_i)
+    # Angular momentum vector.
+    h_i = sr_i × sv_i
+    h   = norm(h_i)
 
-        # Vector that points to the right ascension of the ascending node (RAAN).
-        n_i = SVector{3}(0, 0, 1) × h_i
-        n   = norm(n_i)
+    # Vector that points to the right ascension of the ascending node (RAAN), which is the
+    # cross product between the Z axis and the angular momentum vector.
+    n_i = SVector{3, T}(-h_i[2], h_i[1], 0)
+    n   = norm(n_i)
 
-        # Eccentricity vector.
-        e_i = ((v² - μ / r) * sr_i - rv * sv_i) / μ
+    # Eccentricity vector.
+    e_i = ((v² - μ / r) * sr_i - rv * sv_i) / μ
 
-        # Orbit energy.
-        ξ = v² / 2 - μ / r
+    # Orbit energy.
+    ξ = v² / 2 - μ / r
 
-        # == Eccentricity ==================================================================
+    # == Eccentricity ======================================================================
 
-        ecc = norm(e_i)
+    ecc = norm(e_i)
 
-        # == Semi-major axis ===============================================================
+    abs(ecc) <= 1 - 1e-6 || throw(
+        ArgumentError(
+            "The computed eccentricity is not lower than 1, so the orbit is not elliptical."
+        )
+    )
 
-        if abs(ecc) <= 1 - 1e-6
-            a = -μ / (2ξ)
-        else
-            throw(ArgumentError("""
-                Could not convert the provided Cartesian values to Kepler elements.
-                The computed eccentricity was not between 0 and 1."""))
-        end
+    # == Semi-major Axis ===================================================================
 
-        # == Inclination ===================================================================
+    a = -μ / (2ξ)
 
-        cos_i = h_i[3] / h
-        cos_i = abs(cos_i) > 1 ? sign(cos_i) : cos_i
-        i     = acos(cos_i)
+    # == Inclination =======================================================================
 
-        # == Check the Type of the Orbit to Account for Special Cases ======================
+    i = _angle_from_cos(h_i[3] / h, false)
 
+    # == Special Cases =====================================================================
+
+    # The angles that are undefined in the special cases are set to 0. See the docstring.
+
+    if abs(n) <= 1e-6
         # -- Equatorial --------------------------------------------------------------------
 
-        if abs(n) <= 1e-6
+        Ω = T(0)
 
-            # == Right Ascension of the Ascending Node. ====================================
+        if abs(ecc) > 1e-6
+            # .. Equatorial and Elliptical .................................................
 
-            Ω = T(0)
-
-            # -- Equatorial and Elliptical -------------------------------------------------
-
-            if abs(ecc) > 1e-6
-
-                # == Argument of Perigee ===================================================
-
-                cos_ω = e_i[1] / ecc
-                cos_ω = abs(cos_ω) > 1 ? sign(cos_ω) : cos_ω
-                ω     = acos(cos_ω)
-
-                if e_i[2] < 0
-                    ω = T(2π) - ω
-                end
-
-                # == True Anomaly ==========================================================
-
-                cos_f = dot(e_i, sr_i) / (ecc * r)
-                cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
-                f     = acos(cos_f)
-
-                if rv < 0
-                    f = T(2π) - f
-                end
-
-            else
-                # -- Equatorial and Circular -----------------------------------------------
-
-                # == Argument of Perigee ===================================================
-
-                ω = T(0)
-
-                # == True Anomaly ==========================================================
-
-                cos_f = sr_i[1] / r
-                cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
-                f     = acos(cos_f)
-
-                if sr_i[2] < 0
-                    f = T(2π) - f
-                end
-            end
-
+            ω = _angle_from_cos(e_i[1] / ecc, e_i[2] < 0)
+            f = _angle_from_cos(dot(e_i, sr_i) / (ecc * r), rv < 0)
         else
-            # -- Inclined ------------------------------------------------------------------
+            # .. Equatorial and Circular ...................................................
 
-            # == Right Ascension of the Ascending Node =====================================
+            ω = T(0)
+            f = _angle_from_cos(sr_i[1] / r, sr_i[2] < 0)
+        end
+    else
+        # -- Inclined ----------------------------------------------------------------------
 
-            cos_Ω = n_i[1] / n
-            cos_Ω = abs(cos_Ω) > 1 ? sign(cos_Ω) : cos_Ω
-            Ω     = acos(cos_Ω)
+        Ω = _angle_from_cos(n_i[1] / n, n_i[2] < 0)
 
-            if n_i[2] < 0
-                Ω = T(2π) - Ω
-            end
+        if abs(ecc) < 1e-6
+            # .. Inclined and Circular .....................................................
 
-            # -- Circular and Inclined -----------------------------------------------------
+            ω = T(0)
+            f = _angle_from_cos(dot(n_i, sr_i) / (n * r), sr_i[3] < 0)
+        else
+            # .. Inclined and Elliptical ...................................................
 
-            if abs(ecc) < 1e-6
-
-                # == Argument of Perigee ===================================================
-
-                ω = T(0)
-
-                # == True Anomaly ==========================================================
-
-                cos_f = dot(n_i, sr_i) / (n * r)
-                cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
-                f     = acos(cos_f)
-
-                if sr_i[3] < 0
-                    f = T(2π) - f
-                end
-            else
-
-                # == Argument of Perigee ===================================================
-
-                cos_ω = dot(n_i, e_i) / (n * ecc)
-                cos_ω = abs(cos_ω) > 1 ? sign(cos_ω) : cos_ω
-                ω     = acos(cos_ω)
-
-                if e_i[3] < 0
-                    ω = T(2π) - ω
-                end
-
-                # == True Anomaly ==========================================================
-
-                cos_f = dot(e_i, sr_i) / (ecc * r)
-                cos_f = abs(cos_f) > 1 ? sign(cos_f) : cos_f
-                f     = acos(cos_f)
-
-                if rv < 0
-                    f = T(2π) - f
-                end
-            end
+            ω = _angle_from_cos(dot(n_i, e_i) / (n * ecc), e_i[3] < 0)
+            f = _angle_from_cos(dot(e_i, sr_i) / (ecc * r), rv < 0)
         end
     end
 
-    # Return the Keplerian elements.
-    return KeplerianElements{TrueAnomaly}(Tepoch(t), a, ecc, i, Ω, ω, f)
+    return KeplerianElements{TrueAnomaly}(Tepoch(epoch), a, ecc, i, Ω, ω, f)
+end
+
+############################################################################################
+#                                    Private Functions                                     #
+############################################################################################
+
+"""
+    _angle_from_cos(cos_x::T, negative::Bool) -> T
+
+Return the angle `x` [rad] in the interval [0, 2π] whose cosine is `cos_x`, clamped to the
+interval [-1, 1] to absorb rounding errors. If `negative` is `true`, meaning that `x` lies
+in the interval (π, 2π), the returned angle is `2π - acos(cos_x)`. Otherwise, it is
+`acos(cos_x)`.
+"""
+function _angle_from_cos(cos_x::T, negative::Bool) where {T <: Number}
+    x = acos(clamp(cos_x, -one(T), one(T)))
+    return negative ? T(2π) - x : x
 end
