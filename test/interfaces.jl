@@ -39,6 +39,15 @@
     @test iterate(ee) === (ee, nothing)
     @test iterate(ee, nothing) === nothing
 
+    # == Alternate Equinoctial Elements ====================================================
+
+    aee = convert(AlternateEquinoctialElements, orb)
+
+    @test eltype(aee) === AlternateEquinoctialElements{Float64, Float64}
+    @test length(aee) === 1
+    @test iterate(aee) === (aee, nothing)
+    @test iterate(aee, nothing) === nothing
+
     # == Orbit State Vector ================================================================
 
     #! format: off

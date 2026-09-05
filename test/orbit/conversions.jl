@@ -725,3 +725,241 @@ end
         @test svc.v ≈ sv.v rtol = 1e-9
     end
 end
+
+@testset "Conversions with AlternateEquinoctialElements" verbose = true begin
+    @testset "KeplerianElements => AlternateEquinoctialElements" begin
+        # == Reference Values ==============================================================
+
+        #! format: off
+        ke = KeplerianElements(
+            date_to_jd(1986, 6, 19, 18, 35, 0),
+            7130.982e3,
+               0.0001111,
+              98.405 |> deg2rad,
+             200.000 |> deg2rad,
+              90.000 |> deg2rad,
+             123.456 |> deg2rad,
+        )
+        #! format: on
+
+        e = ke.eccentricity
+        i = ke.inclination
+        Ω = ke.raan
+        ω = ke.argument_of_periapsis
+        M = mean_anomaly(ke)
+
+        aee = convert(AlternateEquinoctialElements, ke)
+
+        @test aee isa AlternateEquinoctialElements{Float64, Float64}
+        #! format: off
+        @test aee.epoch           === ke.epoch
+        @test aee.semi_major_axis === ke.semi_major_axis
+        @test aee.h               ≈ e * sin(ω + Ω)
+        @test aee.k               ≈ e * cos(ω + Ω)
+        @test aee.p               ≈ sin(i / 2) * sin(Ω)
+        @test aee.q               ≈ sin(i / 2) * cos(Ω)
+        @test aee.mean_longitude  ≈ Ω + ω + M
+        #! format: on
+
+        # The result must not depend on the anomaly type of the input.
+        for Tanomaly in (EccentricAnomaly, MeanAnomaly)
+            aeec = convert(
+                AlternateEquinoctialElements, convert(KeplerianElements{Tanomaly}, ke)
+            )
+            #! format: off
+            @test aeec.h              ≈ aee.h
+            @test aeec.k              ≈ aee.k
+            @test aeec.p              ≈ aee.p
+            @test aeec.q              ≈ aee.q
+            @test aeec.mean_longitude ≈ aee.mean_longitude
+            #! format: on
+        end
+
+        # == Types =========================================================================
+
+        aee = convert(AlternateEquinoctialElements{Float64, Float32}, ke)
+        @test aee isa AlternateEquinoctialElements{Float64, Float32}
+        @test aee.p ≈ sin(i / 2) * sin(Ω) rtol = 1e-6
+
+        ke_f32 = KeplerianElements(1.0, 7130.982f3, 0.1f0, 0.5f0, 0.3f0, 0.2f0, 0.1f0)
+        aee    = convert(AlternateEquinoctialElements, ke_f32)
+        @test aee isa AlternateEquinoctialElements{Float64, Float32}
+
+        # == Special Cases =================================================================
+
+        # Circular orbit: h = k = 0.
+        aee = convert(
+            AlternateEquinoctialElements,
+            KeplerianElements(0.0, 8000e3, 0.0, 0.5, 0.3, 0.2, 0.1),
+        )
+        @test aee.h == 0
+        @test aee.k == 0
+
+        # Equatorial orbit: p = q = 0.
+        aee = convert(
+            AlternateEquinoctialElements,
+            KeplerianElements(0.0, 8000e3, 0.1, 0.0, 0.3, 0.2, 0.1),
+        )
+        @test aee.p == 0
+        @test aee.q == 0
+
+        # Retrograde equatorial orbit is finite, with p² + q² = 1.
+        aee = convert(
+            AlternateEquinoctialElements,
+            KeplerianElements(0.0, 8000e3, 0.1, π, 0.3, 0.2, 0.1),
+        )
+        @test hypot(aee.p, aee.q) ≈ 1
+        @test aee.p ≈ sin(0.3)
+        @test aee.q ≈ cos(0.3)
+    end
+
+    @testset "AlternateEquinoctialElements => KeplerianElements" begin
+        # == Round Trip over a Grid ========================================================
+
+        angles = deg2rad.((10, 170, 190, 350))
+
+        for e in (0, 0.1, 0.7),
+            i in deg2rad.((0, 45, 179, 180)), Ω in angles, ω in angles,
+            f in angles
+
+            ke  = KeplerianElements(Int64(123), 8000e3, e, i, Ω, ω, f)
+            aee = convert(AlternateEquinoctialElements, ke)
+            kec = convert(KeplerianElements, aee)
+
+            @test kec isa KeplerianElements{TrueAnomaly, Int64, Float64}
+            @test kec.epoch === ke.epoch
+            @test kec.semi_major_axis ≈ ke.semi_major_axis
+            @test kec.eccentricity ≈ ke.eccentricity atol = 1e-12
+            @test kec.inclination ≈ ke.inclination atol = 1e-8
+
+            # All the angles must be in [0, 2π).
+            @test 0 ≤ kec.raan < 2π
+            @test 0 ≤ kec.argument_of_periapsis < 2π
+            @test 0 ≤ kec.anomaly < 2π
+
+            # The Cartesian state must be recovered regardless of the degenerate angles.
+            r_ke, v_ke = kepler_to_rv(ke)
+            r_kec, v_kec = kepler_to_rv(kec)
+            @test r_kec ≈ r_ke atol = 1e-6
+            @test v_kec ≈ v_ke atol = 1e-9
+
+            # -- Mean and Eccentric Anomaly ------------------------------------------------
+
+            kec_M = convert(KeplerianElements{MeanAnomaly}, aee)
+            @test kec_M isa KeplerianElements{MeanAnomaly, Int64, Float64}
+            @test kec_M.anomaly ≈ mean_anomaly(kec) atol = 1e-9
+
+            kec_E = convert(KeplerianElements{EccentricAnomaly}, aee)
+            @test kec_E isa KeplerianElements{EccentricAnomaly, Int64, Float64}
+            @test kec_E.anomaly ≈ eccentric_anomaly(kec) atol = 1e-9
+        end
+
+        # == Types =========================================================================
+
+        aee = convert(
+            AlternateEquinoctialElements,
+            KeplerianElements(Int64(1), 8000e3, 0.1, 0.5, 0.3, 0.2, 0.1),
+        )
+
+        kec = convert(KeplerianElements{MeanAnomaly, Float64, Float32}, aee)
+        @test kec isa KeplerianElements{MeanAnomaly, Float64, Float32}
+        @test kec.epoch === 1.0
+        @test kec.raan ≈ 0.3 atol = 1e-6
+
+        # == Errors ========================================================================
+
+        # p² + q² > 1 does not represent an orbit.
+        aee = AlternateEquinoctialElements(0.0, 8000e3, 0.0, 0.0, 0.8, 0.8, 1.0)
+        @test_throws ArgumentError convert(KeplerianElements, aee)
+        @test_throws ArgumentError convert(OrbitStateVector, aee)
+    end
+
+    @testset "AlternateEquinoctialElements <=> EquinoctialElements" begin
+        angles = deg2rad.((10, 170, 190, 350))
+
+        for e in (0, 0.1, 0.7), i in deg2rad.((0, 45, 179)), Ω in angles, ω in angles
+            ke  = KeplerianElements(Int64(123), 8000e3, e, i, Ω, ω, 0.5)
+            ee  = convert(EquinoctialElements, ke)
+            aee = convert(AlternateEquinoctialElements, ke)
+
+            # The direct conversions must match the ones through the Keplerian elements.
+            aeec = convert(AlternateEquinoctialElements, ee)
+            @test aeec isa AlternateEquinoctialElements{Int64, Float64}
+            @test aeec.epoch === ee.epoch
+            @test aeec.semi_major_axis === ee.semi_major_axis
+            @test aeec.h === ee.h
+            @test aeec.k === ee.k
+            @test aeec.mean_longitude === ee.mean_longitude
+            @test aeec.p ≈ aee.p atol = 1e-14
+            @test aeec.q ≈ aee.q atol = 1e-14
+
+            # The scaling by `1 / cos(i / 2)` amplifies the rounding error near i = π.
+            eec = convert(EquinoctialElements, aee)
+            @test eec isa EquinoctialElements{Int64, Float64}
+            @test eec.p ≈ ee.p atol = 1e-12 rtol = 1e-10
+            @test eec.q ≈ ee.q atol = 1e-12 rtol = 1e-10
+        end
+
+        # == Types =========================================================================
+
+        ee = convert(
+            EquinoctialElements,
+            KeplerianElements(Int64(1), 8000e3, 0.1, 0.5, 0.3, 0.2, 0.1),
+        )
+
+        aee = convert(AlternateEquinoctialElements{Float64, Float32}, ee)
+        @test aee isa AlternateEquinoctialElements{Float64, Float32}
+        @test aee.epoch === 1.0
+
+        eec = convert(EquinoctialElements{Float64, Float32}, aee)
+        @test eec isa EquinoctialElements{Float64, Float32}
+        @test eec.p ≈ ee.p rtol = 1e-6
+
+        # == Errors ========================================================================
+
+        # Retrograde equatorial orbit is singular in the equinoctial elements.
+        aee = convert(
+            AlternateEquinoctialElements,
+            KeplerianElements(0.0, 8000e3, 0.1, π, 0.3, 0.2, 0.1),
+        )
+        @test_throws ArgumentError convert(EquinoctialElements, aee)
+    end
+
+    @testset "AlternateEquinoctialElements <=> OrbitStateVector" begin
+        ke  = _scenario_01_kepler(Float64, Int64(123))
+        aee = convert(AlternateEquinoctialElements, ke)
+
+        sv = convert(OrbitStateVector, aee)
+        _test_scenario_01_rv(sv.r, sv.v)
+        @test sv isa OrbitStateVector{Int64, Float64}
+        @test sv.epoch === Int64(123)
+
+        sv = convert(OrbitStateVector{Float64, Float32}, aee)
+        _test_scenario_01_rv(sv.r, sv.v)
+        @test sv isa OrbitStateVector{Float64, Float32}
+
+        r_i, v_i = _scenario_01_rv(Float64)
+        sv = OrbitStateVector(Int64(123), r_i, v_i)
+
+        # The conversion must go through the Keplerian elements.
+        aee_ref = convert(AlternateEquinoctialElements, sv_to_kepler(sv))
+        aee     = convert(AlternateEquinoctialElements, sv)
+        @test aee isa AlternateEquinoctialElements{Int64, Float64}
+        @test aee.epoch === Int64(123)
+        @test aee.semi_major_axis == aee_ref.semi_major_axis
+        @test aee.h == aee_ref.h
+        @test aee.k == aee_ref.k
+        @test aee.p == aee_ref.p
+        @test aee.q == aee_ref.q
+        @test aee.mean_longitude == aee_ref.mean_longitude
+
+        aee = convert(AlternateEquinoctialElements{Float64, Float32}, sv)
+        @test aee isa AlternateEquinoctialElements{Float64, Float32}
+        @test aee.epoch === 123.0
+
+        # Round trip through the state vector.
+        svc = convert(OrbitStateVector, convert(AlternateEquinoctialElements, sv))
+        @test svc.r ≈ sv.r rtol = 1e-9
+        @test svc.v ≈ sv.v rtol = 1e-9
+    end
+end
