@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/src/assets/logo.png" width="150" title="SatelliteToolboxTransformations.jl"><br>
+  <img src="./docs/src/assets/logo.png" width="150" title="SatelliteToolboxBase.jl"><br>
   <small><i>This package is part of the <a href="https://github.com/JuliaSpace/SatelliteToolbox.jl">SatelliteToolbox.jl</a> ecosystem.</i></small>
 </p>
 
@@ -223,7 +223,7 @@ The conversion between the orbit representations can be performed using the foll
 functions:
 
 - `kepler_to_rv`: Convert the Keplerian elements to Cartesian position and velocity.
-- `kepler_to_sv`: convert the Keplerian elements to orbit state vector.
+- `kepler_to_sv`: Convert the Keplerian elements to orbit state vector.
 - `rv_to_kepler`: Convert the Cartesian position and velocity to Keplerian elements.
 - `sv_to_kepler`: Convert the orbit state vector to Keplerian elements.
 
@@ -256,7 +256,7 @@ mean_to_eccentric_anomaly(e::Number, M::Number; kwargs...) -> T
 mean_to_true_anomaly(e::Number, M::Number; kwargs...) -> T
 eccentric_to_true_anomaly(e::Number, E::Number) -> T
 eccentric_to_mean_anomaly(e::Number, E::Number) -> T
-true_to_eccentric_anomaly(e::Number,f::Number) -> T
+true_to_eccentric_anomaly(e::Number, f::Number) -> T
 true_to_mean_anomaly(e::Number, f::Number) -> T
 ```
 
@@ -265,22 +265,24 @@ where:
 - `M` is the mean anomaly [rad];
 - `E` is the eccentric anomaly [rad];
 - `f` is the true anomaly [rad];
-- `e` is the eccentricity.
-- `T` is the output type obtained by promoting `T1` and `T2` to float.
+- `e` is the eccentricity [-]; and
+- `T` is the output type obtained by promoting the types of `e` and the input anomaly to
+  float.
 
 All the returned values are in [rad].
 
-The functions `mean_to_eccentric` and `mean_to_true` uses the Newton-Raphson algorithm to
-solve the Kepler's equation. In this case, the following keywords are available to configure
-it:
+The functions `mean_to_eccentric_anomaly` and `mean_to_true_anomaly` use the Newton-Raphson
+algorithm to solve the Kepler's equation. In this case, the following keywords are available
+to configure it:
 
 - `tol::Union{Nothing, Number}`: Tolerance to accept the solution from Newton-Raphson
-    algorithm. If `tol` is `nothing`, then it will be `eps(T)`, where `T` is a
-    floating-point type obtained from the promotion of `T1` and `T2` to a float.
-    (**Default** = `nothing`)
+    algorithm, applied to the residual of the Kepler's equation `|E - e sin(E) - M|`. If
+    `tol` is `nothing`, it will be `eps(T) * max(1, M)`, which is the smallest residual that
+    can be resolved in `T` given the magnitude of `M`.
+    (**Default**: `nothing`)
 - `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
     algorithm. It must be greater than or equal to 1, otherwise an `ArgumentError` is thrown.
-    (**Default** = 10)
+    (**Default**: 10)
 
 ```julia
 julia> mean_to_eccentric_anomaly(0.04, pi / 4)
