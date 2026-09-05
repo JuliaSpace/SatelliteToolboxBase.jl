@@ -12,4 +12,4 @@
 Base.iterate(orb::Orbit) = (orb, nothing)
 Base.iterate(::Orbit, ::Nothing) = nothing
 Base.length(::Orbit) = 1
-Base.eltype(::T) where T<:Orbit = T
+Base.eltype(::T) where {T <: Orbit} = T

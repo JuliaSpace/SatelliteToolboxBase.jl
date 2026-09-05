@@ -21,7 +21,7 @@ export true_to_eccentric_anomaly, true_to_mean_anomaly
 #
 # `mod(x, 2π)` alone is not enough because it returns `2π` when `x` is a tiny negative
 # number, since `2π + x` rounds to `2π` in floating point.
-@inline function _wrap_to_2π(x::T) where T <: AbstractFloat
+@inline function _wrap_to_2π(x::T) where {T <: AbstractFloat}
     y = mod(x, T(2π))
     return y == T(2π) ? zero(T) : y
 end
@@ -54,10 +54,7 @@ This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
     (**Default** = 10)
 """
 function mean_to_eccentric_anomaly(
-    e::T1,
-    M::T2;
-    max_iterations::Integer = 10,
-    tol::Union{Nothing, Number} = nothing
+    e::T1, M::T2; max_iterations::Integer = 10, tol::Union{Nothing, Number} = nothing
 ) where {T1, T2}
     T = float(promote_type(T1, T2))
 

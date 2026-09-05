@@ -5,6 +5,7 @@
 ############################################################################################
 
 @testset "Construction" begin
+    #! format: off
     orb = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -14,9 +15,11 @@
           90.000 |> deg2rad,
          123.456 |> deg2rad,
     )
+    #! format: on
 
     @test orb isa KeplerianElements{TrueAnomaly, Float64, Float64}
 
+    #! format: off
     orb = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982f3,
@@ -26,9 +29,11 @@
           90.000f0 |> deg2rad,
          123.456f0 |> deg2rad,
     )
+    #! format: on
 
     @test orb isa KeplerianElements{TrueAnomaly, Float64, Float32}
 
+    #! format: off
     orb = KeplerianElements(
         Int64(2451545),
         7130.982f3,
@@ -38,29 +43,18 @@
           90.000f0 |> deg2rad,
          123.456f0 |> deg2rad,
     )
+    #! format: on
 
     @test orb isa KeplerianElements{TrueAnomaly, Int64, Float32}
 
     orb = KeplerianElements(
-        date_to_jd(1986, 6, 19, 18, 35, 0),
-        7130000,
-        0,
-        98.405 |> deg2rad,
-        0,
-        0,
-        0
+        date_to_jd(1986, 6, 19, 18, 35, 0), 7130000, 0, 98.405 |> deg2rad, 0, 0, 0
     )
 
     @test orb isa KeplerianElements{TrueAnomaly, Float64, Float64}
 
     orb = KeplerianElements(
-        date_to_jd(1986, 6, 19, 18, 35, 0),
-        7130000,
-        0,
-        98.405f0 |> deg2rad,
-        0,
-        0,
-        0
+        date_to_jd(1986, 6, 19, 18, 35, 0), 7130000, 0, 98.405f0 |> deg2rad, 0, 0, 0
     )
 
     @test orb isa KeplerianElements{TrueAnomaly, Float64, Float32}
@@ -72,6 +66,7 @@
     # == Anomaly Types =====================================================================
 
     for Tanomaly in (TrueAnomaly, EccentricAnomaly, MeanAnomaly)
+        #! format: off
         orb = KeplerianElements{Tanomaly}(
             date_to_jd(1986, 6, 19, 18, 35, 0),
             7130.982e3,
@@ -81,6 +76,7 @@
               90.000 |> deg2rad,
              123.456 |> deg2rad,
         )
+        #! format: on
 
         @test orb isa KeplerianElements{Tanomaly, Float64, Float64}
         @test orb.anomaly ≈ 123.456 |> deg2rad
@@ -99,6 +95,7 @@
 end
 
 @testset "Property Aliases" begin
+    #! format: off
     orb = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -108,6 +105,7 @@ end
           90.000 |> deg2rad,
          123.456 |> deg2rad,
     )
+    #! format: on
 
     @test orb.t === orb.epoch
     @test orb.a === orb.semi_major_axis
@@ -143,26 +141,28 @@ end
     orb_f = KeplerianElements{TrueAnomaly}(0.0, 8000e3, e, 0.1, 0.2, 0.3, f)
 
     for orb in (orb_M, orb_E, orb_f)
-        @test mean_anomaly(orb)      ≈ M atol = 1e-14
+        @test mean_anomaly(orb) ≈ M atol = 1e-14
         @test eccentric_anomaly(orb) ≈ E atol = 1e-14
-        @test true_anomaly(orb)      ≈ f atol = 1e-14
+        @test true_anomaly(orb) ≈ f atol = 1e-14
 
-        @test mean_anomaly(orb)      isa Float64
+        @test mean_anomaly(orb) isa Float64
         @test eccentric_anomaly(orb) isa Float64
-        @test true_anomaly(orb)      isa Float64
+        @test true_anomaly(orb) isa Float64
     end
 
     # The getters must return the stored field without conversion when possible.
-    @test mean_anomaly(orb_M)      === orb_M.anomaly
+    @test mean_anomaly(orb_M) === orb_M.anomaly
     @test eccentric_anomaly(orb_E) === orb_E.anomaly
-    @test true_anomaly(orb_f)      === orb_f.anomaly
+    @test true_anomaly(orb_f) === orb_f.anomaly
 
     # Float32.
-    orb_M32 = KeplerianElements{MeanAnomaly}(0.0, 8000f3, Float32(e), 0.1f0, 0.2f0, 0.3f0, Float32(M))
+    orb_M32 = KeplerianElements{MeanAnomaly}(
+        0.0, 8000.0f3, Float32(e), 0.1f0, 0.2f0, 0.3f0, Float32(M)
+    )
     @test eccentric_anomaly(orb_M32) isa Float32
-    @test true_anomaly(orb_M32)      isa Float32
+    @test true_anomaly(orb_M32) isa Float32
     @test eccentric_anomaly(orb_M32) ≈ E atol = 1e-6
-    @test true_anomaly(orb_M32)      ≈ f atol = 1e-6
+    @test true_anomaly(orb_M32) ≈ f atol = 1e-6
 
     # == Keywords Forwarded to the Newton-Raphson Solver ===================================
 
@@ -170,19 +170,23 @@ end
     E₁ = eccentric_anomaly(orb_M; max_iterations = 1)
     @test abs(E₁ - E) > 1e-6
     @test eccentric_anomaly(orb_M; max_iterations = 10) ≈ E atol = 1e-14
-    @test true_anomaly(orb_M; max_iterations = 10)      ≈ f atol = 1e-14
+    @test true_anomaly(orb_M; max_iterations = 10) ≈ f atol = 1e-14
 
     # A loose tolerance must stop at the first iteration that satisfies it.
-    @test eccentric_anomaly(orb_M; tol = 1e-1) == eccentric_anomaly(orb_M; max_iterations = 1)
+    @test eccentric_anomaly(orb_M; tol = 1e-1) ==
+        eccentric_anomaly(orb_M; max_iterations = 1)
 
     # Keywords are accepted (and ignored) by the other getters.
+    #! format: off
     @test mean_anomaly(orb_M; tol = 1e-3)      === orb_M.anomaly
     @test true_anomaly(orb_f; tol = 1e-3)      === orb_f.anomaly
+    #! format: on
     @test eccentric_anomaly(orb_E; tol = 1e-3) === orb_E.anomaly
     @test mean_anomaly(orb_f; max_iterations = 2) ≈ M atol = 1e-14
 end
 
 @testset "Show" begin
+    #! format: off
     orb = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -192,16 +196,19 @@ end
           90.000 |> deg2rad,
          123.456 |> deg2rad,
     )
+    #! format: on
 
+    #! format: off
     orb_f32 = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982f3,
-           0.0001111f0,
-          98.405f0 |> deg2rad,
-         200.000f0 |> deg2rad,
-          90.000f0 |> deg2rad,
-         123.456f0 |> deg2rad,
+        0.0001111f0,
+        98.405f0 |> deg2rad,
+        200.000f0 |> deg2rad,
+        90.000f0 |> deg2rad,
+        123.456f0 |> deg2rad,
     )
+    #! format: on
 
     expected = "KeplerianElements{TrueAnomaly, Float64, Float64}: Epoch = 2.4466e6 (1986-06-19T18:35:00)"
     str = sprint(print, orb)

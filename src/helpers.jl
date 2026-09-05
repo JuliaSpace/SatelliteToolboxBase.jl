@@ -67,7 +67,7 @@ function get_partition(cp::Integer, inds::AbstractVector, np::Integer)
     i₁ = i₀ + len - 1
 
     i₀ += cp <= rem ? cp - 1 : rem
-    i₁ += cp <= rem ? cp     : rem
+    i₁ += cp <= rem ? cp : rem
 
     return i₀, i₁
 end

@@ -63,11 +63,8 @@ The special cases are treated as follows:
     Elements. Available at www.rene-schwarz.com.
 """
 function rv_to_kepler(
-    r_i::AbstractVector{T1},
-    v_i::AbstractVector{T2},
-    t::T3 = 0;
-    μ::Number = GM_EARTH
-) where {T1<:Number, T2<:Number, T3<:Number}
+    r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; μ::Number = GM_EARTH
+) where {T1 <: Number, T2 <: Number, T3 <: Number}
     # Check inputs.
     length(r_i) != 3 && throw(DimensionMismatch("The vector r_i must have 3 elements."))
     length(v_i) != 3 && throw(DimensionMismatch("The vector v_i must have 3 elements."))
@@ -88,7 +85,7 @@ function rv_to_kepler(
         v  = sqrt(v²)
         rv = dot(sr_i, sv_i)
 
-        μ  = T(μ)
+        μ = T(μ)
 
         # Angular momentum vector.
         h_i = sr_i × sv_i
@@ -99,7 +96,7 @@ function rv_to_kepler(
         n   = norm(n_i)
 
         # Eccentricity vector.
-        e_i = ((v² - μ / r) * sr_i - rv * sv_i ) / μ
+        e_i = ((v² - μ / r) * sr_i - rv * sv_i) / μ
 
         # Orbit energy.
         ξ = v² / 2 - μ / r
@@ -115,8 +112,7 @@ function rv_to_kepler(
         else
             throw(ArgumentError("""
                 Could not convert the provided Cartesian values to Kepler elements.
-                The computed eccentricity was not between 0 and 1."""
-            ))
+                The computed eccentricity was not between 0 and 1."""))
         end
 
         # == Inclination ===================================================================
@@ -159,9 +155,9 @@ function rv_to_kepler(
                     f = T(2π) - f
                 end
 
-            # -- Equatorial and Circular ---------------------------------------------------
-
             else
+                # -- Equatorial and Circular -----------------------------------------------
+
                 # == Argument of Perigee ===================================================
 
                 ω = T(0)
@@ -177,8 +173,8 @@ function rv_to_kepler(
                 end
             end
 
-        # -- Inclined ----------------------------------------------------------------------
         else
+            # -- Inclined ------------------------------------------------------------------
 
             # == Right Ascension of the Ascending Node =====================================
 

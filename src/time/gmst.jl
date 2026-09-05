@@ -33,11 +33,7 @@ function j2000_to_gmst(j2000_ut1::Number)
 
     # Greenwich Mean Sidereal Time at t_ut1 [s].
     θ_gmst = @evalpoly(
-        t_ut1,
-        + 67310.54841,
-        + 876600.0 * 3600 + 8640184.812866,
-        + 0.093104,
-        - 6.2e-6
+        t_ut1, + 67310.54841, + 876600.0 * 3600 + 8640184.812866, + 0.093104, - 6.2e-6
     )
 
     # Reduce to the interval [0, 86400]s.

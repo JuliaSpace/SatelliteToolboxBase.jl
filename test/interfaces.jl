@@ -7,6 +7,7 @@
 @testset "Iterator Interface" begin
     # == Keplerian Elements ================================================================
 
+    #! format: off
     orb = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -16,6 +17,7 @@
           90.000 |> deg2rad,
          123.456 |> deg2rad,
     )
+    #! format: on
 
     @test eltype(orb) === KeplerianElements{TrueAnomaly, Float64, Float64}
     @test length(orb) === 1
@@ -39,11 +41,13 @@
 
     # == Orbit State Vector ================================================================
 
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107e3,  1.954e6, 6.110e6],
         [ 6.337e3, -1.470e3, 3.684e3]
     )
+    #! format: on
 
     @test eltype(sv) === OrbitStateVector{Float64, Float64}
     @test length(sv) === 1
@@ -52,5 +56,6 @@
 
     # Broadcasting treats an orbit as a collection with one element.
     @test true_anomaly.(orb) == [true_anomaly(orb)]
-    @test mean_anomaly.(ee |> x -> convert(KeplerianElements{MeanAnomaly}, x)) == [mean_anomaly(orb_M)]
+    @test mean_anomaly.(ee |> x -> convert(KeplerianElements{MeanAnomaly}, x)) ==
+        [mean_anomaly(orb_M)]
 end

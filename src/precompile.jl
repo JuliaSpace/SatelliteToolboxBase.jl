@@ -10,32 +10,38 @@ PrecompileTools.@compile_workload begin
 
     # == Ellipsoids ========================================================================
 
+    #! format: off
     Ellipsoid(6378137.0,   1 / 298.257223563)
     Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
+    #! format: on
 
     # == Orbit =============================================================================
 
     # -- Keplerian Elements ----------------------------------------------------------------
 
+    #! format: off
     ke = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
-           0.0001111,
-          98.405 |> deg2rad,
-         200.000 |> deg2rad,
-          90.000 |> deg2rad,
-         123.456 |> deg2rad,
+        0.0001111,
+        98.405 |> deg2rad,
+        200.000 |> deg2rad,
+        90.000 |> deg2rad,
+        123.456 |> deg2rad,
     )
+    #! format: on
 
+    #! format: off
     ke_f32 = KeplerianElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982f3,
-           0.0001111f0,
-          98.405f0 |> deg2rad,
-         200.000f0 |> deg2rad,
-          90.000f0 |> deg2rad,
-         123.456f0 |> deg2rad,
+        0.0001111f0,
+        98.405f0 |> deg2rad,
+        200.000f0 |> deg2rad,
+        90.000f0 |> deg2rad,
+        123.456f0 |> deg2rad,
     )
+    #! format: on
 
     ke_E     = convert(KeplerianElements{EccentricAnomaly}, ke)
     ke_E_f32 = convert(KeplerianElements{EccentricAnomaly}, ke_f32)
@@ -78,17 +84,19 @@ PrecompileTools.@compile_workload begin
 
     # -- Orbit State Vector ----------------------------------------------------------------
 
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
-        [-3.107e3,  1.954e6, 6.110e6],
-        [ 6.337e3, -1.470e3, 3.684e3]
+        [-3.107e3, 1.954e6, 6.110e6],
+        [6.337e3, -1.470e3, 3.684e3],
     )
 
     sv_f32 = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
-        [-3.107f3,  1.954f6, 6.110f6],
-        [ 6.337f3, -1.470f3, 3.684f3]
+        [-3.107f3, 1.954f6, 6.110f6],
+        [6.337f3, -1.470f3, 3.684f3],
     )
+    #! format: on
 
     for s in (sv, sv_f32)
         show(IOBuffer(), s)

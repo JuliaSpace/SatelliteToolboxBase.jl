@@ -14,7 +14,6 @@ Abstract type for the data alignment in `LowerTriangularStorage`.
 """
 abstract type AbstractDataAlignment end
 
-
 """
     struct RowMajor <: AbstractDataAlignment
 
@@ -162,9 +161,9 @@ struct LowerTriangularStorage{Ta, Tt} <: AbstractMatrix{Tt}
 
     # == Constructors ======================================================================
 
-    function LowerTriangularStorage{Ta, Tt}(n::Int) where {Ta<:AbstractDataAlignment, Tt}
+    function LowerTriangularStorage{Ta, Tt}(n::Int) where {Ta <: AbstractDataAlignment, Tt}
         n < 1 && throw(ArgumentError("Matrix size must be positive"))
-        len  = (n * (n + 1)) ÷ 2
+        len = (n * (n + 1)) ÷ 2
 
         data = @static if VERSION >= v"1.11-"
             Memory{Tt}(undef, len)
@@ -172,14 +171,14 @@ struct LowerTriangularStorage{Ta, Tt} <: AbstractMatrix{Tt}
             Vector{Tt}(undef, len)
         end
 
-        new{Ta, Tt}(data, n)
+        return new{Ta, Tt}(data, n)
     end
 
-    function LowerTriangularStorage{Ta}(n::Int) where Ta <: AbstractDataAlignment
+    function LowerTriangularStorage{Ta}(n::Int) where {Ta <: AbstractDataAlignment}
         return LowerTriangularStorage{Ta, Float64}(n)
     end
 
-    function LowerTriangularStorage{T}(n::Int) where T
+    function LowerTriangularStorage{T}(n::Int) where {T}
         return LowerTriangularStorage{ColumnMajor, T}(n)
     end
 

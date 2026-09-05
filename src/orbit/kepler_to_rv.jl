@@ -57,8 +57,7 @@ This algorithm was adapted from **[1]** and **[2]**(p. 37-38).
     Instituto Nacional de Pesquisas Espaciais.
 """
 function kepler_to_rv(
-    ke::KeplerianElements{Tanomaly, Tepoch, T};
-    μ::Number = GM_EARTH
+    ke::KeplerianElements{Tanomaly, Tepoch, T}; μ::Number = GM_EARTH
 ) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
     # Unpack.
     a = ke.semi_major_axis

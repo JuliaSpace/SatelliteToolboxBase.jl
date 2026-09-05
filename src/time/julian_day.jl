@@ -59,12 +59,7 @@ The algorithm was obtained from \\[1] (accessed on 2022-07-20).
 - **[1]**: https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
 """
 function date_to_jd(
-    Y::Integer,
-    M::Integer,
-    D::Integer,
-    h::Integer = 0,
-    m::Integer = 0,
-    s::Number = 0
+    Y::Integer, M::Integer, D::Integer, h::Integer = 0, m::Integer = 0, s::Number = 0
 )
     # Check the input.
     ((M < 1) || (M > 12)) &&
@@ -85,9 +80,11 @@ function date_to_jd(
     # Check if the date is valid in terms of number of days in a month.
     if M == 2
         if is_leap_year(Y)
-            (D > 29) && throw(ArgumentError("Wrong day number given the year and the month."))
+            (D > 29) &&
+                throw(ArgumentError("Wrong day number given the year and the month."))
         else
-            (D > 28) && throw(ArgumentError("Wrong day number given the year and the month."))
+            (D > 28) &&
+                throw(ArgumentError("Wrong day number given the year and the month."))
         end
     elseif M in (4, 6, 9, 11)
         (D > 30) && throw(ArgumentError("Wrong day number given the year and the month."))
@@ -119,14 +116,7 @@ end
 Convert the date `date` to Julian Day.
 """
 function date_to_jd(date::Date)
-    return date_to_jd(
-        Dates.year(date),
-        Dates.month(date),
-        Dates.day(date),
-        0,
-        0,
-        0
-    )
+    return date_to_jd(Dates.year(date), Dates.month(date), Dates.day(date), 0, 0, 0)
 end
 
 """
@@ -141,7 +131,7 @@ function date_to_jd(datetime::DateTime)
         Dates.day(datetime),
         Dates.hour(datetime),
         Dates.minute(datetime),
-        Dates.second(datetime) + Dates.millisecond(datetime) / 1000
+        Dates.second(datetime) + Dates.millisecond(datetime) / 1000,
     )
 end
 
@@ -204,8 +194,8 @@ function jd_to_date(JD::Number)
 
     # Get the hour, minute, and second from the day.
     hf = (dayf % 1) * 24
-    mf = (hf   % 1) * 60
-    sf = (mf   % 1) * 60
+    mf = (hf % 1) * 60
+    sf = (mf % 1) * 60
 
     # Transform everything in integers.
     year  = floor(Int, yearf)

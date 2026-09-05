@@ -197,8 +197,9 @@ end
     end
 
     # The mean anomaly is reduced to [0, 2π) before solving.
-    @test mean_to_eccentric_anomaly(0.4, deg2rad(235.4) + 4π) ≈ deg2rad(220.512_074_767_522) atol = 1e-14
-    @test mean_to_eccentric_anomaly(0.4, deg2rad(235.4) - 2π) ≈ deg2rad(220.512_074_767_522) atol = 1e-14
+    E_ref = deg2rad(220.512_074_767_522)
+    @test mean_to_eccentric_anomaly(0.4, deg2rad(235.4) + 4π) ≈ E_ref atol = 1e-14
+    @test mean_to_eccentric_anomaly(0.4, deg2rad(235.4) - 2π) ≈ E_ref atol = 1e-14
 
     # Circular orbits: all anomalies are equal.
     @test mean_to_eccentric_anomaly(0, 1.5) == 1.5

@@ -5,6 +5,7 @@
 ############################################################################################
 
 @testset "Construction" begin
+    #! format: off
     ee = EquinoctialElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
@@ -14,25 +15,30 @@
         -1.08874,
          413.445 |> deg2rad
     )
+    #! format: on
 
     @test ee isa EquinoctialElements{Float64, Float64}
-    @test ee.epoch           ≈ date_to_jd(1986, 6, 19, 18, 35, 0)
+    @test ee.epoch ≈ date_to_jd(1986, 6, 19, 18, 35, 0)
     @test ee.semi_major_axis ≈ 7130.982e3
+    #! format: off
     @test ee.h               ≈ -0.0001044
     @test ee.k               ≈ 3.79984e-5
     @test ee.p               ≈ -0.396269
     @test ee.q               ≈ -1.08874
     @test ee.mean_longitude  ≈ 413.445 |> deg2rad
+    #! format: on
 
+    #! format: off
     ee = EquinoctialElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982f3,
         -0.0001044f0,
-         3.79984f-5,
+        3.79984f-5,
         -0.396269f0,
         -1.08874f0,
-         413.445f0 |> deg2rad
+        413.445f0 |> deg2rad,
     )
+    #! format: on
 
     @test ee isa EquinoctialElements{Float64, Float32}
 
@@ -52,25 +58,29 @@
 end
 
 @testset "Show" begin
+    #! format: off
     ee = EquinoctialElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982e3,
         -0.0001044,
-         3.79984e-5,
+        3.79984e-5,
         -0.396269,
         -1.08874,
-         413.445 |> deg2rad
+        413.445 |> deg2rad,
     )
+    #! format: on
 
+    #! format: off
     ee_f32 = EquinoctialElements(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         7130.982f3,
         -0.0001044f0,
-         3.79984f-5,
+        3.79984f-5,
         -0.396269f0,
         -1.08874f0,
-         413.445f0 |> deg2rad
+        413.445f0 |> deg2rad,
     )
+    #! format: on
 
     expected = "EquinoctialElements{Float64, Float64}: Epoch = 2.4466e6 (1986-06-19T18:35:00)"
     str = sprint(print, ee)
@@ -105,7 +115,9 @@ EquinoctialElements{Float64, Float32}:
     @test str == expected
 
     # A value without decimal point must not break the alignment.
-    ee_nan = EquinoctialElements(date_to_jd(1986, 6, 19, 18, 35, 0), 7000e3, NaN, 1, 2, 3, 4)
+    ee_nan = EquinoctialElements(
+        date_to_jd(1986, 6, 19, 18, 35, 0), 7000e3, NaN, 1, 2, 3, 4
+    )
 
     expected = """
 EquinoctialElements{Float64, Float64}:

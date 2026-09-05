@@ -10,7 +10,7 @@
 
 # Return the strings in `strs` left-padded so that their decimal points are aligned. Strings
 # without a decimal point are treated as if the point were right after the last character.
-function _align_on_decimal(strs::Vararg{String, N}) where N
+function _align_on_decimal(strs::Vararg{String, N}) where {N}
     Δs = map(strs) do s
         Δ = findfirst('.', s)
         return isnothing(Δ) ? length(s) + 1 : Δ
@@ -52,25 +52,32 @@ end
 ############################################################################################
 
 function Base.show(
-    io::IO,
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
+    io::IO, ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
     epoch_str = _compact_string(io, ke.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
 
     print(
         io,
-        "KeplerianElements{", Tanomaly, ", ", Tepoch, ", ", T, "}: ",
-        "Epoch = ", epoch_str, " (", date_str, ")"
+        "KeplerianElements{",
+        Tanomaly,
+        ", ",
+        Tepoch,
+        ", ",
+        T,
+        "}: ",
+        "Epoch = ",
+        epoch_str,
+        " (",
+        date_str,
+        ")",
     )
 
     return nothing
 end
 
 function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
+    io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
     # Convert the data to string.
     date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
@@ -95,13 +102,7 @@ function Base.show(
 
     # Padding to align in the floating point.
     epoch_str, a_str, e_str, i_str, Ω_str, ω_str, f_str = _align_on_decimal(
-        epoch_str,
-        a_str,
-        e_str,
-        i_str,
-        Ω_str,
-        ω_str,
-        f_str
+        epoch_str, a_str, e_str, i_str, Ω_str, ω_str, f_str
     )
 
     max_length = max(
@@ -110,7 +111,7 @@ function Base.show(
         length(i_str),
         length(Ω_str),
         length(ω_str),
-        length(f_str)
+        length(f_str),
     )
 
     # Add the units.
@@ -143,17 +144,23 @@ function Base.show(io::IO, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
 
     print(
         io,
-        "EquinoctialElements{", Tepoch, ", ", T, "}: ",
-        "Epoch = ", epoch_str, " (", date_str, ")"
+        "EquinoctialElements{",
+        Tepoch,
+        ", ",
+        T,
+        "}: ",
+        "Epoch = ",
+        epoch_str,
+        " (",
+        date_str,
+        ")",
     )
 
     return nothing
 end
 
 function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    ee::EquinoctialElements{Tepoch, T}
+    io::IO, ::MIME"text/plain", ee::EquinoctialElements{Tepoch, T}
 ) where {Tepoch, T}
     # Convert the data to string.
     date_str  = sprint(print, jd_to_date(DateTime, ee.epoch))
@@ -167,13 +174,7 @@ function Base.show(
 
     # Padding to align in the floating point.
     epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str = _align_on_decimal(
-        epoch_str,
-        a_str,
-        h_str,
-        k_str,
-        p_str,
-        q_str,
-        λ_str
+        epoch_str, a_str, h_str, k_str, p_str, q_str, λ_str
     )
 
     max_length = max(
@@ -182,7 +183,7 @@ function Base.show(
         length(k_str),
         length(p_str),
         length(q_str),
-        length(λ_str)
+        length(λ_str),
     )
 
     # Add the units.
@@ -212,14 +213,24 @@ function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
 
     print(
         io,
-        "OrbitStateVector{", Tepoch, ", ", T, "}: ",
-        "Epoch = ", epoch_str, " (", date_str, ")"
+        "OrbitStateVector{",
+        Tepoch,
+        ", ",
+        T,
+        "}: ",
+        "Epoch = ",
+        epoch_str,
+        " (",
+        date_str,
+        ")",
     )
 
     return nothing
 end
 
-function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
+function Base.show(
+    io::IO, ::MIME"text/plain", sv::OrbitStateVector{Tepoch, T}
+) where {Tepoch, T}
     epoch_str = _compact_string(io, sv.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
     r_str     = _compact_string(io, sv.r ./ 1000)

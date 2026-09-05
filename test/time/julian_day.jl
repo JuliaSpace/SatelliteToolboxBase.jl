@@ -65,28 +65,28 @@ end
 
 @testset "Function date_to_jd [ERRORS]" begin
     # Error in the month.
-    @test_throws ArgumentError date_to_jd(2023,  0,  1)
-    @test_throws ArgumentError date_to_jd(2023, 13,  1)
+    @test_throws ArgumentError date_to_jd(2023, 0, 1)
+    @test_throws ArgumentError date_to_jd(2023, 13, 1)
 
     # Error in the day.
-    @test_throws ArgumentError date_to_jd(2023,  1,  0)
-    @test_throws ArgumentError date_to_jd(2023,  1, 32)
+    @test_throws ArgumentError date_to_jd(2023, 1, 0)
+    @test_throws ArgumentError date_to_jd(2023, 1, 32)
 
-    @test_throws ArgumentError date_to_jd(2023,  1, 32)
-    @test_throws ArgumentError date_to_jd(2023,  2, 30)
-    @test_throws ArgumentError date_to_jd(2023,  3, 32)
-    @test_throws ArgumentError date_to_jd(2023,  4, 31)
-    @test_throws ArgumentError date_to_jd(2023,  5, 32)
-    @test_throws ArgumentError date_to_jd(2023,  6, 31)
-    @test_throws ArgumentError date_to_jd(2023,  7, 32)
-    @test_throws ArgumentError date_to_jd(2023,  8, 32)
-    @test_throws ArgumentError date_to_jd(2023,  9, 31)
+    @test_throws ArgumentError date_to_jd(2023, 1, 32)
+    @test_throws ArgumentError date_to_jd(2023, 2, 30)
+    @test_throws ArgumentError date_to_jd(2023, 3, 32)
+    @test_throws ArgumentError date_to_jd(2023, 4, 31)
+    @test_throws ArgumentError date_to_jd(2023, 5, 32)
+    @test_throws ArgumentError date_to_jd(2023, 6, 31)
+    @test_throws ArgumentError date_to_jd(2023, 7, 32)
+    @test_throws ArgumentError date_to_jd(2023, 8, 32)
+    @test_throws ArgumentError date_to_jd(2023, 9, 31)
     @test_throws ArgumentError date_to_jd(2023, 10, 32)
     @test_throws ArgumentError date_to_jd(2023, 11, 31)
     @test_throws ArgumentError date_to_jd(2023, 12, 32)
 
     # Leap years.
-    @test_throws ArgumentError date_to_jd(2023,  2, 29)
+    @test_throws ArgumentError date_to_jd(2023, 2, 29)
     @test date_to_jd(2020, 2, 29) == 2.4589085e6
 end
 
@@ -118,12 +118,14 @@ end
     # 1 ms after J2000 epoch.
     year, month, day, h, m, s = jd_to_date(2.451545e6 + 1 / 1000 / 86400)
 
+    #! format: off
     @test year   == 2000
     @test month  == 1
     @test day    == 1
     @test h      == 12
     @test m      == 0
     @test s       ≈ 0.001 atol = 1e-5
+    #! format: on
 end
 
 @testset "Function jd_to_date(::Int, ...)" begin
@@ -155,7 +157,7 @@ end
     @test is_leap_year(2400) == true
 
     # Negative years follow the proleptic Gregorian rules (delegated to `Dates`).
-    @test is_leap_year(0)  == true
+    @test is_leap_year(0) == true
     @test is_leap_year(-1) == false
     @test is_leap_year(-4) == true
 end

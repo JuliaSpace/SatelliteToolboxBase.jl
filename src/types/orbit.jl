@@ -11,7 +11,7 @@ export Orbit, KeplerianElements, EquinoctialElements, OrbitStateVector
 
 Abstract type of an orbit representation.
 """
-abstract type Orbit{Tepoch<:Number, T<:Number} end
+abstract type Orbit{Tepoch <: Number, T <: Number} end
 
 ############################################################################################
 #                                    Keplerian Elements                                    #
@@ -44,11 +44,8 @@ For backward compatibility, the following short property names are also availabl
 (argument of periapsis), and `f` (**true** anomaly, converted from the stored anomaly if
 necessary).
 """
-struct KeplerianElements{
-    Tanomaly <: AbstractAnomaly,
-    Tepoch <: Number,
-    T <: Number
-} <: Orbit{Tepoch, T}
+struct KeplerianElements{Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number} <:
+       Orbit{Tepoch, T}
     epoch::Tepoch
     semi_major_axis::T
     eccentricity::T
@@ -86,7 +83,7 @@ function KeplerianElements(
         inclination,
         raan,
         argument_of_periapsis,
-        anomaly
+        anomaly,
     )
 end
 
@@ -97,7 +94,7 @@ function KeplerianElements{Tanomaly}(
     inclination::T3,
     raan::T4,
     argument_of_periapsis::T5,
-    anomaly::T6
+    anomaly::T6,
 ) where {
     Tanomaly <: AbstractAnomaly,
     Tepoch <: Number,
@@ -106,7 +103,7 @@ function KeplerianElements{Tanomaly}(
     T3 <: Number,
     T4 <: Number,
     T5 <: Number,
-    T6 <: Number
+    T6 <: Number,
 }
     T = float(promote_type(T1, T2, T3, T4, T5, T6))
     return KeplerianElements{Tanomaly, Tepoch, T}(
@@ -171,13 +168,7 @@ struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     # This inner constructor avoids the automatic outer constructor, which would bypass the
     # float promotion when all the elements have the same type.
     function EquinoctialElements{Tepoch, T}(
-        epoch,
-        semi_major_axis,
-        h,
-        k,
-        p,
-        q,
-        mean_longitude
+        epoch, semi_major_axis, h, k, p, q, mean_longitude
     ) where {Tepoch <: Number, T <: Number}
         return new{Tepoch, T}(epoch, semi_major_axis, h, k, p, q, mean_longitude)
     end
@@ -193,13 +184,7 @@ The object type `T` is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `
 float.
 """
 function EquinoctialElements(
-    epoch::Tepoch,
-    semi_major_axis::T1,
-    h::T2,
-    k::T3,
-    p::T4,
-    q::T5,
-    mean_longitude::T6
+    epoch::Tepoch, semi_major_axis::T1, h::T2, k::T3, p::T4, q::T5, mean_longitude::T6
 ) where {
     Tepoch <: Number,
     T1 <: Number,
@@ -207,17 +192,11 @@ function EquinoctialElements(
     T3 <: Number,
     T4 <: Number,
     T5 <: Number,
-    T6 <: Number
+    T6 <: Number,
 }
     T = float(promote_type(T1, T2, T3, T4, T5, T6))
     return EquinoctialElements{Tepoch, T}(
-        epoch,
-        semi_major_axis,
-        h,
-        k,
-        p,
-        q,
-        mean_longitude,
+        epoch, semi_major_axis, h, k, p, q, mean_longitude
     )
 end
 
@@ -249,7 +228,9 @@ struct OrbitStateVector{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 
     # This inner constructor avoids the automatic outer constructor, which would bypass the
     # float promotion when all the vectors are `SVector`s with the same element type.
-    function OrbitStateVector{Tepoch, T}(epoch, r, v, a) where {Tepoch <: Number, T <: Number}
+    function OrbitStateVector{Tepoch, T}(
+        epoch, r, v, a
+    ) where {Tepoch <: Number, T <: Number}
         return new{Tepoch, T}(epoch, r, v, a)
     end
 end
@@ -264,19 +245,14 @@ Create an orbit state vector with `epoch` [Julian Day], position `r` [m], veloci
 The object type `T` is obtained by promoting `Tr`, `Tv`, and `Ta` to float.
 """
 function OrbitStateVector(
-    epoch::Tepoch,
-    r::AbstractVector{Tr},
-    v::AbstractVector{Tv},
-    a::AbstractVector{Ta},
+    epoch::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}, a::AbstractVector{Ta}
 ) where {Tepoch <: Number, Tr <: Number, Tv <: Number, Ta <: Number}
     T = float(promote_type(Tr, Tv, Ta))
     return OrbitStateVector{Tepoch, T}(epoch, r, v, a)
 end
 
 function OrbitStateVector(
-    epoch::Tepoch,
-    r::AbstractVector{Tr},
-    v::AbstractVector{Tv},
+    epoch::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}
 ) where {Tepoch <: Number, Tr <: Number, Tv <: Number}
     T = float(promote_type(Tr, Tv))
     a = @SVector zeros(T, 3)

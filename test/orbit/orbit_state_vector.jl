@@ -5,39 +5,47 @@
 ############################################################################################
 
 @testset "Construction" begin
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107e3,  1.954e6, 6.110e6],
         [ 6.337e3, -1.470e3, 3.684e3]
     )
+    #! format: on
 
     @test sv isa OrbitStateVector{Float64, Float64}
     @test sv.a == SVector{3, Float64}(0, 0, 0)
 
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107f3,  1.954f6, 6.110f6],
         [ 6.337e3, -1.470e3, 3.684e3]
     )
+    #! format: on
 
     @test sv isa OrbitStateVector{Float64, Float64}
     @test sv.a == SVector{3, Float64}(0, 0, 0)
 
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107f3,  1.954f6, 6.110f6],
         [ 6.337f3, -1.470f3, 3.684f3]
     )
+    #! format: on
 
     @test sv isa OrbitStateVector{Float64, Float32}
     @test sv.a == SVector{3, Float64}(0, 0, 0)
 
+    #! format: off
     sv = OrbitStateVector(
         Int64(2451545),
         [-3.107f3,  1.954f6, 6.110f6],
         [ 6.337f3, -1.470f3, 3.684f3],
         [1, 2, 3]
     )
+    #! format: on
 
     @test sv isa OrbitStateVector{Int64, Float32}
     @test sv.a == SVector{3, Float32}(1, 2, 3)
@@ -57,11 +65,13 @@
 end
 
 @testset "Property Aliases" begin
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107e3,  1.954e6, 6.110e6],
         [ 6.337e3, -1.470e3, 3.684e3]
     )
+    #! format: on
 
     @test sv.t === sv.epoch
     @test sv.epoch == date_to_jd(1986, 6, 19, 18, 35, 0)
@@ -69,17 +79,21 @@ end
 end
 
 @testset "Show" begin
+    #! format: off
     sv = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
         [-3.107e3,  1.954e6, 6.110e6],
         [ 6.337e3, -1.470e3, 3.684e3]
     )
+    #! format: on
 
+    #! format: off
     sv_f32 = OrbitStateVector(
         date_to_jd(1986, 6, 19, 18, 35, 0),
-        [-3.107f3,  1.954f6, 6.110f6],
-        [ 6.337f3, -1.470f3, 3.684f3]
+        [-3.107f3, 1.954f6, 6.110f6],
+        [6.337f3, -1.470f3, 3.684f3],
     )
+    #! format: on
 
     expected = "OrbitStateVector{Float64, Float64}: Epoch = 2.4466e6 (1986-06-19T18:35:00)"
     str = sprint(print, sv)

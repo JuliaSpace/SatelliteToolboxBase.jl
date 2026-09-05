@@ -57,22 +57,24 @@ function _test_scenario_01_kepler(ke::KeplerianElements)
     a, e, i, RAAN, w, f = ke.a, ke.e, ke.i, ke.Ω, ke.ω, ke.f
     p = a * (1 - e^2)
 
+    #! format: off
     @test p / 1000       ≈ 11067.790 atol = 5e-2
     @test e              ≈ 0.83285   atol = 1e-5
     @test i    * 180 / π ≈ 87.87     atol = 1e-2
     @test RAAN * 180 / π ≈ 227.89    atol = 1e-2
     @test w    * 180 / π ≈ 53.38     atol = 1e-2
     @test f    * 180 / π ≈ 92.335    atol = 1e-3
+    #! format: on
     return nothing
 end
 
 # Keplerian elements of the Scenario 01 with element type `T`.
-function _scenario_01_kepler(::Type{T}, epoch = zero(T)) where T
+function _scenario_01_kepler(::Type{T}, epoch = zero(T)) where {T}
     p    = T(11067.790) * 1000
     e    = T(0.83285)
-    i    = T(87.87)  * T(π / 180)
+    i    = T(87.87) * T(π / 180)
     RAAN = T(227.89) * T(π / 180)
-    w    = T(53.38)  * T(π / 180)
+    w    = T(53.38) * T(π / 180)
     f    = T(92.335) * T(π / 180)
     a    = p / (1 - e^2)
 
@@ -80,7 +82,7 @@ function _scenario_01_kepler(::Type{T}, epoch = zero(T)) where T
 end
 
 # Cartesian state of the Scenario 01 with element type `T`.
-function _scenario_01_rv(::Type{T}) where T
+function _scenario_01_rv(::Type{T}) where {T}
     r_i = T[6525.344; 6861.535; 6449.125] * 1000
     v_i = T[4.902276; 5.533124; -1.975709] * 1000
     return r_i, v_i
@@ -164,13 +166,7 @@ end
     # -- Equatorial and Elliptical ---------------------------------------------------------
 
     ke = KeplerianElements(
-        123,
-        8000e3,
-        0.01,
-        0.0,
-        30 |> deg2rad,
-        20 |> deg2rad,
-        10 |> deg2rad
+        123, 8000e3, 0.01, 0.0, 30 |> deg2rad, 20 |> deg2rad, 10 |> deg2rad
     )
 
     r, v = kepler_to_rv(ke)
@@ -187,13 +183,7 @@ end
     # -- Equatorial and Circular -----------------------------------------------------------
 
     ke = KeplerianElements(
-        123,
-        8000e3,
-        0.0,
-        0.0,
-        30 |> deg2rad,
-        20 |> deg2rad,
-        10 |> deg2rad
+        123, 8000e3, 0.0, 0.0, 30 |> deg2rad, 20 |> deg2rad, 10 |> deg2rad
     )
 
     r, v = kepler_to_rv(ke)
@@ -212,13 +202,7 @@ end
     # -- Inclined and Circular -------------------------------------------------------------
 
     ke = KeplerianElements(
-        123,
-        8000e3,
-        0.0,
-        90 |> deg2rad,
-        30 |> deg2rad,
-        20 |> deg2rad,
-        10 |> deg2rad
+        123, 8000e3, 0.0, 90 |> deg2rad, 30 |> deg2rad, 20 |> deg2rad, 10 |> deg2rad
     )
 
     r, v = kepler_to_rv(ke)
@@ -265,7 +249,7 @@ end
 
     let
         a  = 1837.4f3
-        ke = KeplerianElements(0.0f0, a, 0.0f0, 85f0 |> deg2rad, 0.0f0, 0.0f0, 0.0f0)
+        ke = KeplerianElements(0.0f0, a, 0.0f0, 85.0f0 |> deg2rad, 0.0f0, 0.0f0, 0.0f0)
 
         _, v_i = kepler_to_rv(ke; μ)
 
@@ -315,8 +299,8 @@ end
     # == Float64 ===========================================================================
 
     r_i, v_i = _scenario_01_rv(Float64)
-    sv  = OrbitStateVector(0.0, r_i, v_i)
-    ke  = sv_to_kepler(sv)
+    sv = OrbitStateVector(0.0, r_i, v_i)
+    ke = sv_to_kepler(sv)
     _test_scenario_01_kepler(ke)
     @test ke isa KeplerianElements{TrueAnomaly, Float64, Float64}
 
@@ -399,11 +383,13 @@ end
             @test kec.anomaly ≈ f atol = 1e-14
 
             # The other elements must be copied unchanged.
+            #! format: off
             @test kec.epoch                 === ke.epoch
             @test kec.semi_major_axis       === ke.semi_major_axis
             @test kec.eccentricity          === ke.eccentricity
             @test kec.inclination           === ke.inclination
             @test kec.raan                  === ke.raan
+            #! format: on
             @test kec.argument_of_periapsis === ke.argument_of_periapsis
 
             # Changing the anomaly and the numeric types at once.
@@ -481,6 +467,7 @@ end
     @testset "KeplerianElements => EquinoctialElements" begin
         # == Reference Values ==============================================================
 
+        #! format: off
         ke = KeplerianElements(
             date_to_jd(1986, 6, 19, 18, 35, 0),
             7130.982e3,
@@ -490,6 +477,7 @@ end
               90.000 |> deg2rad,
              123.456 |> deg2rad,
         )
+        #! format: on
 
         e = ke.eccentricity
         i = ke.inclination
@@ -500,6 +488,7 @@ end
         ee = convert(EquinoctialElements, ke)
 
         @test ee isa EquinoctialElements{Float64, Float64}
+        #! format: off
         @test ee.epoch           === ke.epoch
         @test ee.semi_major_axis === ke.semi_major_axis
         @test ee.h               ≈ e * sin(ω + Ω)
@@ -507,14 +496,17 @@ end
         @test ee.p               ≈ tan(i / 2) * sin(Ω)
         @test ee.q               ≈ tan(i / 2) * cos(Ω)
         @test ee.mean_longitude  ≈ Ω + ω + M
+        #! format: on
 
         # The result must not depend on the anomaly type of the input.
         for Tanomaly in (EccentricAnomaly, MeanAnomaly)
             eec = convert(EquinoctialElements, convert(KeplerianElements{Tanomaly}, ke))
+            #! format: off
             @test eec.h              ≈ ee.h
             @test eec.k              ≈ ee.k
             @test eec.p              ≈ ee.p
             @test eec.q              ≈ ee.q
+            #! format: on
             @test eec.mean_longitude ≈ ee.mean_longitude
         end
 
@@ -528,28 +520,43 @@ end
         ee     = convert(EquinoctialElements, ke_f32)
         @test ee isa EquinoctialElements{Float64, Float32}
 
-        ee = convert(EquinoctialElements, KeplerianElements(Int64(1), 7130.982e3, 0.1, 0.5, 0.3, 0.2, 0.1))
+        ee = convert(
+            EquinoctialElements,
+            KeplerianElements(Int64(1), 7130.982e3, 0.1, 0.5, 0.3, 0.2, 0.1),
+        )
         @test ee isa EquinoctialElements{Int64, Float64}
 
         # == Special Cases =================================================================
 
         # Circular orbit: h = k = 0.
-        ee = convert(EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.0, 0.5, 0.3, 0.2, 0.1))
+        ee = convert(
+            EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.0, 0.5, 0.3, 0.2, 0.1)
+        )
         @test ee.h == 0
         @test ee.k == 0
         @test ee.mean_longitude ≈ 0.3 + 0.2 + 0.1
 
         # Equatorial orbit: p = q = 0.
-        ee = convert(EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.1, 0.0, 0.3, 0.2, 0.1))
+        ee = convert(
+            EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.1, 0.0, 0.3, 0.2, 0.1)
+        )
         @test ee.p == 0
         @test ee.q == 0
 
         # Retrograde equatorial orbit is singular.
-        @test_throws ArgumentError convert(EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.1, π, 0.3, 0.2, 0.1))
-        @test_throws ArgumentError convert(EquinoctialElements, KeplerianElements(0.0f0, 8000f3, 0.1f0, Float32(π), 0.3f0, 0.2f0, 0.1f0))
+        @test_throws ArgumentError convert(
+            EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.1, π, 0.3, 0.2, 0.1)
+        )
+        @test_throws ArgumentError convert(
+            EquinoctialElements,
+            KeplerianElements(0.0f0, 8000.0f3, 0.1f0, Float32(π), 0.3f0, 0.2f0, 0.1f0),
+        )
 
         # Retrograde but not equatorial is fine.
-        ee = convert(EquinoctialElements, KeplerianElements(0.0, 8000e3, 0.1, 179 |> deg2rad, 0.3, 0.2, 0.1))
+        ee = convert(
+            EquinoctialElements,
+            KeplerianElements(0.0, 8000e3, 0.1, 179 |> deg2rad, 0.3, 0.2, 0.1),
+        )
         @test isfinite(ee.p)
         @test isfinite(ee.q)
     end
@@ -559,7 +566,10 @@ end
 
         angles = deg2rad.((10, 170, 190, 350))
 
-        for e in (0, 0.1, 0.7), i in deg2rad.((0, 45, 179)), Ω in angles, ω in angles, f in angles
+        for e in (0, 0.1, 0.7),
+            i in deg2rad.((0, 45, 179)), Ω in angles, ω in angles,
+            f in angles
+
             ke = KeplerianElements(Int64(123), 8000e3, e, i, Ω, ω, f)
             ee = convert(EquinoctialElements, ke)
 
@@ -568,31 +578,37 @@ end
             kec = convert(KeplerianElements, ee)
             @test kec isa KeplerianElements{TrueAnomaly, Int64, Float64}
 
-            @test kec.epoch           === ke.epoch
+            @test kec.epoch === ke.epoch
             @test kec.semi_major_axis ≈ ke.semi_major_axis
+            #! format: off
             @test kec.eccentricity    ≈ ke.eccentricity atol = 1e-12
             @test kec.inclination     ≈ ke.inclination  atol = 1e-12
+            #! format: on
 
             # All the angles must be in [0, 2π).
-            @test 0 ≤ kec.raan                  < 2π
+            @test 0 ≤ kec.raan < 2π
             @test 0 ≤ kec.argument_of_periapsis < 2π
-            @test 0 ≤ kec.anomaly               < 2π
+            @test 0 ≤ kec.anomaly < 2π
+
+            Ω_c = kec.raan
+            ω_c = kec.argument_of_periapsis
+            f_c = kec.anomaly
 
             if e == 0 && i == 0
                 # Circular and equatorial: only the true longitude is defined.
-                @test mod(kec.raan + kec.argument_of_periapsis + kec.anomaly, 2π) ≈ mod(Ω + ω + f, 2π) atol = 1e-9
+                @test mod(Ω_c + ω_c + f_c, 2π) ≈ mod(Ω + ω + f, 2π) atol = 1e-9
             elseif e == 0
                 # Circular and inclined: only the argument of latitude is defined.
-                @test kec.raan ≈ Ω
-                @test mod(kec.argument_of_periapsis + kec.anomaly, 2π) ≈ mod(ω + f, 2π) atol = 1e-9
+                @test Ω_c ≈ Ω
+                @test mod(ω_c + f_c, 2π) ≈ mod(ω + f, 2π) atol = 1e-9
             elseif i == 0
                 # Elliptical and equatorial: only the longitude of periapsis is defined.
-                @test mod(kec.raan + kec.argument_of_periapsis, 2π) ≈ mod(Ω + ω, 2π) atol = 1e-9
-                @test kec.anomaly ≈ f atol = 1e-9
+                @test mod(Ω_c + ω_c, 2π) ≈ mod(Ω + ω, 2π) atol = 1e-9
+                @test f_c ≈ f atol = 1e-9
             else
-                @test kec.raan                  ≈ Ω atol = 1e-9
-                @test kec.argument_of_periapsis ≈ ω atol = 1e-9
-                @test kec.anomaly               ≈ f atol = 1e-9
+                @test Ω_c ≈ Ω atol = 1e-9
+                @test ω_c ≈ ω atol = 1e-9
+                @test f_c ≈ f atol = 1e-9
             end
 
             # -- Mean and Eccentric Anomaly ------------------------------------------------
@@ -609,7 +625,10 @@ end
 
         # == Types =========================================================================
 
-        ee = convert(EquinoctialElements, KeplerianElements(Int64(1), 8000e3, 0.1, 0.5, 0.3, 0.2, 0.1))
+        ee = convert(
+            EquinoctialElements,
+            KeplerianElements(Int64(1), 8000e3, 0.1, 0.5, 0.3, 0.2, 0.1),
+        )
 
         kec = convert(KeplerianElements{MeanAnomaly, Float64, Float32}, ee)
         @test kec isa KeplerianElements{MeanAnomaly, Float64, Float32}
@@ -625,9 +644,9 @@ end
         # Angles that would be negative when computed with `atan` must be wrapped.
         ke  = KeplerianElements(0.0, 8000e3, 0.1, 30 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad)
         kec = convert(KeplerianElements, convert(EquinoctialElements, ke))
-        @test kec.raan                  ≈ 300 |> deg2rad
+        @test kec.raan ≈ 300 |> deg2rad
         @test kec.argument_of_periapsis ≈ 300 |> deg2rad
-        @test kec.anomaly               ≈ 300 |> deg2rad
+        @test kec.anomaly ≈ 300 |> deg2rad
     end
 
     @testset "EquinoctialElements => EquinoctialElements" begin
@@ -635,13 +654,15 @@ end
         eec = convert(EquinoctialElements{Float64, Float32}, ee)
 
         @test eec isa EquinoctialElements{Float64, Float32}
-        @test eec.epoch           === 1.0
+        @test eec.epoch === 1.0
         @test eec.semi_major_axis === 2.0f0
+        #! format: off
         @test eec.h               === 3.0f0
         @test eec.k               === 4.0f0
         @test eec.p               === 5.0f0
         @test eec.q               === 6.0f0
         @test eec.mean_longitude  === 7.0f0
+        #! format: on
 
         @test convert(EquinoctialElements, ee) === ee
         @test convert(typeof(ee), ee) === ee
@@ -670,22 +691,26 @@ end
 
         ee = convert(EquinoctialElements, sv)
         @test ee isa EquinoctialElements{Int64, Float64}
-        @test ee.epoch           === Int64(123)
+        @test ee.epoch === Int64(123)
         @test ee.semi_major_axis == ee_ref.semi_major_axis
+        #! format: off
         @test ee.h               == ee_ref.h
         @test ee.k               == ee_ref.k
         @test ee.p               == ee_ref.p
         @test ee.q               == ee_ref.q
         @test ee.mean_longitude  == ee_ref.mean_longitude
+        #! format: on
 
         # The Vallado example values are rounded, so we use a loose tolerance here.
         ee_vallado = convert(EquinoctialElements, _scenario_01_kepler(Float64, Int64(123)))
         @test ee.semi_major_axis ≈ ee_vallado.semi_major_axis rtol = 1e-4
+        #! format: off
         @test ee.h               ≈ ee_vallado.h               atol = 1e-4
         @test ee.k               ≈ ee_vallado.k               atol = 1e-4
         @test ee.p               ≈ ee_vallado.p               atol = 1e-4
         @test ee.q               ≈ ee_vallado.q               atol = 1e-4
         @test ee.mean_longitude  ≈ ee_vallado.mean_longitude  atol = 1e-4
+        #! format: on
 
         ee = convert(EquinoctialElements{Float64, Float32}, sv)
         @test ee isa EquinoctialElements{Float64, Float32}
