@@ -70,7 +70,7 @@ function date_to_jd(
         throw(ArgumentError("Invalid month. It must be an integer between 1 and 12."))
 
     ((D < 1) || (D > Dates.daysinmonth(Y, M))) && throw(
-        ArgumentError("Invalid day. It must be an integer between 1 and the month length.")
+        ArgumentError("Invalid day. It must be an integer between 1 and the month length."),
     )
 
     ((h < 0) || (h > 23)) &&

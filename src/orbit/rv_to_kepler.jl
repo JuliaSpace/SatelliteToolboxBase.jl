@@ -105,8 +105,8 @@ function rv_to_kepler(
 
     abs(ecc) <= 1 - 1e-6 || throw(
         ArgumentError(
-            "The computed eccentricity is not lower than 1, so the orbit is not elliptical."
-        )
+            "The computed eccentricity is not lower than 1, so the orbit is not elliptical.",
+        ),
     )
 
     # == Semi-major Axis ===================================================================

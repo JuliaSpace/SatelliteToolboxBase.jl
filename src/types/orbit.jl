@@ -186,8 +186,10 @@ the fields `epoch`, `semi_major_axis`, `h`, `k`, `p`, `q`, and `mean_longitude`.
 concrete sets differ only in how `p` and `q` encode the inclination. See
 [`EquinoctialElements`](@ref) and [`AlternateEquinoctialElements`](@ref).
 """
+#! format: off
 abstract type AbstractEquinoctialElements{Tepoch <: Number, T <: Number} <:
               Orbit{Tepoch, T} end
+#! format: on
 
 """
     struct EquinoctialElements{Tepoch <: Number, T <: Number} <: AbstractEquinoctialElements{Tepoch, T}

@@ -774,8 +774,9 @@ end
 
     # Converting to a narrower element type must compute in the wider type and narrow only
     # the result.
-    @test convert(EquinoctialElements{Float64, Float32}, ke_f64) ==
-        convert(EquinoctialElements{Float64, Float32}, convert(EquinoctialElements, ke_f64))
+    @test convert(EquinoctialElements{Float64, Float32}, ke_f64) == convert(
+        EquinoctialElements{Float64, Float32}, convert(EquinoctialElements, ke_f64)
+    )
     @test convert(KeplerianElements{MeanAnomaly, Float64, Float32}, sv_f64) ==
         convert(KeplerianElements{MeanAnomaly, Float64, Float32}, sv_to_kepler(sv_f64))
 end
