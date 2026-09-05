@@ -71,22 +71,20 @@ end
 # == Orbit State Vector ====================================================================
 
 function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector)
-    epoch_str = _compact_string(io, sv.epoch)
-    date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
-    r_str     = _compact_string(io, sv.r ./ 1000)
-    v_str     = _compact_string(io, sv.v ./ 1000)
+    labels = ("Position", "Velocity", "Acceleration")
 
-    # Add units.
-    max_length = max(length(r_str), length(v_str)) + 1
+    values = (
+        _compact_string(io, sv.r ./ 1000),
+        _compact_string(io, sv.v ./ 1000),
+        _compact_string(io, sv.a ./ 1000),
+    )
 
-    r_str = _append_unit(r_str, max_length, "km")
-    v_str = _append_unit(v_str, max_length, "km/s")
+    units = ("km", "km/s", "km/s²")
 
-    println(io, _orbit_type_name(sv), ":")
-    _println_field(io, "  epoch :", " ", epoch_str, " (", date_str, ")")
-    _println_field(io, "      r :", " ", r_str)
-    _print_field(io, "      v :", " ", v_str)
-
+    # The values are vectors, so aligning them at the first decimal point makes no sense.
+    _print_elements(
+        io, _orbit_type_name(sv), sv.epoch, labels, values, units; align_decimal = false
+    )
     return nothing
 end
 
@@ -166,14 +164,19 @@ function _print_compact(io::IO, name::String, epoch::Number)
 end
 
 """
-    _print_elements(io::IO, header::String, epoch::Number, labels::NTuple{N, String}, values::NTuple{N, String}, units::NTuple{N, String}) -> Nothing
+    _print_elements(io::IO, header::String, epoch::Number, labels::NTuple{N, String}, values::NTuple{N, String}, units::NTuple{N, String}; kwargs...) -> Nothing
 
 Print to `io` the rich representation of an orbit: the `header` followed by a colon, a line
 with the `epoch` [Julian Day] and its date, and one line per element with its label, value,
-and unit, taken from `labels`, `values`, and `units`. The values, the epoch included, are
-aligned at the decimal point, and the non-empty units are aligned after the longest value.
-The labels are right-aligned, and printed in bold if `io` supports color. The last line has
-no trailing newline.
+and unit, taken from `labels`, `values`, and `units`. The non-empty units are aligned after
+the longest value. The labels are right-aligned, and printed in bold if `io` supports color.
+The last line has no trailing newline.
+
+# Keywords
+
+- `align_decimal::Bool`: If `true`, the values, the epoch included, are aligned at the
+    decimal point.
+    (**Default**: `true`)
 """
 function _print_elements(
     io::IO,
@@ -181,15 +184,18 @@ function _print_elements(
     epoch::Number,
     labels::NTuple{N, String},
     values::NTuple{N, String},
-    units::NTuple{N, String},
+    units::NTuple{N, String};
+    align_decimal::Bool = true,
 ) where {N}
     epoch_str = _compact_string(io, epoch)
     date_str  = sprint(print, jd_to_date(DateTime, epoch))
 
-    # Align all the values at the decimal point.
-    aligned   = _align_on_decimal(epoch_str, values...)
-    epoch_str = first(aligned)
-    values    = Base.tail(aligned)
+    # Align all the values at the decimal point, if requested.
+    if align_decimal
+        aligned   = _align_on_decimal(epoch_str, values...)
+        epoch_str = first(aligned)
+        values    = Base.tail(aligned)
+    end
 
     # Pad the values with a unit so that the units are aligned.
     max_length = maximum(length, values)

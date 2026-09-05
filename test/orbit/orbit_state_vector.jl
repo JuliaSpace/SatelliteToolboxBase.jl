@@ -105,18 +105,32 @@ end
 
     expected = """
 OrbitStateVector{Float64, Float64}:
-  epoch : 2.4466e6 (1986-06-19T18:35:00)
-      r : [-3.107, 1954.0, 6110.0]  km
-      v : [6.337, -1.47, 3.684]     km/s"""
+        Epoch : 2.4466e6 (1986-06-19T18:35:00)
+     Position : [-3.107, 1954.0, 6110.0] km
+     Velocity : [6.337, -1.47, 3.684]    km/s
+ Acceleration : [0.0, 0.0, 0.0]          km/s²"""
     str = sprint(show, MIME("text/plain"), sv)
     @test str == expected
 
     expected = """
 OrbitStateVector{Float64, Float32}:
-  epoch : 2.4466e6 (1986-06-19T18:35:00)
-      r : Float32[-3.107, 1954.0, 6110.0]  km
-      v : Float32[6.337, -1.47, 3.684]     km/s"""
+        Epoch : 2.4466e6 (1986-06-19T18:35:00)
+     Position : Float32[-3.107, 1954.0, 6110.0] km
+     Velocity : Float32[6.337, -1.47, 3.684]    km/s
+ Acceleration : Float32[0.0, 0.0, 0.0]          km/s²"""
     str = sprint(show, MIME("text/plain"), sv_f32)
+    @test str == expected
+
+    # The acceleration is printed with the same layout as the other vectors.
+    sv_a = OrbitStateVector(sv.epoch, sv.r, sv.v, [1.0, 2.0, 3.0])
+
+    expected = """
+OrbitStateVector{Float64, Float64}:
+        Epoch : 2.4466e6 (1986-06-19T18:35:00)
+     Position : [-3.107, 1954.0, 6110.0] km
+     Velocity : [6.337, -1.47, 3.684]    km/s
+ Acceleration : [0.001, 0.002, 0.003]    km/s²"""
+    str = sprint(show, MIME("text/plain"), sv_a)
     @test str == expected
 
     # == Color =============================================================================
