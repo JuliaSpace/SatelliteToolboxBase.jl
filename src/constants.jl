@@ -83,42 +83,84 @@ const WGS84_ELLIPSOID_F32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
 """
     const EGM_1996_J2
 
-J₂ perturbation term obtained from EGM-1996 model (`J₂ = -C₂,₀ * √5`) [1].
+J₂ perturbation term obtained from the EGM-1996 model (`J₂ = -C₂,₀ * √5`) **[1]**.
+
+# References
+
+- **[1]** Lemoine, F. G., Kenyon, S. C., Factor, J. K., Trimmer, R. G., Pavlis, N. K.,
+    Chinn, D. S., Cox, C. M., Klosko, S. M., Luthcke, S. B., Torrence, M. H., Wang, Y. M.,
+    Williamson, R. G., Pavlis, E. C., Rapp, R. H., Olson, T. R (1998). The Development of
+    the Joint NASA GSFC and the National Imagery and Mapping Agency (NIMA) Geopotential
+    Model EGM96. NASA/TP-1998-206861.
 """
 const EGM_1996_J2 = 1.0826266835531513e-3
 
 """
     const EGM_1996_J3
 
-J₃ perturbation term obtained from EGM-08 model (`J₃ = -C₃ * √7`) [1].
+J₃ perturbation term obtained from the EGM-1996 model (`J₃ = -C₃,₀ * √7`) **[1]**.
+
+# References
+
+- **[1]** Lemoine, F. G., Kenyon, S. C., Factor, J. K., Trimmer, R. G., Pavlis, N. K.,
+    Chinn, D. S., Cox, C. M., Klosko, S. M., Luthcke, S. B., Torrence, M. H., Wang, Y. M.,
+    Williamson, R. G., Pavlis, E. C., Rapp, R. H., Olson, T. R (1998). The Development of
+    the Joint NASA GSFC and the National Imagery and Mapping Agency (NIMA) Geopotential
+    Model EGM96. NASA/TP-1998-206861.
 """
 const EGM_1996_J3 = -2.5326564853322355e-6
 
 """
     const EGM_1996_J4
 
-J₄ perturbation term obtained from EGM-08 model (`J₄ = -C₄ * √9`) [1].
+J₄ perturbation term obtained from the EGM-1996 model (`J₄ = -C₄,₀ * √9`) **[1]**.
+
+# References
+
+- **[1]** Lemoine, F. G., Kenyon, S. C., Factor, J. K., Trimmer, R. G., Pavlis, N. K.,
+    Chinn, D. S., Cox, C. M., Klosko, S. M., Luthcke, S. B., Torrence, M. H., Wang, Y. M.,
+    Williamson, R. G., Pavlis, E. C., Rapp, R. H., Olson, T. R (1998). The Development of
+    the Joint NASA GSFC and the National Imagery and Mapping Agency (NIMA) Geopotential
+    Model EGM96. NASA/TP-1998-206861.
 """
 const EGM_1996_J4 = -1.619621591367e-6
 
 """
     const EGM_2008_J2
 
-J₂ perturbation term obtained from EGM-2008 model (`J₂ = -C₂,₀ * √5`) [1].
+J₂ perturbation term obtained from the EGM-2008 model (`J₂ = -C₂,₀ * √5`) **[1]**.
+
+# References
+
+- **[1]** Pavlis, N. K., Holmes, S. A., Kenyon, S. C., Factor, J. K (2012). The development
+    and evaluation of the Earth Gravitational Model 2008 (EGM2008). Journal of Geophysical
+    Research, v. 117, B04406.
 """
 const EGM_2008_J2 = +1.0826261738522227e-3
 
 """
     const EGM_2008_J3
 
-J₃ perturbation term obtained from EGM-08 model (`J₃ = -C₃ * √7`) [1].
+J₃ perturbation term obtained from the EGM-2008 model (`J₃ = -C₃,₀ * √7`) **[1]**.
+
+# References
+
+- **[1]** Pavlis, N. K., Holmes, S. A., Kenyon, S. C., Factor, J. K (2012). The development
+    and evaluation of the Earth Gravitational Model 2008 (EGM2008). Journal of Geophysical
+    Research, v. 117, B04406.
 """
 const EGM_2008_J3 = -2.5324105185677225e-6
 
 """
     const EGM_2008_J4
 
-J₄ perturbation term obtained from EGM-08 model (`J₄ = -C₄ * √9`) [1].
+J₄ perturbation term obtained from the EGM-2008 model (`J₄ = -C₄,₀ * √9`) **[1]**.
+
+# References
+
+- **[1]** Pavlis, N. K., Holmes, S. A., Kenyon, S. C., Factor, J. K (2012). The development
+    and evaluation of the Earth Gravitational Model 2008 (EGM2008). Journal of Geophysical
+    Research, v. 117, B04406.
 """
 const EGM_2008_J4 = -1.6198975999169731e-6
 
