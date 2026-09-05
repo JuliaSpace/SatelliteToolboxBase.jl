@@ -165,7 +165,7 @@ OrbitStateVector(epoch::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a
 ```
 
 where it creates an orbit state vector with `epoch` [Julian Day], position `r` [m], velocity
-`v` [m / s], and acceleration `a` [m / s²]. If the latter is omitted, it will be filled with
+`v` [m/s], and acceleration `a` [m/s²]. If the latter is omitted, it will be filled with
 `[0, 0, 0]`. For backward compatibility, the property `t` is an alias for `epoch`.
 
 ``` julia-repl

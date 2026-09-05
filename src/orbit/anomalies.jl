@@ -20,10 +20,9 @@ export true_to_eccentric_anomaly, true_to_mean_anomaly
 """
     mean_to_eccentric_anomaly(e::T1, M::T2; kwargs...) where {T1, T2} -> T
 
-Compute the eccentric anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the mean
-anomaly `M` [rad].
-
-This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
+Compute the eccentric anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e`
+[-] and the mean anomaly `M` [rad]. The Kepler's equation is solved using the Newton-Raphson
+algorithm.
 
 !!! note
 
@@ -35,19 +34,19 @@ This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
     algorithm, applied to the residual of the Kepler's equation `|E - e sin(E) - M|`. If
     `tol` is `nothing`, it will be `eps(T) * max(1, M)`, which is the smallest residual that
     can be resolved in `T` given the magnitude of `M`.
-    (**Default** = `nothing`)
+    (**Default**: `nothing`)
 - `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
     algorithm. If it is lower than 1, then it is set to 10.
-    (**Default** = 10)
+    (**Default**: 10)
 """
 function mean_to_eccentric_anomaly(
     e::T1, M::T2; max_iterations::Integer = 10, tol::Union{Nothing, Number} = nothing
 ) where {T1, T2}
     T = float(promote_type(T1, T2))
 
-    # == Compute the Eccentric Anomaly Using the Newton-Raphson method =====================
+    # == Compute the Eccentric Anomaly Using the Newton-Raphson Method =====================
 
-    # Make sure that M is in the interval [0, 2π).
+    # Make sure that `M` is in the interval [0, 2π).
     M = _wrap_to_2π(T(M))
     e = T(e)
 
@@ -85,10 +84,9 @@ end
 """
     mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2} -> T
 
-Compute the true anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the mean anomaly
-`M` [rad].
-
-This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
+Compute the true anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
+and the mean anomaly `M` [rad]. The Kepler's equation is solved using the Newton-Raphson
+algorithm.
 
 !!! note
 
@@ -100,16 +98,16 @@ This function uses the Newton-Raphson algorithm to solve the Kepler's equation.
     algorithm, applied to the residual of the Kepler's equation `|E - e sin(E) - M|`. If
     `tol` is `nothing`, it will be `eps(T) * max(1, M)`, which is the smallest residual that
     can be resolved in `T` given the magnitude of `M`.
-    (**Default** = `nothing`)
+    (**Default**: `nothing`)
 - `max_iterations::Integer`: Maximum number of iterations allowed for the Newton-Raphson
     algorithm. If it is lower than 1, then it is set to 10.
-    (**Default** = 10)
+    (**Default**: 10)
 """
 function mean_to_true_anomaly(e::T1, M::T2; kwargs...) where {T1, T2}
     # Compute the eccentric anomaly.
     E = mean_to_eccentric_anomaly(e, M; kwargs...)
 
-    # Compute the true anomaly in the interval [0, 2π].
+    # Compute the true anomaly in the interval [0, 2π).
     return eccentric_to_true_anomaly(e, E)
 end
 
@@ -120,8 +118,8 @@ end
 """
     eccentric_to_true_anomaly(e::T1, E::T2) where {T1, T2} -> T
 
-Compute the true anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the eccentric
-anomaly `E` [rad].
+Compute the true anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
+and the eccentric anomaly `E` [rad].
 
 !!! note
 
@@ -131,15 +129,15 @@ function eccentric_to_true_anomaly(e::T1, E::T2) where {T1, T2}
     T = float(promote_type(T1, T2))
     sin_Eo2, cos_Eo2 = sincos(T(E) / 2)
 
-    # Compute the true anomaly in the interval [0, 2*π].
+    # Compute the true anomaly in the interval [0, 2π).
     return _wrap_to_2π(2atan(√(1 + T(e)) * sin_Eo2, √(1 - T(e)) * cos_Eo2))
 end
 
 """
     eccentric_to_mean_anomaly(e::T1, E::T2) where {T1, T2} -> T
 
-Compute the mean anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the eccentric
-anomaly `E` [rad].
+Compute the mean anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
+and the eccentric anomaly `E` [rad].
 
 !!! note
 
@@ -157,8 +155,8 @@ end
 """
     true_to_eccentric_anomaly(e::T1, f::T2) where {T1, T2} -> T
 
-Compute the eccentric anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the true
-anomaly `f` [rad].
+Compute the eccentric anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e`
+[-] and the true anomaly `f` [rad].
 
 !!! note
 
@@ -174,8 +172,8 @@ end
 """
     true_to_mean_anomaly(e::T1, f::T2) where {T1, T2} -> T
 
-Compute the mean anomaly [0, 2π) [rad] given the orbit eccentricity `e` and the true anomaly
-`f` [rad].
+Compute the mean anomaly [rad] in the interval [0, 2π) given the orbit eccentricity `e` [-]
+and the true anomaly `f` [rad].
 
 !!! note
 
@@ -190,13 +188,17 @@ function true_to_mean_anomaly(e::T1, f::T2) where {T1, T2}
 end
 
 ############################################################################################
-#                                     Private Functions                                    #
+#                                    Private Functions                                     #
 ############################################################################################
 
-# Wrap the angle `x` [rad] to the interval [0, 2π).
-#
-# `mod(x, 2π)` alone is not enough because it returns `2π` when `x` is a tiny negative
-# number, since `2π + x` rounds to `2π` in floating point.
+"""
+    _wrap_to_2π(x::T) where {T <: AbstractFloat} -> T
+
+Wrap the angle `x` [rad] to the interval [0, 2π).
+
+`mod(x, 2π)` alone is not enough because it returns `2π` when `x` is a tiny negative number,
+since `2π + x` rounds to `2π` in floating point.
+"""
 @inline function _wrap_to_2π(x::T) where {T <: AbstractFloat}
     y = mod(x, T(2π))
     return y == T(2π) ? zero(T) : y

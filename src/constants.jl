@@ -26,14 +26,14 @@ const ASTRONOMICAL_UNIT = 1.495978707e11
 """
     const GM_EARTH
 
-Earth's standard gravitational parameter (EGM-2008) [m³ / s²].
+Earth's standard gravitational parameter (EGM-2008) [m³/s²].
 """
 const GM_EARTH = 3.986004415e14
 
 """
     const EARTH_ANGULAR_SPEED
 
-Earth's angular speed [rad / s] without LOD correction.
+Earth's angular speed [rad/s] without LOD correction.
 """
 const EARTH_ANGULAR_SPEED = 7.292_115_146_706_979e-5
 
@@ -47,7 +47,7 @@ const EARTH_EQUATORIAL_RADIUS = 6378137.0
 """
     const EARTH_ORBIT_MEAN_MOTION
 
-Earth's orbit mean motion [rad / s].
+Earth's orbit mean motion [rad/s].
 """
 const EARTH_ORBIT_MEAN_MOTION = deg2rad(360.0 / 365.2421897) / 86400
 

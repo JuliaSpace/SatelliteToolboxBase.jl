@@ -14,14 +14,14 @@ Abstract type for Jacobian methods.
 abstract type AbstractJacobianMethod end
 
 """
-    struct FiniteDiffJacobian
+    struct FiniteDiffJacobian <: AbstractJacobianMethod
 
 Select the finite-difference Jacobian.
 """
 struct FiniteDiffJacobian <: AbstractJacobianMethod end
 
 """
-    struct ForwardDiffJacobian
+    struct ForwardDiffJacobian <: AbstractJacobianMethod
 
 Select the ForwardDiff automatic-differentiation Jacobian.
 """

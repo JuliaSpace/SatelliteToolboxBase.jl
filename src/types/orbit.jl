@@ -7,9 +7,9 @@
 export Orbit, KeplerianElements, EquinoctialElements, OrbitStateVector
 
 """
-    abstract type Orbit{Tepoch<:Number, T<:Number}
+    abstract type Orbit{Tepoch <: Number, T <: Number}
 
-Abstract type of an orbit representation.
+Abstract type of an orbit representation with epoch type `Tepoch` and element type `T`.
 """
 abstract type Orbit{Tepoch <: Number, T <: Number} end
 
@@ -20,18 +20,21 @@ abstract type Orbit{Tepoch <: Number, T <: Number} end
 """
     struct KeplerianElements{Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 
-Defines the orbit in terms of the Keplerian elements.
+Orbit representation in terms of the Keplerian elements.
 
 The parameter `Tanomaly` selects which anomaly is stored in the field `anomaly`. It must be
 one of `TrueAnomaly`, `EccentricAnomaly`, or `MeanAnomaly`. Use the functions
 [`true_anomaly`](@ref), [`eccentric_anomaly`](@ref), and [`mean_anomaly`](@ref) to obtain
 the anomaly in a specific form regardless of `Tanomaly`.
 
+The time scale of `epoch` is the one adopted by the caller (typically UTC), since this
+package does not convert between time scales.
+
 # Fields
 
-- `epoch::Tepoch`: Epoch.
+- `epoch::Tepoch`: Epoch [Julian Day].
 - `semi_major_axis::T`: Semi-major axis [m].
-- `eccentricity::T`: Eccentricity [ ].
+- `eccentricity::T`: Eccentricity [-].
 - `inclination::T`: Inclination [rad].
 - `raan::T`: Right ascension of the ascending node [rad].
 - `argument_of_periapsis::T`: Argument of periapsis [rad].
@@ -62,13 +65,29 @@ struct KeplerianElements{Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Num
 end
 
 """
-    KeplerianElements(epoch::Tepoch, semi_major_axis::T1, eccentricity::T2, inclination::T3, raan::T4, argument_of_periapsis::T5, anomaly::T6) -> KeplerianElements{TrueAnomaly, Tepoch, T}
-    KeplerianElements{Tanomaly}(epoch::Tepoch, semi_major_axis::T1, eccentricity::T2, inclination::T3, raan::T4, argument_of_periapsis::T5, anomaly::T6) -> KeplerianElements{Tanomaly, Tepoch, T}
+    KeplerianElements(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        eccentricity::T2,
+        inclination::T3,
+        raan::T4,
+        argument_of_periapsis::T5,
+        anomaly::T6,
+    ) -> KeplerianElements{TrueAnomaly, Tepoch, T}
+    KeplerianElements{Tanomaly}(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        eccentricity::T2,
+        inclination::T3,
+        raan::T4,
+        argument_of_periapsis::T5,
+        anomaly::T6,
+    ) -> KeplerianElements{Tanomaly, Tepoch, T}
 
-Create a Keplerian elements object with `epoch` [UTC], `semi_major_axis` [m], `eccentricity`
-[ ], `inclination` [rad], `raan` [rad], `argument_of_periapsis` [rad], and `anomaly` [rad].
-The type of the anomaly is determined by the parameter `Tanomaly`. If it is omitted, the
-default is `TrueAnomaly`.
+Create a Keplerian elements object with `epoch` [Julian Day], `semi_major_axis` [m],
+`eccentricity` [-], `inclination` [rad], `raan` [rad], `argument_of_periapsis` [rad], and
+`anomaly` [rad]. The type of the anomaly is determined by the parameter `Tanomaly`. If it is
+omitted, the default is `TrueAnomaly`.
 
 The object type `T` is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6` to
 float.
@@ -130,8 +149,8 @@ end
 """
     struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 
-Defines the orbit in terms of the equinoctial elements **[1]**. Given the Keplerian elements
-`a`, `e`, `i`, `Ω`, `ω`, and the mean anomaly `M`, the equinoctial elements are:
+Orbit representation in terms of the equinoctial elements **[1]**. Given the Keplerian
+elements `a`, `e`, `i`, `Ω`, `ω`, and the mean anomaly `M`, the equinoctial elements are:
 
     h = e * sin(ω + Ω)
     k = e * cos(ω + Ω)
@@ -141,20 +160,23 @@ Defines the orbit in terms of the equinoctial elements **[1]**. Given the Kepler
 
 This set is non-singular for circular (`e = 0`) and equatorial (`i = 0`) orbits.
 
+The time scale of `epoch` is the one adopted by the caller (typically UTC), since this
+package does not convert between time scales.
+
 !!! warning
 
-    The equinoctial elements are singular for retrograde equatorial orbits (`i = π`), because
-    `tan(i / 2)` diverges. Converting Keplerian elements whose inclination is so close to `π`
-    that `tan(i / 2)` exceeds `1 / eps(T)` throws an `ArgumentError`.
+    The equinoctial elements are singular for retrograde equatorial orbits (`i = π`),
+    because `tan(i / 2)` diverges. Converting Keplerian elements whose inclination is so
+    close to `π` that `tan(i / 2)` exceeds `1 / eps(T)` throws an `ArgumentError`.
 
 # Fields
 
-- `epoch::Tepoch`: Epoch.
+- `epoch::Tepoch`: Epoch [Julian Day].
 - `semi_major_axis::T`: Semi-major axis [m].
-- `h::T`: h = e * sin(ω + Ω) [ ].
-- `k::T`: k = e * cos(ω + Ω) [ ].
-- `p::T`: p = tan(i / 2) * sin(Ω) [ ].
-- `q::T`: q = tan(i / 2) * cos(Ω) [ ].
+- `h::T`: h = e * sin(ω + Ω) [-].
+- `k::T`: k = e * cos(ω + Ω) [-].
+- `p::T`: p = tan(i / 2) * sin(Ω) [-].
+- `q::T`: q = tan(i / 2) * cos(Ω) [-].
 - `mean_longitude::T`: Mean longitude λ = Ω + ω + M [rad].
 
 # References
@@ -189,10 +211,18 @@ struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 end
 
 """
-    EquinoctialElements(epoch::Tepoch, semi_major_axis::T1, h::T2, k::T3, p::T4, q::T5, mean_longitude::T6) -> EquinoctialElements{Tepoch, T}
+    EquinoctialElements(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        h::T2,
+        k::T3,
+        p::T4,
+        q::T5,
+        mean_longitude::T6,
+    ) -> EquinoctialElements{Tepoch, T}
 
-Create an equinoctial elements object with `epoch` [UTC], `semi_major_axis` [m], `h`, `k`,
-`p`, `q` [ ], and `mean_longitude` [rad].
+Create an equinoctial elements object with `epoch` [Julian Day], `semi_major_axis` [m], `h`,
+`k`, `p`, `q` [-], and `mean_longitude` [rad].
 
 The object type `T` is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6` to
 float.
@@ -221,7 +251,10 @@ end
 """
     struct OrbitStateVector{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 
-Store the state vector representation of an orbit.
+Orbit representation in terms of the state vector (position, velocity, and acceleration).
+
+The time scale of `epoch` is the one adopted by the caller (typically UTC), since this
+package does not convert between time scales.
 
 # Fields
 
@@ -255,10 +288,20 @@ struct OrbitStateVector{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
 end
 
 """
-    OrbitStateVector(epoch::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}]) -> OrbitStateVector{Tepoch, T}
+    OrbitStateVector(
+        epoch::Tepoch,
+        r::AbstractVector{Tr},
+        v::AbstractVector{Tv},
+        a::AbstractVector{Ta},
+    ) -> OrbitStateVector{Tepoch, T}
+    OrbitStateVector(
+        epoch::Tepoch,
+        r::AbstractVector{Tr},
+        v::AbstractVector{Tv},
+    ) -> OrbitStateVector{Tepoch, T}
 
 Create an orbit state vector with `epoch` [Julian Day], position `r` [m], velocity `v`
-[m / s], and acceleration `a` [m / s²]. If the latter is omitted, it will be filled with
+[m/s], and acceleration `a` [m/s²]. If the latter is omitted, it will be filled with
 `[0, 0, 0]`.
 
 The object type `T` is obtained by promoting `Tr`, `Tv`, and `Ta` to float.

@@ -15,20 +15,12 @@
 export rv_to_kepler
 
 """
-    rv_to_kepler(
-        r_i::AbstractVector{T1},
-        v_i::AbstractVector{T2},
-        t::T3 = 0;
-        μ::Number = GM_EARTH
-    ) where {
-        T1<:Number,
-        T2<:Number,
-        T3<:Number
-    } -> KeplerianElements{TrueAnomaly, Tepoch, T}
+    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; kwargs...) -> KeplerianElements{TrueAnomaly, Tepoch, T}
 
 Convert a Cartesian representation (position vector `r_i` [m] and velocity vector `v_i`
-[m / s]) to Keplerian elements. Optionally, the user can specify the epoch of the returned
-elements using the parameter `t`. It it is omitted, then it defaults to 0.
+[m/s]) to Keplerian elements. Optionally, the user can specify the epoch of the returned
+elements [Julian Day] using the parameter `t`. If it is omitted, then it defaults to 0. The
+vectors must have three elements, and the orbit must be elliptical.
 
 !!! note
 
@@ -37,12 +29,12 @@ elements using the parameter `t`. It it is omitted, then it defaults to 0.
 
 # Keywords
 
-- `μ::Number`: Standard gravitational parameter of the central body [m³ / s²].
-    (**Default** = `GM_EARTH`)
+- `μ::Number`: Standard gravitational parameter of the central body [m³/s²].
+    (**Default**: `GM_EARTH`)
 
 # Returns
 
-- `KeplerianElements{Tepoch, T}`: The Keplerian elements [SI units].
+- `KeplerianElements{TrueAnomaly, Tepoch, T}`: The Keplerian elements [SI units].
 
 # Remarks
 
@@ -61,6 +53,14 @@ The special cases are treated as follows:
 
 - **[1]**: Schwarz, R (2014). Memorandum No. 2: Cartesian State Vectors to Keplerian Orbit
     Elements. Available at www.rene-schwarz.com.
+
+# Extended help
+
+## Throws
+
+- `DimensionMismatch`: If `r_i` or `v_i` does not have three elements.
+- `ArgumentError`: If the computed eccentricity is not lower than 1, i.e., the orbit is not
+    elliptical.
 """
 function rv_to_kepler(
     r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; μ::Number = GM_EARTH

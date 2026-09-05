@@ -56,19 +56,19 @@ of the elements is defined by `Tt`.
 
 # Constructors
 
-    LowerTriangularStorage{[Ta,][ Tt]}(n::Int) where {Ta<:AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
+    LowerTriangularStorage{[Ta,][ Tt]}(n::Int) where {Ta <: AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
 
 Create a lower triangular storage of size `n x n`, with data alignment `Ta` and element type
 `Tt`. If `Ta` is not provided, it defaults to `ColumnMajor`. If `Tt` is not provided, it
 defaults to `Float64`.
 
-    zeros(::Type{LowerTriangularStorage{[Ta], [Tt]}}, n::Int) where {Ta<:AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
+    zeros(::Type{LowerTriangularStorage{[Ta], [Tt]}}, n::Int) where {Ta <: AbstractDataAlignment, Tt} -> LowerTriangularStorage{Ta, Tt}
 
 Create a lower triangular storage of size `n x n`, with data alignment `Ta` and element type
 `Tt`, with all elements initialized to zero. If `Ta` is not provided, it defaults to
 `ColumnMajor`. If `Tt` is not provided, it defaults to `Float64`.
 
-# Extended Help
+# Extended help
 
 ## Examples
 

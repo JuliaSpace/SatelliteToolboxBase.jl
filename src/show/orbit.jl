@@ -8,31 +8,33 @@
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
+"""
+    Base.show(io::IO, ke::KeplerianElements) -> Nothing
+    Base.show(io::IO, ee::EquinoctialElements) -> Nothing
+    Base.show(io::IO, sv::OrbitStateVector) -> Nothing
+
+Print the compact representation of the orbit to `io`: the type with its parameters and the
+epoch, as a Julian Day and as a date.
+"""
 function Base.show(
     io::IO, ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
     epoch_str = _compact_string(io, ke.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, ke.epoch))
 
-    print(
-        io,
-        "KeplerianElements{",
-        Tanomaly,
-        ", ",
-        Tepoch,
-        ", ",
-        T,
-        "}: ",
-        "Epoch = ",
-        epoch_str,
-        " (",
-        date_str,
-        ")",
-    )
+    print(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}: Epoch = $epoch_str ($date_str)")
 
     return nothing
 end
 
+"""
+    Base.show(io::IO, ::MIME"text/plain", ke::KeplerianElements) -> Nothing
+    Base.show(io::IO, ::MIME"text/plain", ee::EquinoctialElements) -> Nothing
+    Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector) -> Nothing
+
+Print the rich representation of the orbit to `io`: one line per element with its unit,
+aligned at the decimal point. The field labels are printed in bold if `io` supports color.
+"""
 function Base.show(
     io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
@@ -79,7 +81,7 @@ function Base.show(
     f_str = _append_unit(f_str, max_length, "°")
 
     # Print the Keplerian elements.
-    println(io, "KeplerianElements{", Tanomaly, ", ", Tepoch, ", ", T, "}:")
+    println(io, "KeplerianElements{$Tanomaly, $Tepoch, $T}:")
     _println_field(io, "             Epoch : ", epoch_str, " (", date_str, ")")
     _println_field(io, "   Semi-major axis : ", a_str)
     _println_field(io, "      Eccentricity : ", e_str)
@@ -99,19 +101,7 @@ function Base.show(io::IO, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
     epoch_str = _compact_string(io, ee.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, ee.epoch))
 
-    print(
-        io,
-        "EquinoctialElements{",
-        Tepoch,
-        ", ",
-        T,
-        "}: ",
-        "Epoch = ",
-        epoch_str,
-        " (",
-        date_str,
-        ")",
-    )
+    print(io, "EquinoctialElements{$Tepoch, $T}: Epoch = $epoch_str ($date_str)")
 
     return nothing
 end
@@ -148,7 +138,7 @@ function Base.show(
     λ_str = _append_unit(λ_str, max_length, "°")
 
     # Print the equinoctial elements.
-    println(io, "EquinoctialElements{", Tepoch, ", ", T, "}:")
+    println(io, "EquinoctialElements{$Tepoch, $T}:")
     _println_field(io, "           Epoch : ", epoch_str, " (", date_str, ")")
     _println_field(io, " Semi-major axis : ", a_str)
     _println_field(io, "               h : ", h_str)
@@ -168,19 +158,7 @@ function Base.show(io::IO, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
     epoch_str = _compact_string(io, sv.epoch)
     date_str  = sprint(print, jd_to_date(DateTime, sv.epoch))
 
-    print(
-        io,
-        "OrbitStateVector{",
-        Tepoch,
-        ", ",
-        T,
-        "}: ",
-        "Epoch = ",
-        epoch_str,
-        " (",
-        date_str,
-        ")",
-    )
+    print(io, "OrbitStateVector{$Tepoch, $T}: Epoch = $epoch_str ($date_str)")
 
     return nothing
 end
@@ -199,7 +177,7 @@ function Base.show(
     r_str = _append_unit(r_str, max_length, "km")
     v_str = _append_unit(v_str, max_length, "km/s")
 
-    println(io, "OrbitStateVector{", Tepoch, ", ", T, "}:")
+    println(io, "OrbitStateVector{$Tepoch, $T}:")
     _println_field(io, "  epoch :", " ", epoch_str, " (", date_str, ")")
     _println_field(io, "      r :", " ", r_str)
     _print_field(io, "      v :", " ", v_str)
@@ -211,8 +189,12 @@ end
 #                                     Private Functions                                    #
 ############################################################################################
 
-# Return the strings in `strs` left-padded so that their decimal points are aligned. Strings
-# without a decimal point are treated as if the point were right after the last character.
+"""
+    _align_on_decimal(strs::Vararg{String, N}) where {N} -> NTuple{N, String}
+
+Return the strings `strs` left-padded so that their decimal points are aligned. Strings
+without a decimal point are treated as if the point were right after the last character.
+"""
 function _align_on_decimal(strs::Vararg{String, N}) where {N}
     Δs = map(strs) do s
         Δ = findfirst('.', s)
@@ -224,28 +206,45 @@ function _align_on_decimal(strs::Vararg{String, N}) where {N}
     return map((s, Δ) -> " "^(dp_pos - Δ) * s, strs, Δs)
 end
 
-# Return `str` right-padded to `max_length` characters followed by ` unit`.
+"""
+    _append_unit(str::String, max_length::Int, unit::String) -> String
+
+Return `str` right-padded to `max_length` characters and followed by a space and `unit`.
+"""
 function _append_unit(str::String, max_length::Int, unit::String)
     return str * " "^(max_length - length(str)) * " " * unit
 end
 
-# Print the field `label` in bold followed by the values `xs...` and a newline. The bold
-# decoration is rendered only if `io` supports color.
+"""
+    _compact_string(io::IO, x) -> String
+
+Return the string obtained by printing `x` while honoring the `:compact` property of `io`.
+"""
+function _compact_string(io::IO, x)
+    compact = get(io, :compact, true)::Bool
+    return sprint(print, x; context = :compact => compact)
+end
+
+"""
+    _println_field(io::IO, label::String, xs...) -> Nothing
+
+Print the field `label` in bold to `io`, followed by the values `xs...` and a newline. The
+bold decoration is rendered only if `io` supports color.
+"""
 function _println_field(io::IO, label::String, xs...)
     print(io, styled"{bold:$label}")
     println(io, xs...)
     return nothing
 end
 
-# Same as `_println_field` but without the trailing newline.
+"""
+    _print_field(io::IO, label::String, xs...) -> Nothing
+
+Print the field `label` in bold to `io`, followed by the values `xs...` without a trailing
+newline. The bold decoration is rendered only if `io` supports color.
+"""
 function _print_field(io::IO, label::String, xs...)
     print(io, styled"{bold:$label}")
     print(io, xs...)
     return nothing
-end
-
-# Print `x` to a string honoring the `:compact` property in `io`.
-function _compact_string(io::IO, x)
-    compact = get(io, :compact, true)::Bool
-    return sprint(print, x; context = :compact => compact)
 end

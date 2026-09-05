@@ -43,20 +43,28 @@ export date_to_jd, jd_to_date, is_leap_year
 ############################################################################################
 
 """
-    date_to_jd(Y::Integer, M::Integer, D::Integer[, h::Integer, m::Integer, s::Number])
+    date_to_jd(Y::Integer, M::Integer, D::Integer[, h::Integer, m::Integer, s::Number]) -> Float64
 
-Convert a date represented using the Gregorian Calendar (Year = `y`, Month = `M` (1-12), Day
-= `D`, Hour = `h` (0-24), minute = `m`, and second = `s`) to Julian Day.
+Convert a date represented using the Gregorian Calendar (Year = `Y`, Month = `M` (1-12), Day
+= `D`, Hour = `h` (0-23), minute = `m`, and second = `s`) to Julian Day. The date must be
+valid.
 
-If the `h`, `m`, and `s` is omitted, the function assumes they are 0.
+If the `h`, `m`, and `s` are omitted, the function assumes they are 0.
 
 # Remarks
 
-The algorithm was obtained from \\[1] (accessed on 2022-07-20).
+The algorithm was obtained from **[1]** (accessed on 2022-07-20).
 
 # References
 
 - **[1]**: https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
+
+# Extended help
+
+## Throws
+
+- `ArgumentError`: If the month, day, hour, minute, or second is out of range, or if the day
+    does not exist in the given month and year.
 """
 function date_to_jd(
     Y::Integer, M::Integer, D::Integer, h::Integer = 0, m::Integer = 0, s::Number = 0
@@ -90,8 +98,8 @@ function date_to_jd(
         (D > 30) && throw(ArgumentError("Wrong day number given the year and the month."))
     end
 
-    # If the month is January / February, then consider it as the 13rd / 14th
-    # month of the last year.
+    # If the month is January / February, then consider it as the 13th / 14th month of the
+    # last year.
     if (M == 1) || (M == 2)
         Y -= 1
         M += 12
@@ -111,7 +119,7 @@ function date_to_jd(
 end
 
 """
-    date_to_jd(date::Date)
+    date_to_jd(date::Date) -> Float64
 
 Convert the date `date` to Julian Day.
 """
@@ -120,7 +128,7 @@ function date_to_jd(date::Date)
 end
 
 """
-    date_to_jd(datetime::DateTime)
+    date_to_jd(datetime::DateTime) -> Float64
 
 Convert the date and time `datetime` to Julian Day.
 """
@@ -136,7 +144,10 @@ function date_to_jd(datetime::DateTime)
 end
 
 """
-    jd_to_date([T,] JD::Number)
+    jd_to_date(JD::Number) -> Int, Int, Int, Int, Int, Float64
+    jd_to_date(::Type{Int}, JD::Number) -> Int, Int, Int, Int, Int, Int
+    jd_to_date(::Type{Date}, JD::Number) -> Date
+    jd_to_date(::Type{DateTime}, JD::Number) -> DateTime
 
 Convert the Julian Day `JD` to Gregorian Calendar. The optional parameter `T` defines the
 return type.
@@ -162,7 +173,7 @@ If `T` is `DateTime`, it will return the Julia structure `DateTime`.
 
 # Remarks
 
-The algorithm was obtained from \\[1] (accessed on 2022-07-20). In [1], there is the
+The algorithm was obtained from **[1]** (accessed on 2022-07-20). In **[1]**, there is the
 following warning:
 
 !!! note

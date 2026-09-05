@@ -40,12 +40,12 @@ end
 Return the `cp`-th partition (start and end indices) of a vector with indices `inds`
 considering that we are partitioning it into `np` parts.
 
-This function is useful to splitting input information for spawning multiple tasks.
+It is useful to split the input information when spawning multiple tasks.
 
 !!! note
 
-    - The function will clamp `np` if it is larger than the number of elements in `v`.
-    - The function will clamp `cp` if it is larger than `np`.
+    - `np` is clamped if it is larger than the number of elements in `inds`.
+    - `cp` is clamped if it is larger than `np`.
 
 # Returns
 
