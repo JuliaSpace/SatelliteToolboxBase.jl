@@ -56,7 +56,7 @@ function Ellipsoid(a::T1, f::T2) where {T1 <: Number, T2 <: Number}
     a <= 0 && throw(ArgumentError("The semi-major axis must be positive."))
     f >= 1 && throw(ArgumentError("The flattening should be lower than 1."))
 
-    T = promote_type(T1, T2) |> float
+    T = float(promote_type(T1, T2))
 
     b   = T(a) * (1 - T(f))
     e²  = T(f) * (2 - T(f))

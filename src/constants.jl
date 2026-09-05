@@ -42,7 +42,7 @@ const EARTH_ANGULAR_SPEED = 7.292_115_146_706_979e-5
 
 Earth's equatorial radius [m] (WGS-84).
 """
-const EARTH_EQUATORIAL_RADIUS = 6378137.0
+const EARTH_EQUATORIAL_RADIUS = 6_378_137.0
 
 """
     const EARTH_ORBIT_MEAN_MOTION
@@ -56,7 +56,7 @@ const EARTH_ORBIT_MEAN_MOTION = deg2rad(360.0 / 365.2421897) / 86400
 
 Earth's polar radius [m] (WGS-84).
 """
-const EARTH_POLAR_RADIUS = 6356752.3142
+const EARTH_POLAR_RADIUS = 6_356_752.3142
 
 ############################################################################################
 #                                        Ellipsoids                                        #
@@ -67,14 +67,14 @@ const EARTH_POLAR_RADIUS = 6356752.3142
 
 WGS84 ellipsoid represented using `Float64`.
 """
-const WGS84_ELLIPSOID = Ellipsoid(6378137.0, 1 / 298.257223563)
+const WGS84_ELLIPSOID = Ellipsoid(6_378_137.0, 1 / 298.257223563)
 
 """
     const WGS84_ELLIPSOID_F32
 
 WGS84 ellipsoid represented using `Float32`.
 """
-const WGS84_ELLIPSOID_F32 = Ellipsoid(6378137.0f0, 1 / 298.257223563f0)
+const WGS84_ELLIPSOID_F32 = Ellipsoid(6_378_137.0f0, 1 / 298.257223563f0)
 
 ############################################################################################
 #                                    Perturbation Terms                                    #
