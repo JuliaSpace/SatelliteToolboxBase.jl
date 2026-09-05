@@ -4,16 +4,11 @@
 #
 ## References ##############################################################################
 #
-# [1] Vallado, D. A (2013). Fundamentals of Astrodynamics and Applications. Microcosm Press,
-#     Hawthorn, CA, USA.
-#
-# [2] https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
-#
-# [3] https://support.microsoft.com/en-us/help/214019/method-to-determine-whether-a-year-is-a-leap-year
+# [1] https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
 #
 ## Remarks #################################################################################
 #
-# -- Information about the Julian Day obtained from [2] (Accessed on 2018-04-11) -----------
+# -- Information about the Julian Day obtained from [1] (Accessed on 2018-04-11) -----------
 #
 # The Julian Day Count is a uniform count of days from a remote epoch in the past (-4712
 # January 1, 12 hours Greenwich Mean Time (Julian proleptic Calendar) = 4713 BCE January 1,
@@ -73,8 +68,9 @@ function date_to_jd(
     ((M < 1) || (M > 12)) &&
         throw(ArgumentError("Invalid month. It must be an integer between 1 and 12."))
 
-    ((D < 1) || (D > 31)) &&
-        throw(ArgumentError("Invalid day. It must be an integer between 1 and 31."))
+    ((D < 1) || (D > Dates.daysinmonth(Y, M))) && throw(
+        ArgumentError("Invalid day. It must be an integer between 1 and the month length.")
+    )
 
     ((h < 0) || (h > 23)) &&
         throw(ArgumentError("Invalid hour. It must be an integer between 0 and 23."))
@@ -84,19 +80,6 @@ function date_to_jd(
 
     ((s < 0) || (s > 60)) &&
         throw(ArgumentError("Invalid second. It must be a number between 0 and 60."))
-
-    # Check if the date is valid in terms of number of days in a month.
-    if M == 2
-        if is_leap_year(Y)
-            (D > 29) &&
-                throw(ArgumentError("Wrong day number given the year and the month."))
-        else
-            (D > 28) &&
-                throw(ArgumentError("Wrong day number given the year and the month."))
-        end
-    elseif M in (4, 6, 9, 11)
-        (D > 30) && throw(ArgumentError("Wrong day number given the year and the month."))
-    end
 
     # If the month is January / February, then consider it as the 13th / 14th month of the
     # last year.
@@ -113,8 +96,7 @@ function date_to_jd(
 
     # Compute the Julian Day considering the time of day.
     #
-    # Notice that the algorithm in [2] always return the Julian day at 00:00
-    # GMT.
+    # Notice that the algorithm in [1] always returns the Julian day at 00:00 GMT.
     return c + D + e + f - 1524.5 + ((60h + m) * 60 + s) / 86400
 end
 
