@@ -6,6 +6,10 @@
 # vectors use the default central body (Earth). Call `kepler_to_sv` or `sv_to_kepler` with
 # the keyword `μ` for an orbit around another body.
 #
+# The conversions between different representations are computed in the promoted numeric
+# type of the input and the target (see `_promote_element_type`), so precision is never lost
+# in the intermediate computations, and the result is converted to the target type.
+#
 ## References ##############################################################################
 #
 # [1] Broucke, R. A., Cefola, P. J (1972). On the equinoctial orbit elements. Celestial
@@ -66,23 +70,26 @@ end
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, aee::AlternateEquinoctialElements
 ) where {Tepoch <: Number, T <: Number}
+    aeep = _promote_element_type(aee, T)
     return convert(
-        EquinoctialElements{Tepoch, T}, _alternate_equinoctial_to_equinoctial(aee)
+        EquinoctialElements{Tepoch, T}, _alternate_equinoctial_to_equinoctial(aeep)
     )
 end
 
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, ke::KeplerianElements
 ) where {Tepoch <: Number, T <: Number}
+    kep = _promote_element_type(ke, T)
     return convert(
-        EquinoctialElements{Tepoch, T}, _keplerian_to_equinoctial(EquinoctialElements, ke)
+        EquinoctialElements{Tepoch, T}, _keplerian_to_equinoctial(EquinoctialElements, kep)
     )
 end
 
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, sv::OrbitStateVector
 ) where {Tepoch <: Number, T <: Number}
-    return convert(EquinoctialElements{Tepoch, T}, sv_to_kepler(sv))
+    svp = _promote_element_type(sv, T)
+    return convert(EquinoctialElements{Tepoch, T}, sv_to_kepler(svp))
 end
 
 # == To Alternate Equinoctial Elements =====================================================
@@ -98,24 +105,27 @@ end
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, ee::EquinoctialElements
 ) where {Tepoch <: Number, T <: Number}
+    eep = _promote_element_type(ee, T)
     return convert(
-        AlternateEquinoctialElements{Tepoch, T}, _equinoctial_to_alternate_equinoctial(ee)
+        AlternateEquinoctialElements{Tepoch, T}, _equinoctial_to_alternate_equinoctial(eep)
     )
 end
 
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, ke::KeplerianElements
 ) where {Tepoch <: Number, T <: Number}
+    kep = _promote_element_type(ke, T)
     return convert(
         AlternateEquinoctialElements{Tepoch, T},
-        _keplerian_to_equinoctial(AlternateEquinoctialElements, ke),
+        _keplerian_to_equinoctial(AlternateEquinoctialElements, kep),
     )
 end
 
 function Base.convert(
     ::Type{AlternateEquinoctialElements{Tepoch, T}}, sv::OrbitStateVector
 ) where {Tepoch <: Number, T <: Number}
-    return convert(AlternateEquinoctialElements{Tepoch, T}, sv_to_kepler(sv))
+    svp = _promote_element_type(sv, T)
+    return convert(AlternateEquinoctialElements{Tepoch, T}, sv_to_kepler(svp))
 end
 
 # == To Keplerian Elements =================================================================
@@ -123,27 +133,30 @@ end
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, ke::KeplerianElements
 ) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
+    kep = _promote_element_type(ke, T)
     return KeplerianElements{Tanomaly, Tepoch, T}(
-        ke.epoch,
-        ke.semi_major_axis,
-        ke.eccentricity,
-        ke.inclination,
-        ke.raan,
-        ke.argument_of_periapsis,
-        _anomaly(Tanomaly, ke),
+        kep.epoch,
+        kep.semi_major_axis,
+        kep.eccentricity,
+        kep.inclination,
+        kep.raan,
+        kep.argument_of_periapsis,
+        _anomaly(Tanomaly, kep),
     )
 end
 
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, orbit::AbstractEquinoctialElements
 ) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
-    return convert(KeplerianElements{Tanomaly, Tepoch, T}, _equinoctial_to_keplerian(orbit))
+    ke = _equinoctial_to_keplerian(_promote_element_type(orbit, T))
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, ke)
 end
 
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly, Tepoch, T}}, sv::OrbitStateVector
 ) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
-    return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv_to_kepler(sv))
+    svp = _promote_element_type(sv, T)
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv_to_kepler(svp))
 end
 
 # == To Orbit State Vector =================================================================
@@ -157,19 +170,59 @@ end
 function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, ke::KeplerianElements
 ) where {Tepoch <: Number, T <: Number}
-    return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(ke))
+    kep = _promote_element_type(ke, T)
+    return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(kep))
 end
 
 function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, orbit::AbstractEquinoctialElements
 ) where {Tepoch <: Number, T <: Number}
-    ke = _equinoctial_to_keplerian(orbit)
+    ke = _equinoctial_to_keplerian(_promote_element_type(orbit, T))
     return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(ke))
 end
 
 ############################################################################################
 #                                     Private Functions                                    #
 ############################################################################################
+
+"""
+    _promote_element_type(orbit::Orbit{Tepoch, Torbit}, ::Type{T}) -> Orbit{Tepoch, promote_type(Torbit, T)}
+
+Return `orbit` with its elements converted to `promote_type(Torbit, T)`, keeping the epoch
+type, the representation, and the stored anomaly. Only the numeric types change, so no
+computation is involved.
+"""
+function _promote_element_type(
+    ke::KeplerianElements{Tanomaly, Tepoch, Tke}, ::Type{T}
+) where {Tanomaly, Tepoch, Tke, T}
+    return KeplerianElements{Tanomaly, Tepoch, promote_type(Tke, T)}(
+        ke.epoch,
+        ke.semi_major_axis,
+        ke.eccentricity,
+        ke.inclination,
+        ke.raan,
+        ke.argument_of_periapsis,
+        ke.anomaly,
+    )
+end
+
+function _promote_element_type(
+    ee::EquinoctialElements{Tepoch, Tee}, ::Type{T}
+) where {Tepoch, Tee, T}
+    return convert(EquinoctialElements{Tepoch, promote_type(Tee, T)}, ee)
+end
+
+function _promote_element_type(
+    aee::AlternateEquinoctialElements{Tepoch, Taee}, ::Type{T}
+) where {Tepoch, Taee, T}
+    return convert(AlternateEquinoctialElements{Tepoch, promote_type(Taee, T)}, aee)
+end
+
+function _promote_element_type(
+    sv::OrbitStateVector{Tepoch, Tsv}, ::Type{T}
+) where {Tepoch, Tsv, T}
+    return convert(OrbitStateVector{Tepoch, promote_type(Tsv, T)}, sv)
+end
 
 """
     _equinoctial_to_keplerian(orbit::AbstractEquinoctialElements{Tepoch, T}) -> KeplerianElements{MeanAnomaly, Tepoch, T}

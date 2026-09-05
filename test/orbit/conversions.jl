@@ -726,6 +726,43 @@ end
     end
 end
 
+@testset "Conversions in the Promoted Numeric Type" begin
+    # Converting to a wider element type must give the same result as widening the input
+    # first, i.e., the computations must not be performed in the narrower type.
+    ke_f32 = KeplerianElements(1.0, 7130.982f3, 0.1f0, 0.5f0, 0.3f0, 0.2f0, 0.1f0)
+    ke_f64 = convert(KeplerianElements{TrueAnomaly, Float64, Float64}, ke_f32)
+    ee_f32 = convert(EquinoctialElements, ke_f32)
+    ee_f64 = convert(EquinoctialElements{Float64, Float64}, ee_f32)
+    sv_f32 = convert(OrbitStateVector, ke_f32)
+    sv_f64 = convert(OrbitStateVector{Float64, Float64}, sv_f32)
+
+    @test convert(KeplerianElements{MeanAnomaly, Float64, Float64}, ke_f32) ==
+        convert(KeplerianElements{MeanAnomaly}, ke_f64)
+    @test convert(EquinoctialElements{Float64, Float64}, ke_f32) ==
+        convert(EquinoctialElements, ke_f64)
+    @test convert(AlternateEquinoctialElements{Float64, Float64}, ke_f32) ==
+        convert(AlternateEquinoctialElements, ke_f64)
+    @test convert(OrbitStateVector{Float64, Float64}, ke_f32) ==
+        convert(OrbitStateVector, ke_f64)
+    @test convert(KeplerianElements{TrueAnomaly, Float64, Float64}, ee_f32) ==
+        convert(KeplerianElements, ee_f64)
+    @test convert(AlternateEquinoctialElements{Float64, Float64}, ee_f32) ==
+        convert(AlternateEquinoctialElements, ee_f64)
+    @test convert(OrbitStateVector{Float64, Float64}, ee_f32) ==
+        convert(OrbitStateVector, ee_f64)
+    @test convert(KeplerianElements{TrueAnomaly, Float64, Float64}, sv_f32) ==
+        convert(KeplerianElements, sv_f64)
+    @test convert(EquinoctialElements{Float64, Float64}, sv_f32) ==
+        convert(EquinoctialElements, sv_f64)
+
+    # Converting to a narrower element type must compute in the wider type and narrow only
+    # the result.
+    @test convert(EquinoctialElements{Float64, Float32}, ke_f64) ==
+        convert(EquinoctialElements{Float64, Float32}, convert(EquinoctialElements, ke_f64))
+    @test convert(KeplerianElements{MeanAnomaly, Float64, Float32}, sv_f64) ==
+        convert(KeplerianElements{MeanAnomaly, Float64, Float32}, sv_to_kepler(sv_f64))
+end
+
 @testset "Conversions with AlternateEquinoctialElements" verbose = true begin
     @testset "KeplerianElements => AlternateEquinoctialElements" begin
         # == Reference Values ==============================================================

@@ -65,7 +65,8 @@ The Julia built-in function `convert` accepts the following targets:
     Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
     the keyword `μ` for an orbit around another central body.
 
-Omitted type parameters are taken from the input.
+Omitted type parameters are taken from the input. The conversions to other representations
+are computed in the promoted numeric type of the input and the target.
 
 ## Printing
 
@@ -243,7 +244,8 @@ The Julia built-in function `convert` accepts the following targets:
     Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
     the keyword `μ` for an orbit around another central body.
 
-Omitted type parameters are taken from the input.
+Omitted type parameters are taken from the input. The conversions to other representations
+are computed in the promoted numeric type of the input and the target.
 
 ## Printing
 
@@ -373,7 +375,8 @@ The Julia built-in function `convert` accepts the following targets:
     Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
     the keyword `μ` for an orbit around another central body.
 
-Omitted type parameters are taken from the input.
+Omitted type parameters are taken from the input. The conversions to other representations
+are computed in the promoted numeric type of the input and the target.
 
 ## Printing
 
@@ -485,7 +488,8 @@ The Julia built-in function `convert` accepts the following targets:
 
 The conversions to the orbital elements use [`sv_to_kepler`](@ref) with the Earth's standard
 gravitational parameter `GM_EARTH`. Call that function directly with the keyword `μ` for an
-orbit around another central body. Omitted type parameters are taken from the input.
+orbit around another central body. Omitted type parameters are taken from the input, and the
+conversions are computed in the promoted numeric type of the input and the target.
 
 ## Printing
 
