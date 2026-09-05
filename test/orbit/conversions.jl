@@ -642,7 +642,9 @@ end
         # == Angle Wrapping ================================================================
 
         # Angles that would be negative when computed with `atan` must be wrapped.
-        ke  = KeplerianElements(0.0, 8000e3, 0.1, 30 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad)
+        ke = KeplerianElements(
+            0.0, 8000e3, 0.1, 30 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad, 300 |> deg2rad
+        )
         kec = convert(KeplerianElements, convert(EquinoctialElements, ke))
         @test kec.raan ≈ 300 |> deg2rad
         @test kec.argument_of_periapsis ≈ 300 |> deg2rad

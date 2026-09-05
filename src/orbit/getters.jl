@@ -53,8 +53,8 @@ end
 """
     eccentric_anomaly(orbit::KeplerianElements{Tanomaly, Tepoch, T}; kwargs...) -> T
 
-Return the eccentric anomaly [rad] of the `orbit`, converting the stored anomaly if it is not
-already the eccentric anomaly.
+Return the eccentric anomaly [rad] of the `orbit`, converting the stored anomaly if it is
+not already the eccentric anomaly.
 
 # Keywords
 

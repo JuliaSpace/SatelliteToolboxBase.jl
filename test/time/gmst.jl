@@ -21,7 +21,7 @@
 #
 # Example 3-5: Finding GMST and LST (Method 1) [1, p. 188].
 #
-# Considering the Julian Day [UT1] 2448855.009722, the Greenwich Mean Sideral Time was
+# Considering the Julian Day [UT1] 2448855.009722, the Greenwich Mean Sidereal Time was
 # computed as 152.578787810°.
 #
 # Using SatelliteToolbox, the following was obtained:
