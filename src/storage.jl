@@ -12,13 +12,7 @@
 
 # -- Conversion ----------------------------------------------------------------------------
 
-"""
-    Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix} -> Matrix
-
-Convert the lower triangular storage `L` to a dense matrix of type `M`, filling the upper
-triangular part with zeros. If `M` does not specify the element type, the element type of
-`L` is used.
-"""
+# The interface is described in the docstring of `LowerTriangularStorage`.
 function Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix}
     return convert(M{eltype(L.data)}, L)
 end
@@ -40,20 +34,8 @@ end
 # The accessors are inlined and propagate `@inbounds` from the caller so that loops over the
 # storage are as fast as loops over the underlying array.
 
-"""
-    Base.eachindex(L::LowerTriangularStorage) -> Base.OneTo{Int}
-
-Return the linear indices of the elements stored in `L`.
-"""
 Base.eachindex(L::LowerTriangularStorage) = Base.OneTo(length(L.data))
 
-"""
-    Base.getindex(L::LowerTriangularStorage{Ta, Tt}, i::Int) -> Tt
-    Base.getindex(L::LowerTriangularStorage{Ta, Tt}, i::Int, j::Int) -> Tt
-
-Return the element of `L` at the linear index `i` or at the row `i` and column `j`. Only the
-lower triangular part is stored, so accessing an element with `j > i` is a bounds error.
-"""
 @inline @propagate_inbounds function Base.getindex(L::LowerTriangularStorage, i::Int)
     @boundscheck (i < 1 || i > length(L.data)) && throw_boundserror(L, i)
     return L.data[i]
@@ -68,14 +50,6 @@ end
     return L.data[_axes_to_index(L, i, j)]
 end
 
-"""
-    Base.setindex!(L::LowerTriangularStorage, v, i::Int) -> LowerTriangularStorage
-    Base.setindex!(L::LowerTriangularStorage, v, i::Int, j::Int) -> LowerTriangularStorage
-
-Store the value `v` in `L` at the linear index `i` or at the row `i` and column `j`, and
-return `L`. Only the lower triangular part is stored, so setting an element with `j > i` is
-a bounds error.
-"""
 @inline @propagate_inbounds function Base.setindex!(L::LowerTriangularStorage, v, i::Int)
     @boundscheck (i < 1 || i > length(L.data)) && throw_boundserror(L, i)
     L.data[i] = v
@@ -93,21 +67,10 @@ end
     return L
 end
 
-"""
-    Base.size(L::LowerTriangularStorage) -> Tuple{Int, Int}
-
-Return the size of the square matrix represented by `L`.
-"""
 Base.size(L::LowerTriangularStorage) = (L.n, L.n)
 
 # -- Initialization ------------------------------------------------------------------------
 
-"""
-    Base.zeros(::Type{T}, n::Int) where {T <: LowerTriangularStorage} -> T
-
-Create a lower triangular storage of type `T` with `n` rows and columns, initializing all
-the stored elements to zero.
-"""
 function Base.zeros(::Type{T}, n::Int) where {T <: LowerTriangularStorage}
     L = T(n)
     L.data .= zero(eltype(L.data))
@@ -116,12 +79,7 @@ end
 
 # -- Printing ------------------------------------------------------------------------------
 
-"""
-    Base.replace_in_print_matrix(L::LowerTriangularStorage, i::Int, j::Int, s::AbstractString) -> String
-
-Return the string printed for the element `(i, j)` of `L`, whose default representation is
-`s`. Since the upper triangular part is not stored, its elements are printed as `×`.
-"""
+# Since the upper triangular part is not stored, we replace the printed values with `×`.
 function Base.replace_in_print_matrix(
     L::LowerTriangularStorage, i::Int, j::Int, s::AbstractString
 )

@@ -46,6 +46,34 @@ For backward compatibility, the following short property names are also availabl
 (epoch), `a` (semi-major axis), `e` (eccentricity), `i` (inclination), `Ω` (RAAN), `ω`
 (argument of periapsis), and `f` (**true** anomaly, converted from the stored anomaly if
 necessary).
+
+# Extended help
+
+## Conversions
+
+The Julia built-in function `convert` accepts the following targets:
+
+- `KeplerianElements{Tanomaly}` and `KeplerianElements{Tanomaly, Tepoch, T}`: Change the
+    stored anomaly and the numeric types. The anomaly conversions use the default settings
+    of the Kepler's equation solver.
+- `EquinoctialElements` and `EquinoctialElements{Tepoch, T}`: Throw an `ArgumentError` for
+    retrograde equatorial orbits (`i = π`), where the equinoctial elements are singular.
+- `OrbitStateVector` and `OrbitStateVector{Tepoch, T}`: Use [`kepler_to_sv`](@ref) with the
+    Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
+    the keyword `μ` for an orbit around another central body.
+
+Omitted type parameters are taken from the input.
+
+## Printing
+
+`show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
+with its unit, aligned at the decimal point, with the labels in bold if `io` supports color.
+
+## Iteration
+
+The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
+are defined), so it can be used in broadcasting.
 """
 struct KeplerianElements{Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number} <:
        Orbit{Tepoch, T}
@@ -183,6 +211,34 @@ package does not convert between time scales.
 
 - **[1]** Broucke, R. A., Cefola, P. J (1972). On the equinoctial orbit elements. Celestial
     Mechanics, v. 5, p. 303-310.
+
+# Extended help
+
+## Conversions
+
+The Julia built-in function `convert` accepts the following targets:
+
+- `EquinoctialElements{Tepoch, T}`: Change the numeric types.
+- `KeplerianElements`, `KeplerianElements{Tanomaly}`, and
+    `KeplerianElements{Tanomaly, Tepoch, T}`: Store the anomaly `Tanomaly` (`TrueAnomaly` if
+    omitted) and return the RAAN, the argument of periapsis, and the anomaly in the interval
+    [0, 2π).
+- `OrbitStateVector` and `OrbitStateVector{Tepoch, T}`: Use [`kepler_to_sv`](@ref) with the
+    Earth's standard gravitational parameter `GM_EARTH`. Call that function directly with
+    the keyword `μ` for an orbit around another central body.
+
+Omitted type parameters are taken from the input.
+
+## Printing
+
+`show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
+with its unit, aligned at the decimal point, with the labels in bold if `io` supports color.
+
+## Iteration
+
+The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
+are defined), so it can be used in broadcasting.
 """
 struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     epoch::Tepoch
@@ -266,6 +322,33 @@ package does not convert between time scales.
 # Property Aliases
 
 For backward compatibility, the property `t` is an alias for `epoch`.
+
+# Extended help
+
+## Conversions
+
+The Julia built-in function `convert` accepts the following targets:
+
+- `OrbitStateVector{Tepoch, T}`: Change the numeric types.
+- `KeplerianElements`, `KeplerianElements{Tanomaly}`, and
+    `KeplerianElements{Tanomaly, Tepoch, T}`: Store the anomaly `Tanomaly` (`TrueAnomaly` if
+    omitted).
+- `EquinoctialElements` and `EquinoctialElements{Tepoch, T}`.
+
+The conversions to the orbital elements use [`sv_to_kepler`](@ref) with the Earth's standard
+gravitational parameter `GM_EARTH`. Call that function directly with the keyword `μ` for an
+orbit around another central body. Omitted type parameters are taken from the input.
+
+## Printing
+
+`show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
+with its unit, aligned at the decimal point, with the labels in bold if `io` supports color.
+
+## Iteration
+
+The object behaves as a collection with a single element (`length`, `iterate`, and `eltype`
+are defined), so it can be used in broadcasting.
 """
 struct OrbitStateVector{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
     epoch::Tepoch

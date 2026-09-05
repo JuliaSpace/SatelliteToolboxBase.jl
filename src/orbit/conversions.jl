@@ -19,30 +19,7 @@
 
 # == To Equinoctial Elements ===============================================================
 
-"""
-    Base.convert(::Type{EquinoctialElements{Tepoch, T}}, ee::EquinoctialElements) -> EquinoctialElements{Tepoch, T}
-    Base.convert(::Type{EquinoctialElements}, ke::KeplerianElements) -> EquinoctialElements
-    Base.convert(::Type{EquinoctialElements{Tepoch, T}}, ke::KeplerianElements) -> EquinoctialElements{Tepoch, T}
-    Base.convert(::Type{EquinoctialElements}, sv::OrbitStateVector) -> EquinoctialElements
-    Base.convert(::Type{EquinoctialElements{Tepoch, T}}, sv::OrbitStateVector) -> EquinoctialElements{Tepoch, T}
-
-Convert the orbit representation `ee`, `ke`, or `sv` to equinoctial elements. If the epoch
-type `Tepoch` and the element type `T` are omitted, they are taken from the input.
-
-The conversion from an `OrbitStateVector` uses [`sv_to_kepler`](@ref) with the Earth's
-standard gravitational parameter `GM_EARTH`. Call that function directly with the keyword
-`μ` for an orbit around another central body.
-
-The conversion from Keplerian elements fails for retrograde equatorial orbits (`i = π`),
-where the equinoctial elements are singular.
-
-# Extended help
-
-## Throws
-
-- `ArgumentError`: If the inclination is so close to `π` that `tan(i / 2)` exceeds
-    `1 / eps(T)`.
-"""
+# See the docstring of `EquinoctialElements` for the description of the conversions.
 function Base.convert(
     ::Type{EquinoctialElements{Tepoch, T}}, ee::EquinoctialElements
 ) where {Tepoch, T}
@@ -75,27 +52,7 @@ end
 
 # == To Keplerian Elements =================================================================
 
-"""
-    Base.convert(::Type{KeplerianElements{Tanomaly}}, ke::KeplerianElements) -> KeplerianElements{Tanomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements{Tanomaly, Tepoch, T}}, ke::KeplerianElements) -> KeplerianElements{Tanomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements}, ee::EquinoctialElements) -> KeplerianElements{TrueAnomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements{Tanomaly}}, ee::EquinoctialElements) -> KeplerianElements{Tanomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements{Tanomaly, Tepoch, T}}, ee::EquinoctialElements) -> KeplerianElements{Tanomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements}, sv::OrbitStateVector) -> KeplerianElements{TrueAnomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements{Tanomaly}}, sv::OrbitStateVector) -> KeplerianElements{Tanomaly, Tepoch, T}
-    Base.convert(::Type{KeplerianElements{Tanomaly, Tepoch, T}}, sv::OrbitStateVector) -> KeplerianElements{Tanomaly, Tepoch, T}
-
-Convert the orbit representation `ke`, `ee`, or `sv` to Keplerian elements storing the
-anomaly selected by `Tanomaly` (`TrueAnomaly` if omitted). If the epoch type `Tepoch` and
-the element type `T` are omitted, they are taken from the input.
-
-Converting between anomaly types uses [`true_anomaly`](@ref), [`eccentric_anomaly`](@ref),
-and [`mean_anomaly`](@ref) with the default settings of the Kepler's equation solver. The
-conversion from equinoctial elements returns the RAAN, the argument of periapsis, and the
-anomaly in the interval [0, 2π). The conversion from an `OrbitStateVector` uses
-[`sv_to_kepler`](@ref) with the Earth's standard gravitational parameter `GM_EARTH`. Call
-that function directly with the keyword `μ` for an orbit around another central body.
-"""
+# See the docstring of `KeplerianElements` for the description of the conversions.
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly}}, ke::KeplerianElements{<:AbstractAnomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
@@ -160,21 +117,7 @@ end
 
 # == To Orbit State Vector =================================================================
 
-"""
-    Base.convert(::Type{OrbitStateVector{Tepoch, T}}, sv::OrbitStateVector) -> OrbitStateVector{Tepoch, T}
-    Base.convert(::Type{OrbitStateVector}, ke::KeplerianElements) -> OrbitStateVector
-    Base.convert(::Type{OrbitStateVector{Tepoch, T}}, ke::KeplerianElements) -> OrbitStateVector{Tepoch, T}
-    Base.convert(::Type{OrbitStateVector}, ee::EquinoctialElements) -> OrbitStateVector
-    Base.convert(::Type{OrbitStateVector{Tepoch, T}}, ee::EquinoctialElements) -> OrbitStateVector{Tepoch, T}
-
-Convert the orbit representation `sv`, `ke`, or `ee` to an orbit state vector. If the epoch
-type `Tepoch` and the element type `T` are omitted, they are taken from the input.
-
-The conversions from Keplerian and equinoctial elements use [`kepler_to_sv`](@ref) with the
-Earth's standard gravitational parameter `GM_EARTH`, and the acceleration of the result is
-zero. Call that function directly with the keyword `μ` for an orbit around another central
-body.
-"""
+# See the docstring of `OrbitStateVector` for the description of the conversions.
 function Base.convert(
     ::Type{OrbitStateVector{Tepoch, T}}, sv::OrbitStateVector
 ) where {Tepoch, T}

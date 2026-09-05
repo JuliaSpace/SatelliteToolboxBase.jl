@@ -8,18 +8,9 @@
 #                                    Iterator Interface                                    #
 ############################################################################################
 
-# These functions allow broadcast when using the orbit propagators.
+# These functions treat an orbit as a collection with a single element, allowing broadcast
+# when using the orbit propagators. See the docstrings of the orbit representations.
 
-"""
-    Base.iterate(orb::Orbit) -> Tuple{Orbit, Nothing}
-    Base.iterate(orb::Orbit, ::Nothing) -> Nothing
-    Base.length(orb::Orbit) -> Int
-    Base.eltype(orb::T) where {T <: Orbit} -> Type{T}
-
-Implement the iterator interface for the orbit representations, treating the orbit `orb` as
-a collection with a single element. Hence, the orbit representations can be used in
-broadcasting.
-"""
 Base.iterate(orb::Orbit) = (orb, nothing)
 Base.iterate(::Orbit, ::Nothing) = nothing
 Base.length(::Orbit) = 1

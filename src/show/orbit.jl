@@ -8,14 +8,7 @@
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
-"""
-    Base.show(io::IO, ke::KeplerianElements) -> Nothing
-    Base.show(io::IO, ee::EquinoctialElements) -> Nothing
-    Base.show(io::IO, sv::OrbitStateVector) -> Nothing
-
-Print the compact representation of the orbit to `io`: the type with its parameters and the
-epoch, as a Julian Day and as a date.
-"""
+# The printing formats are described in the docstrings of the orbit representations.
 function Base.show(
     io::IO, ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
@@ -27,14 +20,6 @@ function Base.show(
     return nothing
 end
 
-"""
-    Base.show(io::IO, ::MIME"text/plain", ke::KeplerianElements) -> Nothing
-    Base.show(io::IO, ::MIME"text/plain", ee::EquinoctialElements) -> Nothing
-    Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector) -> Nothing
-
-Print the rich representation of the orbit to `io`: one line per element with its unit,
-aligned at the decimal point. The field labels are printed in bold if `io` supports color.
-"""
 function Base.show(
     io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}

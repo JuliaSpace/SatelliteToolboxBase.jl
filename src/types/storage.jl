@@ -70,6 +70,20 @@ Create a lower triangular storage of size `n x n`, with data alignment `Ta` and 
 
 # Extended help
 
+## Interface
+
+- `L[i]` and `L[i] = v`: Access the stored elements by linear index, in the order given by
+    the data alignment. `eachindex(L)` returns those indices.
+- `L[i, j]` and `L[i, j] = v`: Access the element at row `i` and column `j`. Only the lower
+    triangular part is stored, so `j > i` is a bounds error.
+- `size(L)`: Return `(n, n)`.
+- `convert(Matrix, L)` and `convert(Matrix{T}, L)`: Return a dense matrix with the upper
+    triangular part filled with zeros.
+- `zeros(LowerTriangularStorage{Ta, Tt}, n)`: Create a storage with all the elements
+    initialized to zero (see the constructors above).
+
+When printed, the elements of the upper triangular part are shown as `×`.
+
 ## Examples
 
 The following code creates a `4 x 4` lower triangular storage with column major ordering and
