@@ -176,7 +176,7 @@ struct LowerTriangularStorage{Ta, Tt} <: AbstractMatrix{Tt}
     # == Constructors ======================================================================
 
     function LowerTriangularStorage{Ta, Tt}(n::Int) where {Ta <: AbstractDataAlignment, Tt}
-        n < 1 && throw(ArgumentError("Matrix size must be positive"))
+        n < 1 && throw(ArgumentError("The matrix size must be positive."))
         len = (n * (n + 1)) ÷ 2
 
         data = @static if VERSION >= v"1.11-"
