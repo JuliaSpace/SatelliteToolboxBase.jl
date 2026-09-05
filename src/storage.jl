@@ -26,6 +26,8 @@ end
 function Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix{T}} where {T}
     mat = zeros(T, size(L)...)
 
+    # The indices are within the bounds of `mat` and `L` by construction, so we can skip the
+    # bounds checking.
     @inbounds for i in 1:size(L, 1), j in 1:i
         mat[i, j] = L[i, j]
     end
@@ -34,6 +36,9 @@ function Base.convert(::Type{M}, L::LowerTriangularStorage) where {M <: Matrix{T
 end
 
 # -- Indexing ------------------------------------------------------------------------------
+#
+# The accessors are inlined and propagate `@inbounds` from the caller so that loops over the
+# storage are as fast as loops over the underlying array.
 
 """
     Base.eachindex(L::LowerTriangularStorage) -> Base.OneTo{Int}
@@ -136,6 +141,8 @@ end
 ############################################################################################
 #                                    Private Functions                                     #
 ############################################################################################
+
+# `_axes_to_index` is inlined because it is called in the indexing hot path.
 
 """
     _axes_to_index(L::LowerTriangularStorage{RowMajor}, i::Integer, j::Integer) -> Int

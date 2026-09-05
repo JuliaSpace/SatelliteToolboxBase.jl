@@ -58,16 +58,17 @@ This algorithm was adapted from **[1]** and **[2]** (p. 37-38).
 function kepler_to_rv(
     ke::KeplerianElements{Tanomaly, Tepoch, T}; μ::Number = GM_EARTH
 ) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
+    # Check the eccentricity.
+    e = ke.eccentricity
+    !(0 <= e < 1) &&
+        throw(ArgumentError("The eccentricity must be in the interval [0, 1)."))
+
     # Unpack.
     a = ke.semi_major_axis
-    e = ke.eccentricity
     i = ke.inclination
     Ω = ke.raan
     ω = ke.argument_of_periapsis
     f = true_anomaly(ke)
-
-    # Check eccentricity.
-    !(0 <= e < 1) && throw(ArgumentError("Eccentricity must be in the interval [0,1)."))
 
     # Auxiliary variables.
     sin_f, cos_f = sincos(f)

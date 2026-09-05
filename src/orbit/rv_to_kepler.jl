@@ -73,6 +73,8 @@ function rv_to_kepler(
     Tepoch = float(T3)
     T      = float(promote_type(T1, T2))
 
+    # All the accesses below use fixed indices of 3-element `SVector`s, whose lengths were
+    # checked above. Hence, we can skip the bounds checking.
     @inbounds begin
         # Convert the input vectors to `SVector` with the correct type.
         sr_i = SVector{3, T}(r_i[0 + begin], r_i[1 + begin], r_i[2 + begin])

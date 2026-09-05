@@ -199,7 +199,7 @@ Wrap the angle `x` [rad] to the interval [0, 2π).
 `mod(x, 2π)` alone is not enough because it returns `2π` when `x` is a tiny negative number,
 since `2π + x` rounds to `2π` in floating point.
 """
-@inline function _wrap_to_2π(x::T) where {T <: AbstractFloat}
+function _wrap_to_2π(x::T) where {T <: AbstractFloat}
     y = mod(x, T(2π))
     return y == T(2π) ? zero(T) : y
 end
