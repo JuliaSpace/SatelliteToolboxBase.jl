@@ -1,6 +1,11 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 2.0.1
+-------------
+
+- ![Info][badge-info] Add quality tests with **Aqua.jl** and **JET.jl** to the test suite.
+
 Version 2.0.0
 -------------
 
@@ -57,7 +62,6 @@ Version 2.0.0
   the EGM-2008 model, and add the references of the EGM constants.
 - ![Info][badge-info] Add the `.JuliaFormatter.toml` configuration and format the code base
   according to the coding style.
-- ![Info][badge-info] Add quality tests with **Aqua.jl** and **JET.jl** to the test suite.
 
 Version 1.2.0
 -------------
