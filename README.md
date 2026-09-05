@@ -54,8 +54,8 @@ We define and export the following constants in this package:
 
 This package defines the abstract type `Orbit` for all orbit representations.
 
-Currently, we defined three types to represent an orbit: `KeplerianElements`,
-`EquinoctialElements`, and `OrbitStateVector`.
+Currently, we defined four types to represent an orbit: `KeplerianElements`,
+`EquinoctialElements`, `AlternateEquinoctialElements`, and `OrbitStateVector`.
 
 #### Keplerian Elements
 
@@ -154,6 +154,31 @@ EquinoctialElements{Float64, Float64}:
   Mean Longitude :  413.445      °
 ```
 
+#### Alternate Equinoctial Elements
+
+`AlternateEquinoctialElements{Tepoch, T}` differs from the equinoctial elements only in the
+inclination elements, where `sin(i / 2)` replaces `tan(i / 2)`:
+
+```julia
+AlternateEquinoctialElements(epoch::Tepoch, semi_major_axis::T1, h::T2, k::T3, p::T4, q::T5, mean_longitude::T6)
+```
+
+Hence, `p = sin(i / 2) * sin(Ω)` and `q = sin(i / 2) * cos(Ω)` are bounded (`p² + q² ≤ 1`)
+and finite for every inclination, including retrograde equatorial orbits (`i = π`). This set
+is called "Alternate Equinoctial" in GMAT and "Nonsingular Keplerian" in FreeFlyer.
+
+```julia
+julia> convert(AlternateEquinoctialElements, orb)
+AlternateEquinoctialElements{Float64, Float64}:
+           Epoch :    2.4466e6 (1986-06-19T18:35:00)
+ Semi-major axis : 7130.98       km
+               h :   -0.0001044
+               k :    3.79984e-5
+               p :   -0.258917
+               q :   -0.711369
+  Mean Longitude :  413.445      °
+```
+
 #### Orbit State Vector
 
 `OrbitStateVector` defines the orbit in terms of the [object state
@@ -207,6 +232,7 @@ conversion system (`convert`), which uses the Earth as the central body:
 ```julia
 julia> convert(KeplerianElements{MeanAnomaly}, sv)
 julia> convert(EquinoctialElements, orb)
+julia> convert(AlternateEquinoctialElements, convert(EquinoctialElements, orb))
 julia> convert(OrbitStateVector{Float64, Float32}, orb_M)
 ```
 

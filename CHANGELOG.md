@@ -30,9 +30,12 @@ Version 2.0.0
   converting it if necessary. Pass the keywords of the Newton-Raphson solver (`tol` and
   `max_iterations`) to those functions when the conversion starts from the mean anomaly.
 - ![Feature][badge-feature] Add the orbit representation `EquinoctialElements`.
+- ![Feature][badge-feature] Add the orbit representation `AlternateEquinoctialElements`,
+  which uses `sin(i / 2)` instead of `tan(i / 2)` in the elements `p` and `q`, keeping them
+  bounded and finite for every inclination, including retrograde equatorial orbits.
 - ![Feature][badge-feature] Support all the conversions between `KeplerianElements` (with
-  any anomaly), `EquinoctialElements`, and `OrbitStateVector` in the Julia built-in
-  conversion system (`convert`).
+  any anomaly), `EquinoctialElements`, `AlternateEquinoctialElements`, and
+  `OrbitStateVector` in the Julia built-in conversion system (`convert`).
 - ![Enhancement][badge-enhancement] Use **StyledStrings.jl** instead of **Crayons.jl** for
   the decorations in the `show` methods. **Crayons.jl** is no longer a dependency.
 - ![Enhancement][badge-enhancement] Remove the unused dependency **Printf.jl**.
