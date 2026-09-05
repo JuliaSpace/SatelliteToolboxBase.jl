@@ -18,7 +18,14 @@
 export kepler_to_rv
 
 """
-    kepler_to_rv(ke::KeplerianElements{Tepoch, T}; μ::Number = GM_EARTH) where {Tepoch <: Number, T <: Number} -> SVector{3, T}, SVector{3, T}
+    kepler_to_rv(
+        ke::KeplerianElements{Tanomaly, Tepoch, T};
+        μ::Number = GM_EARTH
+    ) where {
+        Tanomaly <: AbstractAnomaly,
+        Tepoch <: Number,
+        T <: Number
+    } -> SVector{3, T}, SVector{3, T}
 
 Convert the Keplerian elements `ke` to a Cartesian representation (position vector `r` [m]
 and velocity vector `v` [m / s]).
@@ -50,16 +57,16 @@ This algorithm was adapted from **[1]** and **[2]**(p. 37-38).
     Instituto Nacional de Pesquisas Espaciais.
 """
 function kepler_to_rv(
-    ke::KeplerianElements{Tepoch, T};
+    ke::KeplerianElements{Tanomaly, Tepoch, T};
     μ::Number = GM_EARTH
-) where {Tepoch <: Number, T <: Number}
+) where {Tanomaly <: AbstractAnomaly, Tepoch <: Number, T <: Number}
     # Unpack.
-    a = ke.a
-    e = ke.e
-    i = ke.i
-    Ω = ke.Ω
-    ω = ke.ω
-    f = ke.f
+    a = ke.semi_major_axis
+    e = ke.eccentricity
+    i = ke.inclination
+    Ω = ke.raan
+    ω = ke.argument_of_periapsis
+    f = true_anomaly(ke)
 
     # Check eccentricity.
     !(0 <= e < 1) && throw(ArgumentError("Eccentricity must be in the interval [0,1)."))
@@ -72,7 +79,7 @@ function kepler_to_rv(
     r = a * (1 - e²) / (1 + e * cos_f)
 
     # Compute the position vector in the orbit plane, defined as:
-    #   - The X axis points towards the perigee;
+    #   - The X axis points towards the periapsis;
     #   - The Z axis is perpendicular to the orbital plane (right-hand);
     #   - The Y axis completes a right-hand coordinate system.
     r_o = SVector{3, T}(r * cos_f, r * sin_f, 0)

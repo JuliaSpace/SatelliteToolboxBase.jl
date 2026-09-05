@@ -14,47 +14,155 @@ Abstract type of an orbit representation.
 abstract type Orbit{Tepoch<:Number, T<:Number} end
 
 """
-    KeplerianElements{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
+    KeplerianElements{
+        Tanomaly <: AbstractAnomaly,
+        Tepoch <: Number,
+        T <: Number
+    } <: Orbit{Tepoch, T}
 
-This structure defines the orbit in terms of the Keplerian elements.
+Defines the orbit in terms of the Keplerian elements.
 
 # Fields
 
-- `t::Tepoch`: Epoch.
-- `a::T`: Semi-major axis [m].
-- `e::T`: Eccentricity [ ].
-- `i::T`: Inclination [rad].
-- `Ω::T`: Right ascension of the ascending node [rad].
-- `ω::T`: Argument of perigee [rad].
-- `f::T`: True anomaly [rad].
+- `epoch::Tepoch`: Epoch.
+- `semi_major_axis::T`: Semi-major axis [m].
+- `eccentricity::T`: Eccentricity [ ].
+- `inclination::T`: Inclination [rad].
+- `raan::T`: Right ascension of the ascending node [rad].
+- `argument_of_periapsis::T`: Argument of periapsis [rad].
+- `anomaly::T`: Anomaly [rad], where the type depends on the parameter `Tanomaly`.
 """
-struct KeplerianElements{Tepoch<:Number, T<:Number} <: Orbit{Tepoch, T}
-    t::Tepoch
-    a::T
-    e::T
-    i::T
-    Ω::T
-    ω::T
-    f::T
+struct KeplerianElements{
+    Tanomaly <: AbstractAnomaly,
+    Tepoch <: Number,
+    T <: Number
+} <: Orbit{Tepoch, T}
+    epoch::Tepoch
+    semi_major_axis::T
+    eccentricity::T
+    inclination::T
+    raan::T
+    argument_of_periapsis::T
+    anomaly::T
 end
 
 """
-    KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
+    KeplerianElements{Tanomaly <: AbstractAnomaly}(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        eccentricity::T2,
+        inclination::T3,
+        raan::T4,
+        argument_of_periapsis::T5,
+        anomaly::T6
+    ) where {
 
-Create an orbit representation using Keplerian elements with semi-major axis `a` [m],
-eccentricity `e` [ ], inclination `i` [rad], right ascension of the ascending node `Ω`
-[rad], argument of perigee `ω` [rad], and true anomaly `f` [rad].
+Create a Keplerian elements object with `epoch` [UTC], `semi_major_axis` [m], `eccentricity`
+[ ], `inclination` [rad], `raan` [rad], `argument_of_periapsis` [rad], and `anomaly` [rad].
+The type of the anomaly is determined by the parameter `Tanomaly`. If it is omitted, the
+default is `TrueAnomaly`.
 
 The object type is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6`.
 """
 function KeplerianElements(
-    t::Tepoch,
-    a::T1,
-    e::T2,
-    i::T3,
-    Ω::T4,
-    ω::T5,
-    f::T6
+    epoch::Number,
+    semi_major_axis::Number,
+    eccentricity::Number,
+    inclination::Number,
+    raan::Number,
+    argument_of_periapsis::Number,
+    anomaly::Number,
+)
+    return KeplerianElements{TrueAnomaly}(
+        epoch,
+        semi_major_axis,
+        eccentricity,
+        inclination,
+        raan,
+        argument_of_periapsis,
+        anomaly
+    )
+end
+
+function KeplerianElements{Tanomaly}(
+    epoch::Tepoch,
+    semi_major_axis::T1,
+    eccentricity::T2,
+    inclination::T3,
+    raan::T4,
+    argument_of_periapsis::T5,
+    anomaly::T6
+) where {
+    Tanomaly <: AbstractAnomaly,
+    Tepoch <: Number,
+    T1<:Number,
+    T2<:Number,
+    T3<:Number,
+    T4<:Number,
+    T5<:Number,
+    T6<:Number
+}
+    T = promote_type(T1, T2, T3, T4, T5, T6) |> float
+    return KeplerianElements{Tanomaly, typeof(epoch), T}(
+        epoch,
+        semi_major_axis,
+        eccentricity,
+        inclination,
+        raan,
+        argument_of_periapsis,
+        anomaly,
+    )
+end
+
+"""
+    struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+
+Defines the orbit in terms of the equinoctial elements.
+
+# Fields
+
+- `epoch::Tepoch`: Epoch.
+- `semi_major_axis::T`: Semi-major axis [m].
+- `h::T`: h = e * sin(ω + Ω) [ ].
+- `k::T`: k = e * cos(ω + Ω) [ ].
+- `p::T`: p = tan(i / 2) * sin(Ω) [ ].
+- `q::T`: q = tan(i / 2) * cos(Ω) [ ].
+- `longitude::T`: Longitude [rad].
+"""
+struct EquinoctialElements{Tepoch <: Number, T <: Number} <: Orbit{Tepoch, T}
+    epoch::Tepoch
+    semi_major_axis::T
+    h::T
+    k::T
+    p::T
+    q::T
+    longitude::T
+end
+
+"""
+    EquinoctialElements(
+        epoch::Tepoch,
+        semi_major_axis::T1,
+        h::T2,
+        k::T3,
+        p::T4,
+        q::T5,
+        longitude::T6
+    ) -> EquinoctialElements{Tepoch, T}
+
+Create an equinoctial elements object with `epoch` [UTC], `semi_major_axis` [m], `h`, `k`,
+`p`, `q`, and `longitude` [rad].
+
+The object type is obtained by promoting `T1`, `T2`, `T3`, `T4`, `T5`, and `T6`.
+"""
+function EquinoctialElements(
+    epoch::Tepoch,
+    semi_major_axis::T1,
+    h::T2,
+    k::T3,
+    p::T4,
+    q::T5,
+    longitude::T6
 ) where {
     Tepoch <: Number,
     T1<:Number,

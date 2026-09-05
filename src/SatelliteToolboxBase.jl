@@ -13,6 +13,7 @@ import Base: throw_boundserror, @boundscheck, @propagate_inbounds
 #                                          Types                                           #
 ############################################################################################
 
+include("./types/anomalies.jl")
 include("./types/ellipsoid.jl")
 include("./types/jacobian.jl")
 include("./types/storage.jl")
@@ -40,6 +41,7 @@ include("storage.jl")
 
 include("./orbit/anomalies.jl")
 include("./orbit/conversions.jl")
+include("./orbit/getters.jl")
 include("./orbit/kepler_to_rv.jl")
 include("./orbit/kepler_to_sv.jl")
 include("./orbit/rv_to_kepler.jl")

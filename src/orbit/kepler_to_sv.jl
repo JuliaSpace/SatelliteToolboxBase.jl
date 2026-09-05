@@ -22,5 +22,5 @@ Convert the Keplerian elements `ke` to the orbit state vector.
 """
 function kepler_to_sv(ke::KeplerianElements; μ::Number = GM_EARTH)
     r_i, v_i = kepler_to_rv(ke; μ)
-    return OrbitStateVector(ke.t, r_i, v_i)
+    return OrbitStateVector(ke.epoch, r_i, v_i)
 end

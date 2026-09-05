@@ -15,7 +15,16 @@
 export rv_to_kepler
 
 """
-    rv_to_kepler(r_i::AbstractVector{T1}, v_i::AbstractVector{T2}, t::T3 = 0; μ::Number = GM_EARTH) where {T1<:Number, T2<:Number, T3<:Number} -> KeplerianElements{Tepoch, T}
+    rv_to_kepler(
+        r_i::AbstractVector{T1},
+        v_i::AbstractVector{T2},
+        t::T3 = 0;
+        μ::Number = GM_EARTH
+    ) where {
+        T1<:Number,
+        T2<:Number,
+        T3<:Number
+    } -> KeplerianElements{TrueAnomaly, Tepoch, T}
 
 Convert a Cartesian representation (position vector `r_i` [m] and velocity vector `v_i`
 [m / s]) to Keplerian elements. Optionally, the user can specify the epoch of the returned
@@ -69,8 +78,8 @@ function rv_to_kepler(
 
     @inbounds begin
         # Convert the input vectors to `SVector` with the correct type.
-        sr_i = SVector{3, T}(r_i[begin + 0], r_i[begin + 1], r_i[begin + 2])
-        sv_i = SVector{3, T}(v_i[begin + 0], v_i[begin + 1], v_i[begin + 2])
+        sr_i = SVector{3, T}(r_i[0 + begin], r_i[1 + begin], r_i[2 + begin])
+        sv_i = SVector{3, T}(v_i[0 + begin], v_i[1 + begin], v_i[2 + begin])
 
         # Position and velocity vector norms and auxiliary dot products.
         r² = dot(sr_i, sr_i)
@@ -224,5 +233,5 @@ function rv_to_kepler(
     end
 
     # Return the Keplerian elements.
-    return KeplerianElements(Tepoch(t), a, ecc, i, Ω, ω, f)
+    return KeplerianElements{TrueAnomaly}(Tepoch(t), a, ecc, i, Ω, ω, f)
 end

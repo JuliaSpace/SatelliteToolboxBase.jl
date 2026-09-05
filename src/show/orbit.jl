@@ -8,12 +8,24 @@
 #                                    Keplerian Elements                                    #
 ############################################################################################
 
-function Base.show(io::IO, k::KeplerianElements{Tepoch, T}) where {Tepoch, T}
+function Base.show(
+    io::IO,
+    k::KeplerianElements{Tanomaly, Tepoch, T}
+) where {Tanomaly, Tepoch, T}
     compact   = get(io, :compact, true)
-    epoch_str = sprint(print, k.t, context = :compact => compact)
-    jd_str    = sprint(print, jd_to_date(DateTime, k.t))
+    epoch_str = sprint(print, k.epoch, context = :compact => compact)
+    jd_str    = sprint(print, jd_to_date(DateTime, k.epoch))
 
-    print(io, "KeplerianElements{", Tepoch, ", ", T, "}: Epoch = $epoch_str ($jd_str)")
+    print(
+        io,
+        "KeplerianElements{",
+        Tanomaly,
+        ", ",
+        Tepoch,
+        ", ",
+        T,
+        "}: Epoch = $epoch_str ($jd_str)"
+    )
 
     return nothing
 end
@@ -21,8 +33,8 @@ end
 function Base.show(
     io::IO,
     mime::MIME"text/plain",
-    k::KeplerianElements{Tepoch, T}
-) where {Tepoch, T}
+    k::KeplerianElements{Tanomaly, Tepoch, T}
+) where {Tanomaly, Tepoch, T}
     d2r = 180 / π
 
     # Check if the IO supports color.
@@ -36,14 +48,25 @@ function Base.show(
     r = color ? string(_CRAYON_RESET) : ""
 
     # Convert the data to string.
-    date_str  = sprint(print, jd_to_date(DateTime, k.t))
-    epoch_str = sprint(print, k.t, context = :compact => compact)
-    a_str     = sprint(print, k.a / 1000, context = :compact => compact)
-    e_str     = sprint(print, k.e, context = :compact => compact)
-    i_str     = sprint(print, rad2deg(k.i), context = :compact => compact)
-    Ω_str     = sprint(print, rad2deg(k.Ω), context = :compact => compact)
-    ω_str     = sprint(print, rad2deg(k.ω), context = :compact => compact)
-    f_str     = sprint(print, rad2deg(k.f), context = :compact => compact)
+    date_str  = sprint(print, jd_to_date(DateTime, k.epoch))
+    epoch_str = sprint(print, k.epoch, context = :compact => compact)
+    a_str     = sprint(print, k.semi_major_axis / 1000, context = :compact => compact)
+    e_str     = sprint(print, k.eccentricity, context = :compact => compact)
+    i_str     = sprint(print, rad2deg(k.inclination), context = :compact => compact)
+    Ω_str     = sprint(print, rad2deg(k.raan), context = :compact => compact)
+    ω_str     = sprint(print, rad2deg(k.argument_of_periapsis), context = :compact => compact)
+    f_str     = sprint(print, rad2deg(k.anomaly), context = :compact => compact)
+
+    # Current anomaly type.
+    anomaly_type = if Tanomaly <: TrueAnomaly
+        "     True"
+    elseif Tanomaly <: EccentricAnomaly
+        "Eccentric"
+    elseif Tanomaly <: MeanAnomaly
+        "     Mean"
+    else
+        "  Unknown"
+    end
 
     # Padding to align in the floating point.
     Δepoch = findfirst('.', epoch_str)
@@ -77,12 +100,14 @@ function Base.show(
     ω_str     = " "^(dp_pos - Δω) * ω_str
     f_str     = " "^(dp_pos - Δf) * f_str
 
-    max_length = max(length(a_str),
-                     length(e_str),
-                     length(i_str),
-                     length(Ω_str),
-                     length(ω_str),
-                     length(f_str))
+    max_length = max(
+        length(a_str),
+        length(e_str),
+        length(i_str),
+        length(Ω_str),
+        length(ω_str),
+        length(f_str)
+    )
 
     # Add the units.
     a_str *= " "^(max_length - length(a_str)) * " km"
@@ -92,7 +117,104 @@ function Base.show(
     f_str *= " "^(max_length - length(f_str)) * " °"
 
     # Print the Keplerian elements.
-    println(io, "KeplerianElements{", Tepoch, ", ", T, "}:")
+    println(io, "KeplerianElements{", Tanomaly, ", ", Tepoch, ", ", T, "}:")
+    println(io, "$b             Epoch : $r", epoch_str, " (", date_str, ")");
+    println(io, "$b   Semi-major axis : $r", a_str)
+    println(io, "$b      Eccentricity : $r", e_str)
+    println(io, "$b       Inclination : $r", i_str)
+    println(io, "$b              RAAN : $r", Ω_str)
+    println(io, "$b Arg. of Periapsis : $r", ω_str)
+    print(io,   "$b $anomaly_type Anomaly : $r", f_str)
+
+    return nothing
+end
+
+############################################################################################
+#                                   Equinoctial Elements                                   #
+############################################################################################
+
+function Base.show(io::IO, eq::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    compact   = get(io, :compact, true)
+    epoch_str = sprint(print, eq.epoch, context = :compact => compact)
+    jd_str    = sprint(print, jd_to_date(DateTime, eq.epoch))
+
+    print(io, "EquinoctialElements{", Tepoch, ", ", T, "}: Epoch = $epoch_str ($jd_str)")
+
+    return nothing
+end
+
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    eq::EquinoctialElements{Tepoch, T}
+) where {Tepoch, T}
+    # Check if the IO supports color.
+    color = get(io, :color, false)
+
+    # Compact printing.
+    compact = get(io, :compact, true)
+
+    # Definition of colors that will be used for printing.
+    b = color ? string(_CRAYON_BOLD)  : ""
+    r = color ? string(_CRAYON_RESET) : ""
+
+    # Convert the data to string.
+    date_str  = sprint(print, jd_to_date(DateTime, eq.epoch))
+    epoch_str = sprint(print, eq.epoch, context = :compact => compact)
+    a_str     = sprint(print, eq.semi_major_axis / 1000, context = :compact => compact)
+    h_str     = sprint(print, eq.h, context = :compact => compact)
+    k_str     = sprint(print, eq.k, context = :compact => compact)
+    p_str     = sprint(print, eq.p, context = :compact => compact)
+    q_str     = sprint(print, eq.q, context = :compact => compact)
+    l_str     = sprint(print, rad2deg(eq.longitude), context = :compact => compact)
+
+    # Padding to align in the floating point.
+    Δepoch = findfirst('.', epoch_str)
+    isnothing(Δepoch) && (Δepoch = length(epoch_str) + 1)
+
+    Δa = findfirst('.', a_str)
+    isnothing(Δa) && (Δa = length(a_str) + 1)
+
+    Δh = findfirst('.', h_str)
+    isnothing(Δh) && (Δh = lhngth(h_str) + 1)
+
+    Δk = findfirst('.', k_str)
+    isnothing(Δk) && (Δk = length(k_str) + 1)
+
+    Δp = findfirst('.', p_str)
+    isnothing(Δp) && (Δp = length(p_str) + 1)
+
+    Δq = findfirst('.', q_str)
+    isnothing(Δq) && (Δq = length(q_str) + 1)
+
+    Δl = findfirst('.', l_str)
+    isnothing(Δl) && (Δl = length(l_str) + 1)
+
+    dp_pos = max(Δepoch, Δa, Δh, Δk, Δp, Δq, Δl)
+
+    epoch_str = " "^(dp_pos - Δepoch) * epoch_str
+    a_str     = " "^(dp_pos - Δa) * a_str
+    h_str     = " "^(dp_pos - Δh) * h_str
+    k_str     = " "^(dp_pos - Δk) * k_str
+    p_str     = " "^(dp_pos - Δp) * p_str
+    q_str     = " "^(dp_pos - Δq) * q_str
+    l_str     = " "^(dp_pos - Δl) * l_str
+
+    max_length = max(
+        length(a_str),
+        length(h_str),
+        length(k_str),
+        length(p_str),
+        length(q_str),
+        length(l_str)
+    )
+
+    # Add the units.
+    a_str *= " km"
+    l_str *= " °"
+
+    # Print the Keplerian elements.
+    println(io, "EquinoctialElements{", Tepoch, ", ", T, "}:")
     println(io, "$b           Epoch : $r", epoch_str, " (", date_str, ")");
     println(io, "$b Semi-major axis : $r", a_str)
     println(io, "$b    Eccentricity : $r", e_str)
