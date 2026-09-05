@@ -69,8 +69,8 @@ function rv_to_kepler(
     μ::Number = GM_EARTH
 ) where {T1<:Number, T2<:Number, T3<:Number}
     # Check inputs.
-    length(r_i) != 3 && error("The vector r_i must have 3 dimensions.")
-    length(v_i) != 3 && error("The vector v_i must have 3 dimensions.")
+    length(r_i) != 3 && throw(DimensionMismatch("The vector r_i must have 3 elements."))
+    length(v_i) != 3 && throw(DimensionMismatch("The vector v_i must have 3 elements."))
 
     # Obtain the type of the output elements.
     Tepoch = float(T3)
