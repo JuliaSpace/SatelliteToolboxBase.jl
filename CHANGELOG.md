@@ -21,6 +21,9 @@ Version 2.0.0
   `rv_to_kepler` when the input vectors do not have three elements.
 - ![BREAKING][badge-breaking] Delegate `is_leap_year` to `Dates.isleapyear`, which no longer
   throws for negative years.
+- ![BREAKING][badge-breaking] Throw `ArgumentError` in `mean_to_eccentric_anomaly` and
+  `mean_to_true_anomaly` when `max_iterations` is lower than 1, instead of silently
+  resetting it to 10.
 - ![Feature][badge-feature] Support the true, eccentric, or mean anomaly in
   `KeplerianElements`, selected by the new type parameter `Tanomaly`. Use the constructor
   `KeplerianElements{Tanomaly}(...)` to create an object with the desired anomaly. The
@@ -36,12 +39,22 @@ Version 2.0.0
 - ![Feature][badge-feature] Support all the conversions between `KeplerianElements` (with
   any anomaly), `EquinoctialElements`, `AlternateEquinoctialElements`, and
   `OrbitStateVector` in the Julia built-in conversion system (`convert`).
+- ![Feature][badge-feature] Add the abstract type `AbstractEquinoctialElements`, supertype
+  of `EquinoctialElements` and `AlternateEquinoctialElements`, to dispatch on either
+  equinoctial set.
 - ![Enhancement][badge-enhancement] Use **StyledStrings.jl** instead of **Crayons.jl** for
   the decorations in the `show` methods. **Crayons.jl** is no longer a dependency.
 - ![Enhancement][badge-enhancement] Remove the unused dependency **Printf.jl**.
 - ![Enhancement][badge-enhancement] Scale the default tolerance of the Newton-Raphson solver
   in `mean_to_eccentric_anomaly` by the magnitude of the mean anomaly, avoiding iterations
   that cannot improve the solution.
+- ![Enhancement][badge-enhancement] Compute the conversions between different orbit
+  representations in the promoted numeric type of the input and the target, so no precision
+  is lost when converting to a wider type.
+- ![Enhancement][badge-enhancement] Print the acceleration in the rich representation of
+  `OrbitStateVector`, using the same layout as the other orbit representations.
+- ![Bugfix][badge-bugfix] Fix the docstrings of `EGM_1996_J3` and `EGM_1996_J4`, which named
+  the EGM-2008 model, and add the references of the EGM constants.
 - ![Info][badge-info] Add the `.JuliaFormatter.toml` configuration and format the code base
   according to the coding style.
 
@@ -157,11 +170,11 @@ Version 0.1.0
 - Initial version.
   - This version was based on the functions in **SatelliteToolbox.jl**.
 
-[badge-breaking]: https://img.shields.io/badge/BREAKING-red.svg
-[badge-deprecation]: https://img.shields.io/badge/Deprecation-orange.svg
-[badge-feature]: https://img.shields.io/badge/Feature-green.svg
-[badge-enhancement]: https://img.shields.io/badge/Enhancement-blue.svg
-[badge-bugfix]: https://img.shields.io/badge/Bugfix-purple.svg
-[badge-info]: https://img.shields.io/badge/Info-gray.svg
+[badge-breaking]: https://img.shields.io/badge/Breaking-DC2626?style=flat-square
+[badge-deprecation]: https://img.shields.io/badge/Deprecation-D97706?style=flat-square
+[badge-feature]: https://img.shields.io/badge/Feature-16A34A?style=flat-square
+[badge-enhancement]: https://img.shields.io/badge/Enhancement-0284C7?style=flat-square
+[badge-bugfix]: https://img.shields.io/badge/Bugfix-DB2777?style=flat-square
+[badge-info]: https://img.shields.io/badge/Info-475569?style=flat-square
 
 [gh-issue-2]: https://github.com/JuliaSpace/SatelliteToolboxBase.jl/issues/2
