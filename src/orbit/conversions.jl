@@ -6,6 +6,67 @@
 # vectors use the default central body (Earth). Call `kepler_to_sv` or `sv_to_kepler` with
 # the keyword `μ` for an orbit around another body.
 #
+## References ##############################################################################
+#
+# [1] Broucke, R. A., Cefola, P. J (1972). On the equinoctial orbit elements. Celestial
+#     Mechanics, v. 5, p. 303-310.
+#
+############################################################################################
+
+############################################################################################
+#                                     Private Functions                                    #
+############################################################################################
+
+# Convert the equinoctial elements to Keplerian elements with mean anomaly. All the angles
+# are returned in the interval [0, 2π).
+function _equinoctial_to_keplerian(ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    a = ee.semi_major_axis
+    h = ee.h
+    k = ee.k
+    p = ee.p
+    q = ee.q
+    λ = ee.mean_longitude
+
+    e = hypot(h, k)
+    i = 2atan(hypot(p, q))
+    Ω = _wrap_to_2π(atan(p, q))
+    ω = _wrap_to_2π(atan(h, k) - Ω)
+    M = _wrap_to_2π(λ - Ω - ω)
+
+    return KeplerianElements{MeanAnomaly, Tepoch, T}(ee.epoch, a, e, i, Ω, ω, M)
+end
+
+# Convert the Keplerian elements (any anomaly) to equinoctial elements.
+function _keplerian_to_equinoctial(ke::KeplerianElements{Tanomaly, Tepoch, T}) where {Tanomaly, Tepoch, T}
+    a = ke.semi_major_axis
+    e = ke.eccentricity
+    i = ke.inclination
+    Ω = ke.raan
+    ω = ke.argument_of_periapsis
+    M = mean_anomaly(ke)
+
+    sin_Ω₊ω, cos_Ω₊ω = sincos(Ω + ω)
+    sin_Ω, cos_Ω     = sincos(Ω)
+    tan_io2          = tan(i / 2)
+
+    # The elements `p` and `q` are singular at i = π. In floating point, `tan(i / 2)` does
+    # not overflow at `i = π`, but it exceeds `1 / eps(T)`, where `p` and `q` lose all the
+    # fractional precision. We use this threshold to detect the singularity.
+    abs(tan_io2) < 1 / eps(T) || throw(ArgumentError(
+        "The equinoctial elements are singular for retrograde equatorial orbits (i = π)."
+    ))
+
+    h = e * sin_Ω₊ω
+    k = e * cos_Ω₊ω
+    p = tan_io2 * sin_Ω
+    q = tan_io2 * cos_Ω
+    λ = Ω + ω + M
+
+    return EquinoctialElements{Tepoch, T}(ke.epoch, a, h, k, p, q, λ)
+end
+
+############################################################################################
+#                                     Julia Conversions                                    #
 ############################################################################################
 
 # == Equinoctial Elements => Equinoctial Elements ==========================================
@@ -21,243 +82,126 @@ function Base.convert(
         ee.k,
         ee.p,
         ee.q,
-        ee.longitude
+        ee.mean_longitude
     )
 end
 
 # == Equinoctial Elements => Keplerian Elements ============================================
 
+function Base.convert(::Type{KeplerianElements}, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    return convert(KeplerianElements{TrueAnomaly, Tepoch, T}, ee)
+end
+
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly}},
     ee::EquinoctialElements{Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
-    t = ee.epoch
-    a = ee.semi_major_axis
-    h = ee.h
-    k = ee.k
-    p = ee.p
-    q = ee.q
-    l = ee.longitude
-
-    e = hypot(h, k)
-    Ω = atan(p, q)
-    i = 2atan(hypot(p, q))
-    ω = atan(h, k) - Ω
-    M = l - Ω - ω
-
-    return convert(
-        KeplerianElements{Tanomaly, Tepoch, T},
-        KeplerianElements{MeanAnomaly, Tepoch, T}(t, a, e, i, Ω, ω, M)
-    )
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, ee)
 end
 
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly, Tepoch, T}},
     ee::EquinoctialElements
 ) where {Tanomaly, Tepoch, T}
-    t = ee.epoch
-    a = ee.semi_major_axis
-    h = ee.h
-    k = ee.k
-    p = ee.p
-    q = ee.q
-    l = ee.longitude
-
-    e = hypot(h, k)
-    Ω = atan(p, q)
-    i = 2atan(hypot(p, q))
-    ω = atan(h, k) - Ω
-    M = l - Ω - ω
-
-    return convert(
-        KeplerianElements{Tanomaly, Tepoch, T},
-        KeplerianElements{MeanAnomaly, Tepoch, T}(t, a, e, i, Ω, ω, M)
-    )
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, _equinoctial_to_keplerian(ee))
 end
 
 # == Equinoctial Elements => Orbit State Vector ============================================
 
-function Base.convert(
-    ::Type{OrbitStateVector},
-    ee::EquinoctialElements{Tepoch, T}
-) where {Tepoch, T}
-    k = convert(KeplerianElements{TrueAnomaly, Tepoch, T}, ee)
-    return convert(OrbitStateVector{Tepoch, T}, k)
+function Base.convert(::Type{OrbitStateVector}, ee::EquinoctialElements{Tepoch, T}) where {Tepoch, T}
+    return convert(OrbitStateVector{Tepoch, T}, ee)
 end
 
-function Base.convert(
-    ::Type{OrbitStateVector{Tepoch, T}},
-    ee::EquinoctialElements
-) where {Tepoch, T}
-    k = convert(KeplerianElements{TrueAnomaly, Tepoch, T}, ee)
-    return convert(OrbitStateVector{Tepoch, T}, k)
+function Base.convert(::Type{OrbitStateVector{Tepoch, T}}, ee::EquinoctialElements) where {Tepoch, T}
+    ke = convert(KeplerianElements{TrueAnomaly, Tepoch, T}, ee)
+    return convert(OrbitStateVector{Tepoch, T}, ke)
 end
 
 # == Keplerian Elements => Equinoctial Elements ============================================
 
-function Base.convert(
-    ::Type{EquinoctialElements},
-    ke::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    t = ke.epoch
-    a = ke.semi_major_axis
-    e = ke.eccentricity
-    i = ke.inclination
-    Ω = ke.raan
-    ω = ke.argument_of_periapsis
-    M = mean_anomaly(ke)
-
-    sin_Ω₊ω, cos_Ω₊ω = sincos(Ω + ω)
-    sin_Ω, cos_Ω     = sincos(Ω)
-    tan_io2          = tan(i / 2)
-
-    h = e * sin_Ω₊ω
-    k = e * cos_Ω₊ω
-    p = tan_io2 * sin_Ω
-    q = tan_io2 * cos_Ω
-    l = Ω + ω + M
-
-    return EquinoctialElements{Tepoch, T}(t, a, h, k, p, q, l)
+function Base.convert(::Type{EquinoctialElements}, ke::KeplerianElements)
+    return _keplerian_to_equinoctial(ke)
 end
 
-function Base.convert(
-    ::Type{EquinoctialElements{Tepoch, T}},
-    ke::KeplerianElements
-) where {Tepoch, T}
-    t = ke.epoch
-    a = ke.semi_major_axis
-    e = ke.eccentricity
-    i = ke.inclination
-    Ω = ke.raan
-    ω = ke.argument_of_periapsis
-    M = mean_anomaly(ke)
-
-    sin_Ω₊ω, cos_Ω₊ω = sincos(Ω + ω)
-    sin_Ω, cos_Ω     = sincos(Ω)
-    tan_io2          = tan(i / 2)
-
-    h = e * sin_Ω₊ω
-    k = e * cos_Ω₊ω
-    p = tan_io2 * sin_Ω
-    q = tan_io2 * cos_Ω
-    l = Ω + ω + M
-
-    return EquinoctialElements{Tepoch, T}(t, a, h, k, p, q, l)
+function Base.convert(::Type{EquinoctialElements{Tepoch, T}}, ke::KeplerianElements) where {Tepoch, T}
+    return convert(EquinoctialElements{Tepoch, T}, _keplerian_to_equinoctial(ke))
 end
 
 # == Keplerian Elements => Keplerian Elements ==============================================
 
 function Base.convert(
-    ::Type{KeplerianElements{EccentricAnomaly}},
-    k::KeplerianElements{Tanomaly, Tepoch, T}
+    ::Type{KeplerianElements{Tanomaly}},
+    ke::KeplerianElements{<:AbstractAnomaly, Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
-    return Base.convert(KeplerianElements{EccentricAnomaly, Tepoch, T}, k)
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, ke)
 end
 
-function Base.convert(
-    ::Type{KeplerianElements{EccentricAnomaly, Tepoch, T}},
-    k::KeplerianElements
-) where {Tepoch, T}
-    return KeplerianElements{EccentricAnomaly, Tepoch, T}(
-        k.epoch,
-        k.semi_major_axis,
-        k.eccentricity,
-        k.inclination,
-        k.raan,
-        k.argument_of_periapsis,
-        eccentric_anomaly(k)
-    )
-end
-
-function Base.convert(
-    ::Type{KeplerianElements{MeanAnomaly}},
-    k::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    return Base.convert(KeplerianElements{MeanAnomaly, Tepoch, T}, k)
-end
-
-function Base.convert(
-    ::Type{KeplerianElements{MeanAnomaly, Tepoch, T}},
-    k::KeplerianElements
-) where {Tepoch, T}
-    return KeplerianElements{MeanAnomaly, Tepoch, T}(
-        k.epoch,
-        k.semi_major_axis,
-        k.eccentricity,
-        k.inclination,
-        k.raan,
-        k.argument_of_periapsis,
-        mean_anomaly(k)
-    )
-end
-
-function Base.convert(
-    ::Type{KeplerianElements{TrueAnomaly}},
-    k::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    return Base.convert(KeplerianElements{TrueAnomaly, Tepoch, T}, k)
-end
-
-function Base.convert(
-    ::Type{KeplerianElements{TrueAnomaly, Tepoch, T}},
-    k::KeplerianElements
-) where {Tepoch, T}
-    return KeplerianElements{TrueAnomaly, Tepoch, T}(
-        k.epoch,
-        k.semi_major_axis,
-        k.eccentricity,
-        k.inclination,
-        k.raan,
-        k.argument_of_periapsis,
-        true_anomaly(k)
-    )
+for (Tanomaly, getter) in (
+    (:EccentricAnomaly, :eccentric_anomaly),
+    (:MeanAnomaly,      :mean_anomaly),
+    (:TrueAnomaly,      :true_anomaly),
+)
+    @eval function Base.convert(
+        ::Type{KeplerianElements{$Tanomaly, Tepoch, T}},
+        ke::KeplerianElements
+    ) where {Tepoch, T}
+        return KeplerianElements{$Tanomaly, Tepoch, T}(
+            ke.epoch,
+            ke.semi_major_axis,
+            ke.eccentricity,
+            ke.inclination,
+            ke.raan,
+            ke.argument_of_periapsis,
+            $getter(ke)
+        )
+    end
 end
 
 # == Keplerian Elements => Orbit State Vector ==============================================
 
 function Base.convert(
-    ::Type{KeplerianElements},
-    sv::OrbitStateVector{Tepoch, T}
+    ::Type{OrbitStateVector},
+    ke::KeplerianElements{<:AbstractAnomaly, Tepoch, T}
 ) where {Tepoch, T}
-    return Base.convert(KeplerianElements{TrueAnomaly, Tepoch, T}, sv)
+    return convert(OrbitStateVector{Tepoch, T}, ke)
+end
+
+function Base.convert(::Type{OrbitStateVector{Tepoch, T}}, ke::KeplerianElements) where {Tepoch, T}
+    return convert(OrbitStateVector{Tepoch, T}, kepler_to_sv(ke))
+end
+
+# == Orbit State Vector => Equinoctial Elements ============================================
+
+function Base.convert(::Type{EquinoctialElements}, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
+    return convert(EquinoctialElements{Tepoch, T}, sv)
+end
+
+function Base.convert(::Type{EquinoctialElements{Tepoch, T}}, sv::OrbitStateVector) where {Tepoch, T}
+    return convert(EquinoctialElements{Tepoch, T}, sv_to_kepler(sv))
+end
+
+# == Orbit State Vector => Keplerian Elements ==============================================
+
+function Base.convert(::Type{KeplerianElements}, sv::OrbitStateVector{Tepoch, T}) where {Tepoch, T}
+    return convert(KeplerianElements{TrueAnomaly, Tepoch, T}, sv)
 end
 
 function Base.convert(
     ::Type{KeplerianElements{Tanomaly}},
     sv::OrbitStateVector{Tepoch, T}
 ) where {Tanomaly, Tepoch, T}
-    return Base.convert(KeplerianElements{Tanomaly, Tepoch, T}, sv)
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv)
 end
 
 function Base.convert(
-    KT::Type{KeplerianElements{Tanomaly, Tepoch, T}},
+    ::Type{KeplerianElements{Tanomaly, Tepoch, T}},
     sv::OrbitStateVector
 ) where {Tanomaly, Tepoch, T}
-    k = sv_to_kepler(sv)
-    return convert(KT, k)
+    return convert(KeplerianElements{Tanomaly, Tepoch, T}, sv_to_kepler(sv))
 end
 
-# == Orbit State Vector => Keplerian Elements ==============================================
+# == Orbit State Vector => Orbit State Vector ==============================================
 
-function Base.convert(
-    ::Type{OrbitStateVector},
-    k::KeplerianElements{Tanomaly, Tepoch, T}
-) where {Tanomaly, Tepoch, T}
-    return Base.convert(OrbitStateVector{Tepoch, T}, k)
+function Base.convert(::Type{OrbitStateVector{Tepoch, T}}, sv::OrbitStateVector) where {Tepoch, T}
+    return OrbitStateVector{Tepoch, T}(sv.epoch, sv.r, sv.v, sv.a)
 end
-
-function Base.convert(
-    ST::Type{OrbitStateVector{Tepoch, T}},
-    k::KeplerianElements
-) where {Tepoch, T}
-    sv = kepler_to_sv(k)
-    return convert(ST, sv)
-end
-
-function Base.convert(
-    ::Type{OrbitStateVector{Tepoch, T}},
-    sv::OrbitStateVector
-) where {Tepoch, T}
-    return OrbitStateVector{Tepoch, T}(sv.t, sv.r, sv.v, sv.a)
-end
-
