@@ -54,20 +54,26 @@ We define and export the following constants in this package:
 
 This package defines the abstract type `Orbit` for all orbit representations.
 
-Currently, we defined two types to represent an orbit: `KeplerianElements` and
-`OrbitStateVector`.
+Currently, we defined three types to represent an orbit: `KeplerianElements`,
+`EquinoctialElements`, and `OrbitStateVector`.
 
-`KeplerianElements` defines an orbit in terms of the [Keplerian
-elements](https://en.wikipedia.org/wiki/Orbital_elements). This object is created using the
-function:
+#### Keplerian Elements
+
+`KeplerianElements{Tanomaly, Tepoch, T}` defines an orbit in terms of the [Keplerian
+elements](https://en.wikipedia.org/wiki/Orbital_elements). The type parameter `Tanomaly`
+selects which anomaly is stored in the object: `TrueAnomaly`, `EccentricAnomaly`, or
+`MeanAnomaly`. This object is created using the functions:
 
 ```julia
-KeplerianElements(t::Tepoch, a::T1, e::T2, i::T3, Ω::T4, ω::T5, f::T6)
+KeplerianElements(epoch::Tepoch, semi_major_axis::T1, eccentricity::T2, inclination::T3, raan::T4, argument_of_periapsis::T5, anomaly::T6)
+KeplerianElements{Tanomaly}(epoch::Tepoch, semi_major_axis::T1, eccentricity::T2, inclination::T3, raan::T4, argument_of_periapsis::T5, anomaly::T6)
 ```
 
-where it returns an orbit representation using Keplerian elements with semi-major axis `a`
-[m], eccentricity `e` [ ], inclination `i` [rad], right ascension of the ascending node `Ω`
-[rad], argument of perigee `ω` [rad], and true anomaly `f` [rad].
+where it returns an orbit representation using Keplerian elements with semi-major axis
+`semi_major_axis` [m], eccentricity `eccentricity` [ ], inclination `inclination` [rad],
+right ascension of the ascending node `raan` [rad], argument of periapsis
+`argument_of_periapsis` [rad], and anomaly `anomaly` [rad]. If `Tanomaly` is omitted, the
+anomaly is the true anomaly.
 
 ```julia
 julia> orb = KeplerianElements(
@@ -79,27 +85,88 @@ julia> orb = KeplerianElements(
              90.000 |> deg2rad,
             123.456 |> deg2rad,
        )
-KeplerianElements{Float64, Float64}:
-           Epoch :    2.4466e6 (1986-06-19T18:35:00)
- Semi-major axis : 7130.98      km
-    Eccentricity :    0.0001111
-     Inclination :   98.405     °
-            RAAN :  200.0       °
- Arg. of Perigee :   90.0       °
-    True Anomaly :  123.456     °
+KeplerianElements{TrueAnomaly, Float64, Float64}:
+             Epoch :    2.4466e6 (1986-06-19T18:35:00)
+   Semi-major axis : 7130.98      km
+      Eccentricity :    0.0001111
+       Inclination :   98.405     °
+              RAAN :  200.0       °
+ Arg. of Periapsis :   90.0       °
+      True Anomaly :  123.456     °
+
+julia> orb_M = KeplerianElements{MeanAnomaly}(
+           date_to_jd(1986, 6, 19, 18, 35, 0),
+           7130.982e3,
+              0.0001111,
+             98.405 |> deg2rad,
+            200.000 |> deg2rad,
+             90.000 |> deg2rad,
+            123.456 |> deg2rad,
+       )
+KeplerianElements{MeanAnomaly, Float64, Float64}:
+             Epoch :    2.4466e6 (1986-06-19T18:35:00)
+   Semi-major axis : 7130.98      km
+      Eccentricity :    0.0001111
+       Inclination :   98.405     °
+              RAAN :  200.0       °
+ Arg. of Periapsis :   90.0       °
+      Mean Anomaly :  123.456     °
 ```
+
+The functions `true_anomaly`, `eccentric_anomaly`, and `mean_anomaly` return the desired
+anomaly of the orbit, converting it from the stored one if necessary. The keywords of the
+Newton-Raphson solver (see below) can be passed to those functions:
+
+```julia
+julia> true_anomaly(orb_M)
+2.1546338615735434
+
+julia> true_anomaly(orb_M; tol = 1e-6, max_iterations = 5)
+2.1546338615735434
+```
+
+For backward compatibility, the properties `t`, `a`, `e`, `i`, `Ω`, `ω`, and `f` are
+aliases for the fields `epoch`, `semi_major_axis`, `eccentricity`, `inclination`, `raan`,
+`argument_of_periapsis`, and the **true** anomaly, respectively.
+
+#### Equinoctial Elements
+
+`EquinoctialElements{Tepoch, T}` defines an orbit in terms of the equinoctial elements, which
+are non-singular for circular and equatorial orbits:
+
+```julia
+EquinoctialElements(epoch::Tepoch, semi_major_axis::T1, h::T2, k::T3, p::T4, q::T5, mean_longitude::T6)
+```
+
+where, given the Keplerian elements, `h = e * sin(ω + Ω)`, `k = e * cos(ω + Ω)`,
+`p = tan(i / 2) * sin(Ω)`, `q = tan(i / 2) * cos(Ω)`, and the mean longitude is
+`Ω + ω + M`. This set is singular for retrograde equatorial orbits (`i = π`).
+
+```julia
+julia> convert(EquinoctialElements, orb)
+EquinoctialElements{Float64, Float64}:
+           Epoch :    2.4466e6 (1986-06-19T18:35:00)
+ Semi-major axis : 7130.98       km
+               h :   -0.0001044
+               k :    3.79984e-5
+               p :   -0.396269
+               q :   -1.08874
+  Mean Longitude :  413.445      °
+```
+
+#### Orbit State Vector
 
 `OrbitStateVector` defines the orbit in terms of the [object state
 vector](https://en.wikipedia.org/wiki/Orbital_state_vectors). This object is created using
 the function:
 
 ```julia
-OrbitStateVector(t::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
+OrbitStateVector(epoch::Tepoch, r::AbstractVector{Tr}, v::AbstractVector{Tv}[, a::AbstractVector{Ta}])
 ```
 
-where it creates an orbit state vector with epoch `t` [Julian Day], position `r`
-[m], velocity `v` [m / s], and acceleration `a` [m / s²]. If the latter is
-omitted, it will be filled with `[0, 0, 0]`.
+where it creates an orbit state vector with `epoch` [Julian Day], position `r` [m], velocity
+`v` [m / s], and acceleration `a` [m / s²]. If the latter is omitted, it will be filled with
+`[0, 0, 0]`. For backward compatibility, the property `t` is an alias for `epoch`.
 
 ``` julia-repl
 julia> r_i = [6525.344; 6861.535; 6449.125] * 1000
@@ -121,6 +188,8 @@ OrbitStateVector{Float64, Float64}:
       v : [49.0228, 55.3312, -19.7571]  km/s
 ```
 
+#### Conversion between Orbit Representations
+
 The conversion between the orbit representations can be performed using the following
 functions:
 
@@ -129,7 +198,17 @@ functions:
 - `rv_to_kepler`: Convert the Cartesian position and velocity to Keplerian elements.
 - `sv_to_kepler`: Convert the orbit state vector to Keplerian elements.
 
-For more information, see the built-in documentation of those functions.
+Those functions accept the keyword `μ` to select the standard gravitational parameter of the
+central body. For more information, see the built-in documentation of those functions.
+
+All the representations can also be converted between each other using the Julia built-in
+conversion system (`convert`), which uses the Earth as the central body:
+
+```julia
+julia> convert(KeplerianElements{MeanAnomaly}, sv)
+julia> convert(EquinoctialElements, orb)
+julia> convert(OrbitStateVector{Float64, Float32}, orb_M)
+```
 
 #### Conversion between Orbit Anomalies
 
