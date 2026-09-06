@@ -86,13 +86,13 @@ julia> orb = KeplerianElements(
             123.456 |> deg2rad,
        )
 KeplerianElements{TrueAnomaly, Float64, Float64}:
-             Epoch :    2.4466e6 (1986-06-19T18:35:00)
-   Semi-major axis : 7130.98      km
-      Eccentricity :    0.0001111
-       Inclination :   98.405     °
-              RAAN :  200.0       °
- Arg. of Periapsis :   90.0       °
-      True Anomaly :  123.456     °
+              Epoch :    2.4466e6 (1986-06-19T18:35:00)
+    Semi-major axis : 7130.98      km
+       Eccentricity :    0.0001111
+        Inclination :   98.405     °
+               RAAN :  200.0       °
+  Arg. of Periapsis :   90.0       °
+       True Anomaly :  123.456     °
 
 julia> orb_M = KeplerianElements{MeanAnomaly}(
            date_to_jd(1986, 6, 19, 18, 35, 0),
@@ -104,13 +104,13 @@ julia> orb_M = KeplerianElements{MeanAnomaly}(
             123.456 |> deg2rad,
        )
 KeplerianElements{MeanAnomaly, Float64, Float64}:
-             Epoch :    2.4466e6 (1986-06-19T18:35:00)
-   Semi-major axis : 7130.98      km
-      Eccentricity :    0.0001111
-       Inclination :   98.405     °
-              RAAN :  200.0       °
- Arg. of Periapsis :   90.0       °
-      Mean Anomaly :  123.456     °
+              Epoch :    2.4466e6 (1986-06-19T18:35:00)
+    Semi-major axis : 7130.98      km
+       Eccentricity :    0.0001111
+        Inclination :   98.405     °
+               RAAN :  200.0       °
+  Arg. of Periapsis :   90.0       °
+       Mean Anomaly :  123.456     °
 ```
 
 The functions `true_anomaly`, `eccentric_anomaly`, and `mean_anomaly` return the desired
@@ -145,13 +145,13 @@ where, given the Keplerian elements, `h = e * sin(ω + Ω)`, `k = e * cos(ω + �
 ```julia
 julia> convert(EquinoctialElements, orb)
 EquinoctialElements{Float64, Float64}:
-           Epoch :    2.4466e6 (1986-06-19T18:35:00)
- Semi-major axis : 7130.98       km
-               h :   -0.0001044
-               k :    3.79984e-5
-               p :   -0.396269
-               q :   -1.08874
-  Mean Longitude :  413.445      °
+            Epoch :    2.4466e6 (1986-06-19T18:35:00)
+  Semi-major axis : 7130.98       km
+                h :   -0.0001044
+                k :    3.79984e-5
+                p :   -0.396269
+                q :   -1.08874
+   Mean Longitude :  413.445      °
 ```
 
 #### Alternate Equinoctial Elements
@@ -173,13 +173,13 @@ used to write code that accepts either of them.
 ```julia
 julia> convert(AlternateEquinoctialElements, orb)
 AlternateEquinoctialElements{Float64, Float64}:
-           Epoch :    2.4466e6 (1986-06-19T18:35:00)
- Semi-major axis : 7130.98       km
-               h :   -0.0001044
-               k :    3.79984e-5
-               p :   -0.258917
-               q :   -0.711369
-  Mean Longitude :  413.445      °
+            Epoch :    2.4466e6 (1986-06-19T18:35:00)
+  Semi-major axis : 7130.98       km
+                h :   -0.0001044
+                k :    3.79984e-5
+                p :   -0.258917
+                q :   -0.711369
+   Mean Longitude :  413.445      °
 ```
 
 #### Orbit State Vector
@@ -211,10 +211,10 @@ julia> v_i = [4.902276; 5.533124; -1.975709] * 1000
 
 julia> sv = OrbitStateVector(date_to_jd(1986, 6, 19, 18, 35, 0), r_i, v_i)
 OrbitStateVector{Float64, Float64}:
-        Epoch : 2.4466e6 (1986-06-19T18:35:00)
-     Position : [6525.34, 6861.53, 6449.12]  km
-     Velocity : [4.90228, 5.53312, -1.97571] km/s
- Acceleration : [0.0, 0.0, 0.0]              km/s²
+         Epoch : 2.4466e6 (1986-06-19T18:35:00)
+      Position : [6525.34, 6861.53, 6449.12]  km
+      Velocity : [4.90228, 5.53312, -1.97571] km/s
+  Acceleration : [0.0, 0.0, 0.0]              km/s²
 ```
 
 #### Conversion between Orbit Representations

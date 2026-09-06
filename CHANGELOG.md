@@ -9,6 +9,9 @@ Version 2.1.0
   types with the same layout: `print_elements`, `print_compact`, `println_field`,
   `print_field`, `align_on_decimal`, `append_unit`, and `compact_string`. They are not
   exported and live in `src/show/helpers.jl`.
+- ![Enhancement][badge-enhancement] Indent the rows of the rich representations by two
+  spaces with respect to the header instead of one, so that nested structures printed by
+  the other packages grow their indentation by two spaces per level.
 
 Version 2.0.1
 -------------

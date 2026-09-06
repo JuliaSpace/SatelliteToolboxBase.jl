@@ -37,8 +37,8 @@ end
 Print to `io` the rich representation of an object: the `header` followed by a colon, a
 line with the `epoch` [Julian Day] and its date, and one line per element with its label,
 value, and unit, taken from `labels`, `values`, and `units`. The non-empty units are aligned
-after the longest value. The labels are right-aligned, and printed in bold if `io` supports
-color. The last line has no trailing newline.
+after the longest value. The labels are right-aligned two spaces after the header column,
+and printed in bold if `io` supports color. The last line has no trailing newline.
 
 This function is public but not exported. Call it as `SatelliteToolboxBase.print_elements`.
 
@@ -74,8 +74,9 @@ function print_elements(
         return isempty(unit) ? value : append_unit(value, max_length, unit)
     end
 
-    # Right-align the labels, leaving one space before the longest one.
-    label_width = maximum(length, ("Epoch", labels...)) + 1
+    # Right-align the labels, leaving two spaces before the longest one so that the rows
+    # are indented with respect to the header.
+    label_width = maximum(length, ("Epoch", labels...)) + 2
 
     println(io, header, ":")
     println_field(io, lpad("Epoch", label_width) * " : ", epoch_str, " (", date_str, ")")

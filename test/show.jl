@@ -36,10 +36,10 @@
     @testset "print_elements" begin
         expected = """
 MyType:
-           Epoch :    2.4466e6 (1986-06-18T12:00:00)
- Semi-major axis : 7130.98      km
-    Eccentricity :    0.0001111
-            Name : SGP4"""
+            Epoch :    2.4466e6 (1986-06-18T12:00:00)
+  Semi-major axis : 7130.98      km
+     Eccentricity :    0.0001111
+             Name : SGP4"""
 
         str = sprint(
             SatelliteToolboxBase.print_elements,
@@ -54,9 +54,9 @@ MyType:
         # Without the decimal alignment, the values are printed as they are.
         expected = """
 MyType:
- Epoch : 2.4466e6 (1986-06-18T12:00:00)
-     A : 1.5  m
-     B : 12.5 s"""
+  Epoch : 2.4466e6 (1986-06-18T12:00:00)
+      A : 1.5  m
+      B : 12.5 s"""
 
         str = sprint() do io
             SatelliteToolboxBase.print_elements(
