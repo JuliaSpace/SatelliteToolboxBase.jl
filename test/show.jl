@@ -5,34 +5,26 @@
 ############################################################################################
 
 @testset "Show Helpers" verbose = true begin
-    @testset "align_on_decimal" begin
-        a, b, c = SatelliteToolboxBase.align_on_decimal("7130.98", "0.0001111", "12")
-
-        # The decimal points must be at the same column, and strings without a decimal
-        # point are treated as if the point were right after the last character.
-        @test a == "7130.98"
-        @test b == "   0.0001111"
-        @test c == "  12"
+    @testset "epoch_string" begin
+        str = SatelliteToolboxBase.epoch_string(2.4466e6)
+        @test str == "2.4466e6 (1986-06-18T12:00:00)"
     end
 
-    @testset "append_unit" begin
-        # The result is an annotated string, so we compare its contents.
-        @test String(SatelliteToolboxBase.append_unit("7130.98", 10, "km")) == "7130.98    km"
-        @test String(SatelliteToolboxBase.append_unit("7130.98", 7, "km")) == "7130.98 km"
+    @testset "format_value" begin
+        # Floating-point numbers are rounded to 10 significant digits.
+        @test SatelliteToolboxBase.format_value(7130.982) == "7130.982"
+        @test SatelliteToolboxBase.format_value(8000.0) == "8000.0"
+        @test SatelliteToolboxBase.format_value(1 / 3) == "0.3333333333"
+        @test SatelliteToolboxBase.format_value(100.00000000000001) == "100.0"
+        @test SatelliteToolboxBase.format_value(7130.982f0) == "7130.98"
+        @test SatelliteToolboxBase.format_value(199.99998f0) == "200.0"
+        @test SatelliteToolboxBase.format_value(-2.53215e-6) == "-2.53215e-6"
+        @test SatelliteToolboxBase.format_value(NaN) == "NaN"
 
-        # The unit must be dimmed when the output supports colors.
-        str_color = sprint(
-            print, SatelliteToolboxBase.append_unit("7130.98", 7, "km"); context = :color => true
-        )
-        @test str_color == "7130.98 \e[90mkm\e[39m"
-    end
-
-    @testset "compact_string" begin
-        io = IOBuffer()
-        @test SatelliteToolboxBase.compact_string(io, 1 / 3) == "0.333333"
-        @test SatelliteToolboxBase.compact_string(
-            IOContext(io, :compact => false), 1 / 3
-        ) == "0.3333333333333333"
+        # Vectors are printed between brackets, and other values with `string`.
+        @test SatelliteToolboxBase.format_value([1 / 3, 2.0]) == "[0.3333333333, 2.0]"
+        @test SatelliteToolboxBase.format_value(12) == "12"
+        @test SatelliteToolboxBase.format_value("SGP4") == "SGP4"
     end
 
     @testset "print_compact" begin
@@ -40,66 +32,118 @@
         @test str == "MyOrbit: Epoch = 2.4466e6 (1986-06-18T12:00:00)"
     end
 
-    @testset "print_elements" begin
-        expected = """
-MyType:
-            Epoch :    2.4466e6 (1986-06-18T12:00:00)
-  Semi-major axis : 7130.98      km
-     Eccentricity :    0.0001111
-             Name : SGP4"""
+    @testset "print_fields" begin
+        fields = SatelliteToolboxBase.PrintedField[
+            ("Semi-Major Axis", "7130.982", "km"),
+            ("Inclination",     "98.405",   "°"),
+            ("Name",            "SGP4",     ""),
+        ]
 
-        str = sprint(
-            SatelliteToolboxBase.print_elements,
-            "MyType",
-            2.4466e6,
-            ("Semi-major axis", "Eccentricity", "Name"),
-            ("7130.98", "0.0001111", "SGP4"),
-            ("km", "", "");
-        )
+        # The labels are left-aligned, and the degree symbol hugs the value.
+        expected = join(
+            (
+                "│  Semi-Major Axis : 7130.982 km",
+                "│  Inclination     : 98.405°",
+                "│  Name            : SGP4",
+            ),
+            '\n',
+        ) * '\n'
+
+        str = sprint(SatelliteToolboxBase.print_fields, fields, "│  ")
         @test str == expected
 
-        # Without the decimal alignment, the values are printed as they are.
-        expected = """
-MyType:
-  Epoch : 2.4466e6 (1986-06-18T12:00:00)
-      A : 1.5  m
-      B : 12.5 s"""
+        # Nothing is printed without fields.
+        no_fields = SatelliteToolboxBase.PrintedField[]
+        @test sprint(SatelliteToolboxBase.print_fields, no_fields, "  ") == ""
 
-        str = sprint() do io
-            SatelliteToolboxBase.print_elements(
-                io,
-                "MyType",
-                2.4466e6,
-                ("A", "B"),
-                ("1.5", "12.5"),
-                ("m", "s");
-                align_decimal = false,
-            )
-        end
-        @test str == expected
-
-        # The labels must be highlighted when the output supports colors.
+        # The rails, the labels, and the units must be decorated when the output supports
+        # colors.
         str_color = sprint(
-            SatelliteToolboxBase.print_elements,
-            "MyType",
-            2.4466e6,
-            ("A",),
-            ("1.5",),
-            ("m",);
-            context = :color => true,
+            SatelliteToolboxBase.print_fields, fields[1:1], "│  "; context = :color => true
         )
-        @test occursin("\e[1m", str_color)
-        @test occursin("\e[90mm\e[39m", str_color)
+        @test str_color ==
+            "\e[90m│  \e[39m\e[1mSemi-Major Axis\e[22m : 7130.982 \e[90mkm\e[39m\n"
     end
 
-    @testset "println_field and print_field" begin
-        @test sprint(SatelliteToolboxBase.println_field, "Label : ", 1, " m") ==
-            "Label : 1 m\n"
-        @test sprint(SatelliteToolboxBase.print_field, "Label : ", 1, " m") == "Label : 1 m"
+    @testset "print_node" begin
+        @test sprint(SatelliteToolboxBase.print_node, "Constants", "  ", "└─ ") ==
+            "  └─ Constants\n"
 
         str_color = sprint(
-            SatelliteToolboxBase.print_field, "L : ", 1; context = :color => true
+            SatelliteToolboxBase.print_node,
+            "Constants",
+            "  ",
+            "├─ ";
+            context = :color => true,
         )
-        @test str_color == "\e[1mL : \e[22m1"
+        @test str_color == "\e[90m  \e[39m\e[90m├─ \e[39m\e[33m\e[1mConstants\e[39m\e[22m\n"
+    end
+
+    @testset "print_tree and print_tree_body" begin
+        fields = SatelliteToolboxBase.PrintedField[
+            ("Epoch",            SatelliteToolboxBase.epoch_string(2.4466e6), ""),
+            ("Last Propagation", "100.0",                                     "s"),
+        ]
+
+        sections = SatelliteToolboxBase.PrintedSection[
+            "Mean Elements" => [
+                ("Semi-Major Axis", "7130.982",  "km"),
+                ("Eccentricity",    "0.0001111", ""),
+            ],
+            "Constants" => [
+                ("R₀", "6378.137",   "km"),
+                ("J₂", "0.00108263", ""),
+            ],
+        ]
+
+        expected = join(
+            (
+                "MyType:",
+                "  Epoch            : 2.4466e6 (1986-06-18T12:00:00)",
+                "  Last Propagation : 100.0 s",
+                "  ├─ Mean Elements",
+                "  │    Semi-Major Axis : 7130.982 km",
+                "  │    Eccentricity    : 0.0001111",
+                "  └─ Constants",
+                "       R₀ : 6378.137 km",
+                "       J₂ : 0.00108263",
+            ),
+            '\n',
+        )
+
+        str = sprint(SatelliteToolboxBase.print_tree, "MyType", fields, sections)
+        @test str == expected
+
+        # The body has no header and no trailing newline.
+        str = sprint(SatelliteToolboxBase.print_tree_body, fields, sections)
+        @test str == expected[(length("MyType:\n") + 1):end]
+
+        # Without sections, only the fields are printed.
+        str = sprint(
+            SatelliteToolboxBase.print_tree,
+            "MyType",
+            fields,
+            SatelliteToolboxBase.PrintedSection[],
+        )
+        @test str == join(
+            (
+                "MyType:",
+                "  Epoch            : 2.4466e6 (1986-06-18T12:00:00)",
+                "  Last Propagation : 100.0 s",
+            ),
+            '\n',
+        )
+
+        # The header must be highlighted when the output supports colors, and the
+        # decorations must not change the text.
+        str_color = sprint(
+            SatelliteToolboxBase.print_tree,
+            "MyType",
+            fields,
+            sections;
+            context = :color => true,
+        )
+        @test startswith(str_color, "\e[1mMyType:\e[22m\n")
+        @test replace(str_color, r"\e\[[0-9;]*m" => "") == expected
     end
 end

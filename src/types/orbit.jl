@@ -71,9 +71,10 @@ are computed in the promoted numeric type of the input and the target.
 ## Printing
 
 `show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
-Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
-with its unit, aligned at the decimal point, with the labels in bold and the units dimmed if
-`io` supports color.
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints the epoch and one
+element per line with its unit, with the labels in bold and the units dimmed if `io`
+supports color. The body can be printed under another header with
+`SatelliteToolboxBase.print_tree_body`.
 
 ## Iteration
 
@@ -253,9 +254,10 @@ are computed in the promoted numeric type of the input and the target.
 ## Printing
 
 `show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
-Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
-with its unit, aligned at the decimal point, with the labels in bold and the units dimmed if
-`io` supports color.
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints the epoch and one
+element per line with its unit, with the labels in bold and the units dimmed if `io`
+supports color. The body can be printed under another header with
+`SatelliteToolboxBase.print_tree_body`.
 
 ## Iteration
 
@@ -385,9 +387,10 @@ are computed in the promoted numeric type of the input and the target.
 ## Printing
 
 `show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
-Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints one element per line
-with its unit, aligned at the decimal point, with the labels in bold and the units dimmed if
-`io` supports color.
+Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints the epoch and one
+element per line with its unit, with the labels in bold and the units dimmed if `io`
+supports color. The body can be printed under another header with
+`SatelliteToolboxBase.print_tree_body`.
 
 ## Iteration
 
@@ -501,7 +504,8 @@ conversions are computed in the promoted numeric type of the input and the targe
 `show(io, orbit)` prints the compact form: the type with its parameters and the epoch as a
 Julian Day and as a date. `show(io, MIME("text/plain"), orbit)` prints the epoch and the
 position, velocity, and acceleration vectors, one per line with its unit, with the labels in
-bold and the units dimmed if `io` supports color.
+bold and the units dimmed if `io` supports color. The body can be printed under another
+header with `SatelliteToolboxBase.print_tree_body`.
 
 ## Iteration
 

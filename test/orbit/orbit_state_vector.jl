@@ -105,19 +105,19 @@ end
 
     expected = """
 OrbitStateVector{Float64, Float64}:
-         Epoch : 2.4466e6 (1986-06-19T18:35:00)
-      Position : [-3.107, 1954.0, 6110.0] km
-      Velocity : [6.337, -1.47, 3.684]    km/s
-  Acceleration : [0.0, 0.0, 0.0]          km/s²"""
+  Epoch        : 2.4466e6 (1986-06-19T18:35:00)
+  Position     : [-3.107, 1954.0, 6110.0] km
+  Velocity     : [6.337, -1.47, 3.684] km/s
+  Acceleration : [0.0, 0.0, 0.0] km/s²"""
     str = sprint(show, MIME("text/plain"), sv)
     @test str == expected
 
     expected = """
 OrbitStateVector{Float64, Float32}:
-         Epoch : 2.4466e6 (1986-06-19T18:35:00)
-      Position : Float32[-3.107, 1954.0, 6110.0] km
-      Velocity : Float32[6.337, -1.47, 3.684]    km/s
-  Acceleration : Float32[0.0, 0.0, 0.0]          km/s²"""
+  Epoch        : 2.4466e6 (1986-06-19T18:35:00)
+  Position     : [-3.107, 1954.0, 6110.0] km
+  Velocity     : [6.337, -1.47, 3.684] km/s
+  Acceleration : [0.0, 0.0, 0.0] km/s²"""
     str = sprint(show, MIME("text/plain"), sv_f32)
     @test str == expected
 
@@ -126,10 +126,10 @@ OrbitStateVector{Float64, Float32}:
 
     expected = """
 OrbitStateVector{Float64, Float64}:
-         Epoch : 2.4466e6 (1986-06-19T18:35:00)
-      Position : [-3.107, 1954.0, 6110.0] km
-      Velocity : [6.337, -1.47, 3.684]    km/s
-  Acceleration : [0.001, 0.002, 0.003]    km/s²"""
+  Epoch        : 2.4466e6 (1986-06-19T18:35:00)
+  Position     : [-3.107, 1954.0, 6110.0] km
+  Velocity     : [6.337, -1.47, 3.684] km/s
+  Acceleration : [0.001, 0.002, 0.003] km/s²"""
     str = sprint(show, MIME("text/plain"), sv_a)
     @test str == expected
 

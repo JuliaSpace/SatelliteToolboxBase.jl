@@ -94,25 +94,25 @@ end
 
     expected = """
 EquinoctialElements{Float64, Float64}:
-            Epoch :    2.4466e6 (1986-06-19T18:35:00)
-  Semi-major axis : 7130.98       km
-                h :   -0.0001044
-                k :    3.79984e-5
-                p :   -0.396269
-                q :   -1.08874
-   Mean Longitude :  413.445      °"""
+  Epoch           : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis : 7130.982 km
+  h               : -0.0001044
+  k               : 3.79984e-5
+  p               : -0.396269
+  q               : -1.08874
+  Mean Longitude  : 413.445°"""
     str = sprint(show, MIME("text/plain"), ee)
     @test str == expected
 
     expected = """
 EquinoctialElements{Float64, Float32}:
-            Epoch :    2.4466e6 (1986-06-19T18:35:00)
-  Semi-major axis : 7130.98       km
-                h :   -0.0001044
-                k :    3.79984e-5
-                p :   -0.396269
-                q :   -1.08874
-   Mean Longitude :  413.445      °"""
+  Epoch           : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis : 7130.98 km
+  h               : -0.0001044
+  k               : 3.79984e-5
+  p               : -0.396269
+  q               : -1.08874
+  Mean Longitude  : 413.445°"""
     str = sprint(show, MIME("text/plain"), ee_f32)
     @test str == expected
 
@@ -123,13 +123,13 @@ EquinoctialElements{Float64, Float32}:
 
     expected = """
 EquinoctialElements{Float64, Float64}:
-            Epoch :    2.4466e6 (1986-06-19T18:35:00)
-  Semi-major axis : 7000.0   km
-                h :  NaN
-                k :    1.0
-                p :    2.0
-                q :    3.0
-   Mean Longitude :  229.183 °"""
+  Epoch           : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis : 7000.0 km
+  h               : NaN
+  k               : 1.0
+  p               : 2.0
+  q               : 3.0
+  Mean Longitude  : 229.1831181°"""
     str = sprint(show, MIME("text/plain"), ee_nan)
     @test str == expected
 

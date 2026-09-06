@@ -4,18 +4,22 @@ SatelliteToolboxBase.jl Changelog
 Version 2.1.0
 -------------
 
-- ![Feature][badge-feature] Make the helpers that print the rich and the compact
-  representations public, so that the other packages of the ecosystem can print their
-  types with the same layout: `print_elements`, `print_compact`, `println_field`,
-  `print_field`, `align_on_decimal`, `append_unit`, and `compact_string`. They are not
-  exported and live in `src/show/helpers.jl`.
-- ![Enhancement][badge-enhancement] Indent the rows of the rich representations by two
-  spaces with respect to the header instead of one, so that nested structures printed by
-  the other packages grow their indentation by two spaces per level.
-- ![Enhancement][badge-enhancement] Dim the units of the rich representations when the
-  output supports color. The decorations use the faces `:satellitetoolbox_base_label` and
-  `:satellitetoolbox_base_unit`, registered at load time, which can be customized with
-  **StyledStrings**.
+- ![BREAKING][badge-breaking] The rich representations of the orbit types follow the
+  layout of the orbit data messages of **SatelliteToolboxOrbitDataMessages.jl**: the header
+  is followed by one field per line with a left-aligned label, the value rounded to 10
+  significant digits, and the unit, where `°` hugs the value. The labels were renamed
+  accordingly (`Semi-Major Axis`, `RA of Asc. Node`, `Arg. of Pericenter`). If the output
+  supports color, the header and the labels are bold and the units are dimmed.
+- ![Feature][badge-feature] Make the helpers that print the representations public, so
+  that the other packages of the ecosystem can print their types with the same layout:
+  `print_compact`, `print_tree`, `print_tree_body`, `print_fields`, `print_node`,
+  `epoch_string`, and `format_value`, together with the types `PrintedField` and
+  `PrintedSection`. They are not exported and live in `src/show/helpers.jl`. The rich
+  representation is a tree whose sections are drawn as nodes, and `print_tree_body` is
+  overloaded by the orbit types so that a wrapper can print their body under its own header.
+- ![Feature][badge-feature] Register the **StyledStrings** faces `:satellitetoolbox_base_title`,
+  `:satellitetoolbox_base_node`, `:satellitetoolbox_base_tree`, `:satellitetoolbox_base_label`,
+  and `:satellitetoolbox_base_unit` at load time, which the users can customize.
 
 Version 2.0.1
 -------------

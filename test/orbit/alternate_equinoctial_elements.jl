@@ -88,25 +88,25 @@ end
 
     expected = """
 AlternateEquinoctialElements{Float64, Float64}:
-            Epoch :    2.4466e6 (1986-06-19T18:35:00)
-  Semi-major axis : 7130.98       km
-                h :   -0.0001044
-                k :    3.79984e-5
-                p :   -0.258917
-                q :   -0.711369
-   Mean Longitude :  413.445      °"""
+  Epoch           : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis : 7130.982 km
+  h               : -0.0001044
+  k               : 3.79984e-5
+  p               : -0.258917
+  q               : -0.711369
+  Mean Longitude  : 413.445°"""
     str = sprint(show, MIME("text/plain"), aee)
     @test str == expected
 
     expected = """
 AlternateEquinoctialElements{Float64, Float32}:
-            Epoch :    2.4466e6 (1986-06-19T18:35:00)
-  Semi-major axis : 7130.98       km
-                h :   -0.0001044
-                k :    3.79984e-5
-                p :   -0.258917
-                q :   -0.711369
-   Mean Longitude :  413.445      °"""
+  Epoch           : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis : 7130.98 km
+  h               : -0.0001044
+  k               : 3.79984e-5
+  p               : -0.258917
+  q               : -0.711369
+  Mean Longitude  : 413.445°"""
     str = sprint(show, MIME("text/plain"), aee_f32)
     @test str == expected
 

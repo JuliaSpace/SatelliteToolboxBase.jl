@@ -19,72 +19,56 @@ end
 #                                       Rich Format                                        #
 ############################################################################################
 
+function Base.show(io::IO, ::MIME"text/plain", orbit::Orbit)
+    print_tree(io, _orbit_type_name(orbit), orbit)
+    return nothing
+end
+
 # == Keplerian Elements ====================================================================
 
-function Base.show(
-    io::IO, ::MIME"text/plain", ke::KeplerianElements{Tanomaly}
-) where {Tanomaly <: AbstractAnomaly}
-    labels = (
-        "Semi-major axis",
-        "Eccentricity",
-        "Inclination",
-        "RAAN",
-        "Arg. of Periapsis",
-        _anomaly_label(Tanomaly),
-    )
+function print_tree_body(io::IO, ke::KeplerianElements{Tanomaly}) where {Tanomaly}
+    fields = PrintedField[
+        ("Epoch",                 epoch_string(ke.epoch),                            ""),
+        ("Semi-Major Axis",       format_value(ke.semi_major_axis / 1000),           "km"),
+        ("Eccentricity",          format_value(ke.eccentricity),                     ""),
+        ("Inclination",           format_value(rad2deg(ke.inclination)),             "°"),
+        ("RA of Asc. Node",       format_value(rad2deg(ke.raan)),                    "°"),
+        ("Arg. of Pericenter",    format_value(rad2deg(ke.argument_of_periapsis)),   "°"),
+        (_anomaly_label(Tanomaly), format_value(rad2deg(ke.anomaly)),                "°"),
+    ]
 
-    values = (
-        compact_string(io, ke.semi_major_axis / 1000),
-        compact_string(io, ke.eccentricity),
-        compact_string(io, rad2deg(ke.inclination)),
-        compact_string(io, rad2deg(ke.raan)),
-        compact_string(io, rad2deg(ke.argument_of_periapsis)),
-        compact_string(io, rad2deg(ke.anomaly)),
-    )
-
-    units = ("km", "", "°", "°", "°", "°")
-
-    print_elements(io, _orbit_type_name(ke), ke.epoch, labels, values, units)
+    print_tree_body(io, fields, PrintedSection[])
     return nothing
 end
 
 # == Equinoctial Elements ==================================================================
 
-function Base.show(io::IO, ::MIME"text/plain", orbit::AbstractEquinoctialElements)
-    labels = ("Semi-major axis", "h", "k", "p", "q", "Mean Longitude")
+function print_tree_body(io::IO, orbit::AbstractEquinoctialElements)
+    fields = PrintedField[
+        ("Epoch",           epoch_string(orbit.epoch),                     ""),
+        ("Semi-Major Axis", format_value(orbit.semi_major_axis / 1000),    "km"),
+        ("h",               format_value(orbit.h),                         ""),
+        ("k",               format_value(orbit.k),                         ""),
+        ("p",               format_value(orbit.p),                         ""),
+        ("q",               format_value(orbit.q),                         ""),
+        ("Mean Longitude",  format_value(rad2deg(orbit.mean_longitude)),   "°"),
+    ]
 
-    values = (
-        compact_string(io, orbit.semi_major_axis / 1000),
-        compact_string(io, orbit.h),
-        compact_string(io, orbit.k),
-        compact_string(io, orbit.p),
-        compact_string(io, orbit.q),
-        compact_string(io, rad2deg(orbit.mean_longitude)),
-    )
-
-    units = ("km", "", "", "", "", "°")
-
-    print_elements(io, _orbit_type_name(orbit), orbit.epoch, labels, values, units)
+    print_tree_body(io, fields, PrintedSection[])
     return nothing
 end
 
 # == Orbit State Vector ====================================================================
 
-function Base.show(io::IO, ::MIME"text/plain", sv::OrbitStateVector)
-    labels = ("Position", "Velocity", "Acceleration")
+function print_tree_body(io::IO, sv::OrbitStateVector)
+    fields = PrintedField[
+        ("Epoch",        epoch_string(sv.epoch),        ""),
+        ("Position",     format_value(sv.r ./ 1000),    "km"),
+        ("Velocity",     format_value(sv.v ./ 1000),    "km/s"),
+        ("Acceleration", format_value(sv.a ./ 1000),    "km/s²"),
+    ]
 
-    values = (
-        compact_string(io, sv.r ./ 1000),
-        compact_string(io, sv.v ./ 1000),
-        compact_string(io, sv.a ./ 1000),
-    )
-
-    units = ("km", "km/s", "km/s²")
-
-    # The values are vectors, so aligning them at the first decimal point makes no sense.
-    print_elements(
-        io, _orbit_type_name(sv), sv.epoch, labels, values, units; align_decimal = false
-    )
+    print_tree_body(io, fields, PrintedSection[])
     return nothing
 end
 
