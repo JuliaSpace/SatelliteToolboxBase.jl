@@ -3,7 +3,7 @@ uuid = "9e17983a-0463-41a7-9a16-1682db6d8b66"
 license = "MIT"
 desc = "Base constants, functions, and types for the SatelliteToolbox.jl ecosystem."
 authors = ["Ronan Arraes Jardim Chagas <ronisbr@gmail.com>"]
-version = "2.0.1"
+version = "2.1.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
