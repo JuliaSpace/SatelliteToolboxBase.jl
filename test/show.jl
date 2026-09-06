@@ -16,8 +16,15 @@
     end
 
     @testset "append_unit" begin
-        @test SatelliteToolboxBase.append_unit("7130.98", 10, "km") == "7130.98    km"
-        @test SatelliteToolboxBase.append_unit("7130.98", 7, "km") == "7130.98 km"
+        # The result is an annotated string, so we compare its contents.
+        @test String(SatelliteToolboxBase.append_unit("7130.98", 10, "km")) == "7130.98    km"
+        @test String(SatelliteToolboxBase.append_unit("7130.98", 7, "km")) == "7130.98 km"
+
+        # The unit must be dimmed when the output supports colors.
+        str_color = sprint(
+            print, SatelliteToolboxBase.append_unit("7130.98", 7, "km"); context = :color => true
+        )
+        @test str_color == "7130.98 \e[90mkm\e[39m"
     end
 
     @testset "compact_string" begin
@@ -82,6 +89,7 @@ MyType:
             context = :color => true,
         )
         @test occursin("\e[1m", str_color)
+        @test occursin("\e[90mm\e[39m", str_color)
     end
 
     @testset "println_field and print_field" begin

@@ -58,4 +58,14 @@ include("./time/julian_day.jl")
 
 include("./precompile.jl")
 
+############################################################################################
+#                                     Initialization                                      #
+############################################################################################
+
+# Register the `StyledStrings` faces used by the printed representations.
+function __init__()
+    _register_faces()
+    return nothing
+end
+
 end # module SatelliteToolboxBase

@@ -12,6 +12,10 @@ Version 2.1.0
 - ![Enhancement][badge-enhancement] Indent the rows of the rich representations by two
   spaces with respect to the header instead of one, so that nested structures printed by
   the other packages grow their indentation by two spaces per level.
+- ![Enhancement][badge-enhancement] Dim the units of the rich representations when the
+  output supports color. The decorations use the faces `:satellitetoolbox_base_label` and
+  `:satellitetoolbox_base_unit`, registered at load time, which can be customized with
+  **StyledStrings**.
 
 Version 2.0.1
 -------------
