@@ -52,6 +52,10 @@ end
     end
 end
 
+@testset "Show" verbose = true begin
+    include("./show.jl")
+end
+
 @testset "Storage" verbose = true begin
     include("./storage.jl")
 end

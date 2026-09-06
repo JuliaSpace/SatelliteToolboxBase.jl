@@ -1,6 +1,15 @@
 SatelliteToolboxBase.jl Changelog
 =================================
 
+Version 2.1.0
+-------------
+
+- ![Feature][badge-feature] Make the helpers that print the rich and the compact
+  representations public, so that the other packages of the ecosystem can print their
+  types with the same layout: `print_elements`, `print_compact`, `println_field`,
+  `print_field`, `align_on_decimal`, `append_unit`, and `compact_string`. They are not
+  exported and live in `src/show/helpers.jl`.
+
 Version 2.0.1
 -------------
 

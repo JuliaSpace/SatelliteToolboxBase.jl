@@ -1,0 +1,166 @@
+## Description #############################################################################
+#
+# Helpers to print the rich and the compact representations of the types defined in the
+# SatelliteToolbox.jl ecosystem.
+#
+# The functions in this file are public but not exported. They must be called with the
+# module prefix, e.g. `SatelliteToolboxBase.print_elements`.
+#
+############################################################################################
+
+"""
+    print_compact(io::IO, name::String, epoch::Number) -> Nothing
+
+Print to `io` the compact representation of an object whose type is described by `name`:
+the `name` followed by the `epoch` [Julian Day] as a number and as a date.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.print_compact`.
+"""
+function print_compact(io::IO, name::String, epoch::Number)
+    epoch_str = compact_string(io, epoch)
+    date_str  = sprint(print, jd_to_date(DateTime, epoch))
+    print(io, name, ": Epoch = ", epoch_str, " (", date_str, ")")
+    return nothing
+end
+
+"""
+    print_elements(
+        io::IO,
+        header::String,
+        epoch::Number,
+        labels::NTuple{N, String},
+        values::NTuple{N, String},
+        units::NTuple{N, String};
+        kwargs...
+    ) where {N} -> Nothing
+
+Print to `io` the rich representation of an object: the `header` followed by a colon, a
+line with the `epoch` [Julian Day] and its date, and one line per element with its label,
+value, and unit, taken from `labels`, `values`, and `units`. The non-empty units are aligned
+after the longest value. The labels are right-aligned, and printed in bold if `io` supports
+color. The last line has no trailing newline.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.print_elements`.
+
+# Keywords
+
+- `align_decimal::Bool`: If `true`, the values, the epoch included, are aligned at the
+    decimal point.
+    (**Default**: `true`)
+"""
+function print_elements(
+    io::IO,
+    header::String,
+    epoch::Number,
+    labels::NTuple{N, String},
+    values::NTuple{N, String},
+    units::NTuple{N, String};
+    align_decimal::Bool = true,
+) where {N}
+    epoch_str = compact_string(io, epoch)
+    date_str  = sprint(print, jd_to_date(DateTime, epoch))
+
+    # Align all the values at the decimal point, if requested.
+    if align_decimal
+        aligned   = align_on_decimal(epoch_str, values...)
+        epoch_str = first(aligned)
+        values    = Base.tail(aligned)
+    end
+
+    # Pad the values with a unit so that the units are aligned.
+    max_length = maximum(length, values)
+
+    values = map(values, units) do value, unit
+        return isempty(unit) ? value : append_unit(value, max_length, unit)
+    end
+
+    # Right-align the labels, leaving one space before the longest one.
+    label_width = maximum(length, ("Epoch", labels...)) + 1
+
+    println(io, header, ":")
+    println_field(io, lpad("Epoch", label_width) * " : ", epoch_str, " (", date_str, ")")
+
+    for k in 1:N
+        label = lpad(labels[k], label_width) * " : "
+
+        if k < N
+            println_field(io, label, values[k])
+        else
+            print_field(io, label, values[k])
+        end
+    end
+
+    return nothing
+end
+
+"""
+    println_field(io::IO, label::String, xs...) -> Nothing
+
+Print the field `label` in bold to `io`, followed by the values `xs...` and a newline. The
+bold decoration is rendered only if `io` supports color.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.println_field`.
+"""
+function println_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    println(io, xs...)
+    return nothing
+end
+
+"""
+    print_field(io::IO, label::String, xs...) -> Nothing
+
+Print the field `label` in bold to `io`, followed by the values `xs...` without a trailing
+newline. The bold decoration is rendered only if `io` supports color.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.print_field`.
+"""
+function print_field(io::IO, label::String, xs...)
+    print(io, styled"{bold:$label}")
+    print(io, xs...)
+    return nothing
+end
+
+"""
+    align_on_decimal(strs::Vararg{String, N}) where {N} -> NTuple{N, String}
+
+Return the strings `strs` left-padded so that their decimal points are aligned. Strings
+without a decimal point are treated as if the point were right after the last character.
+
+This function is public but not exported. Call it as
+`SatelliteToolboxBase.align_on_decimal`.
+"""
+function align_on_decimal(strs::Vararg{String, N}) where {N}
+    Δs = map(strs) do s
+        Δ = findfirst('.', s)
+        return isnothing(Δ) ? length(s) + 1 : Δ
+    end
+
+    dp_pos = maximum(Δs)
+
+    return map((s, Δ) -> " "^(dp_pos - Δ) * s, strs, Δs)
+end
+
+"""
+    append_unit(str::String, max_length::Int, unit::String) -> String
+
+Return `str` right-padded to `max_length` characters and followed by a space and `unit`.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.append_unit`.
+"""
+function append_unit(str::String, max_length::Int, unit::String)
+    return str * " "^(max_length - length(str)) * " " * unit
+end
+
+"""
+    compact_string(io::IO, x) -> String
+
+Return the string obtained by printing `x` while honoring the `:compact` property of `io`,
+which defaults to `true` if it is absent.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.compact_string`.
+"""
+function compact_string(io::IO, x)
+    compact = get(io, :compact, true)::Bool
+    return sprint(print, x; context = :compact => compact)
+end
