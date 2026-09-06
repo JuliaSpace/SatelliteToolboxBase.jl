@@ -134,6 +134,47 @@
             '\n',
         )
 
+        # The subsections are printed after the fields of their section, with the rails
+        # extended while the section has siblings.
+        nested = SatelliteToolboxBase.PrintedSection[
+            SatelliteToolboxBase.PrintedSection(
+                "Data",
+                [("Comment", "Data comment", "")],
+                [
+                    SatelliteToolboxBase.PrintedSection(
+                        "Mean Elements", [("Semi-Major Axis", "7130.982", "km")]
+                    ),
+                    SatelliteToolboxBase.PrintedSection(
+                        "Parameters", [("Mass", "100.0", "kg")]
+                    ),
+                ],
+            ),
+            "Constants" => [("J₂", "0.00108263", "")],
+        ]
+
+        expected_nested = join(
+            (
+                "MyType:",
+                "  ├─ Data",
+                "  │    Comment : Data comment",
+                "  │    ├─ Mean Elements",
+                "  │    │    Semi-Major Axis : 7130.982 km",
+                "  │    └─ Parameters",
+                "  │         Mass : 100.0 kg",
+                "  └─ Constants",
+                "       J₂ : 0.00108263",
+            ),
+            '\n',
+        )
+
+        str = sprint(
+            SatelliteToolboxBase.print_tree,
+            "MyType",
+            SatelliteToolboxBase.PrintedField[],
+            nested,
+        )
+        @test str == expected_nested
+
         # The header must be highlighted when the output supports colors, and the
         # decorations must not change the text.
         str_color = sprint(

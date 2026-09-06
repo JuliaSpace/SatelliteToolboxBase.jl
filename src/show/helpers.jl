@@ -26,13 +26,40 @@ This type is public but not exported. Refer to it as `SatelliteToolboxBase.Print
 const PrintedField = NTuple{3, String}
 
 """
-    PrintedSection
+    struct PrintedSection
 
-Section of a rich representation: a pair with the section name and its fields.
+Section of a rich representation, drawn as a tree node that holds its fields and, below
+them, its subsections. A pair `name => fields` is converted to a section without
+subsections, so the sections can be written as `PrintedSection["Name" => fields]`.
 
 This type is public but not exported. Refer to it as `SatelliteToolboxBase.PrintedSection`.
+
+# Fields
+
+- `name::String`: Name of the section.
+- `fields::Vector{PrintedField}`: Fields printed under the section name.
+- `sections::Vector{PrintedSection}`: Subsections printed after the fields.
 """
-const PrintedSection = Pair{String, Vector{PrintedField}}
+struct PrintedSection
+    name::String
+    fields::Vector{PrintedField}
+    sections::Vector{PrintedSection}
+end
+
+"""
+    PrintedSection(name::String, fields::AbstractVector{PrintedField}) -> PrintedSection
+
+Create a section called `name` with the `fields` and no subsections.
+"""
+function PrintedSection(name::String, fields::AbstractVector{PrintedField})
+    return PrintedSection(name, fields, PrintedSection[])
+end
+
+function Base.convert(
+    ::Type{PrintedSection}, p::Pair{<:AbstractString, <:AbstractVector{PrintedField}}
+)
+    return PrintedSection(String(first(p)), last(p))
+end
 
 ############################################################################################
 #                                      Compact Format                                      #
@@ -107,9 +134,10 @@ This function is public but not exported. Call it as `SatelliteToolboxBase.print
     ) -> Nothing
 
 Print to `io` the `fields` indented by two spaces, followed by the `sections` drawn as tree
-nodes whose fields are indented by two more spaces after the tree rails. The labels are
-left-aligned to the widest one of each group, the unit `°` hugs the value whereas any other
-unit is separated from it by a space, and the last line has no trailing newline. If `io`
+nodes whose fields and subsections are indented by two more spaces after the tree rails,
+recursively. The labels are left-aligned to the widest one of each group, the unit `°` hugs
+the value whereas any other unit is separated from it by a space, and the last line has no
+trailing newline. If `io`
 supports color, the labels are printed in bold, the units are dimmed, and the tree nodes are
 highlighted, using the faces `:satellitetoolbox_base_label`, `:satellitetoolbox_base_unit`,
 `:satellitetoolbox_base_node`, and `:satellitetoolbox_base_tree`.
@@ -126,12 +154,7 @@ function print_tree_body(
     buf = IOContext(IOBuffer(), io)
 
     print_fields(buf, fields, "  ")
-
-    for (k, (name, section_fields)) in enumerate(sections)
-        is_last = k == lastindex(sections)
-        print_node(buf, name, "  ", is_last ? "└─ " : "├─ ")
-        print_fields(buf, section_fields, is_last ? "       " : "  │    ")
-    end
+    _print_sections(buf, sections, "  ")
 
     print(io, chomp(String(take!(buf.io))))
 
@@ -240,6 +263,30 @@ format_value(x) = string(x)
 ############################################################################################
 #                                    Private Functions                                     #
 ############################################################################################
+
+"""
+    _print_sections(
+        io::IO,
+        sections::AbstractVector{PrintedSection},
+        rail::String
+    ) -> Nothing
+
+Print to `io` the `sections` as tree nodes preceded by `rail`, which holds the tree rails
+of the ancestors. The fields and the subsections of each section are printed below its
+name, with the rail extended by `│` while the section has siblings after it.
+"""
+function _print_sections(io::IO, sections::AbstractVector{PrintedSection}, rail::String)
+    for (k, section) in enumerate(sections)
+        is_last    = k == lastindex(sections)
+        child_rail = rail * (is_last ? "     " : "│    ")
+
+        print_node(io, section.name, rail, is_last ? "└─ " : "├─ ")
+        print_fields(io, section.fields, child_rail)
+        _print_sections(io, section.sections, child_rail)
+    end
+
+    return nothing
+end
 
 """
     _register_faces() -> Nothing

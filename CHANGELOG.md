@@ -15,8 +15,9 @@ Version 2.1.0
   `print_compact`, `print_tree`, `print_tree_body`, `print_fields`, `print_node`,
   `epoch_string`, and `format_value`, together with the types `PrintedField` and
   `PrintedSection`. They are not exported and live in `src/show/helpers.jl`. The rich
-  representation is a tree whose sections are drawn as nodes, and `print_tree_body` is
-  overloaded by the orbit types so that a wrapper can print their body under its own header.
+  representation is a tree whose sections are drawn as nodes and can hold subsections, and
+  `print_tree_body` is overloaded by the orbit types so that a wrapper can print their body
+  under its own header.
 - ![Feature][badge-feature] Register the **StyledStrings** faces `:satellitetoolbox_base_title`,
   `:satellitetoolbox_base_node`, `:satellitetoolbox_base_tree`, `:satellitetoolbox_base_label`,
   and `:satellitetoolbox_base_unit` at load time, which the users can customize.
