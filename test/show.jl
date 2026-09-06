@@ -52,6 +52,10 @@
         str = sprint(SatelliteToolboxBase.print_fields, fields, "│  ")
         @test str == expected
 
+        # An empty value leaves no trailing space after the colon.
+        empty_value = SatelliteToolboxBase.PrintedField[("Decay Date", "", "")]
+        @test sprint(SatelliteToolboxBase.print_fields, empty_value, "  ") == "  Decay Date :\n"
+
         # Nothing is printed without fields.
         no_fields = SatelliteToolboxBase.PrintedField[]
         @test sprint(SatelliteToolboxBase.print_fields, no_fields, "  ") == ""

@@ -166,8 +166,8 @@ end
 
 Print to `io` the `fields`, one per line, each preceded by `rail`, which holds the tree
 rails of the ancestors. The labels are left-aligned to the widest one, the unit `°` hugs the
-value whereas any other unit is separated from it by a space, and every line ends with a
-newline. If `io` supports color, the rails are printed with the face
+value whereas any other unit is separated from it by a space, an empty value leaves no
+trailing space after the colon, and every line ends with a newline. If `io` supports color, the rails are printed with the face
 `:satellitetoolbox_base_tree`, the labels with `:satellitetoolbox_base_label`, and the units
 with `:satellitetoolbox_base_unit`.
 
@@ -185,9 +185,11 @@ function print_fields(io::IO, fields::AbstractVector{PrintedField}, rail::String
             io,
             styled"{satellitetoolbox_base_tree:$rail}",
             styled"{satellitetoolbox_base_label:$padded_label}",
-            " : ",
-            value,
+            " :",
         )
+
+        # An empty value leaves no trailing space after the colon.
+        isempty(value) || print(io, " ", value)
 
         if !isempty(unit)
             unit == "°" || print(io, " ")
