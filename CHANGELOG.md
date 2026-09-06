@@ -8,7 +8,7 @@ Version 2.1.0
   layout of the orbit data messages of **SatelliteToolboxOrbitDataMessages.jl**: the header
   is followed by one field per line with a left-aligned label, the value rounded to 10
   significant digits, and the unit, where `°` hugs the value. The labels were renamed
-  accordingly (`Semi-Major Axis`, `RA of Asc. Node`, `Arg. of Pericenter`). If the output
+  accordingly (`Semi-Major Axis`, `RA of Asc. Node`, `Arg. of Periapsis`). If the output
   supports color, the header and the labels are bold and the units are dimmed.
 - ![Feature][badge-feature] Make the helpers that print the representations public, so
   that the other packages of the ecosystem can print their types with the same layout:

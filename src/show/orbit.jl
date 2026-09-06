@@ -28,13 +28,13 @@ end
 
 function print_tree_body(io::IO, ke::KeplerianElements{Tanomaly}) where {Tanomaly}
     fields = PrintedField[
-        ("Epoch",                 epoch_string(ke.epoch),                            ""),
-        ("Semi-Major Axis",       format_value(ke.semi_major_axis / 1000),           "km"),
-        ("Eccentricity",          format_value(ke.eccentricity),                     ""),
-        ("Inclination",           format_value(rad2deg(ke.inclination)),             "°"),
-        ("RA of Asc. Node",       format_value(rad2deg(ke.raan)),                    "°"),
-        ("Arg. of Pericenter",    format_value(rad2deg(ke.argument_of_periapsis)),   "°"),
-        (_anomaly_label(Tanomaly), format_value(rad2deg(ke.anomaly)),                "°"),
+        ("Epoch",                  epoch_string(ke.epoch),                          ""),
+        ("Semi-Major Axis",        format_value(ke.semi_major_axis / 1000),         "km"),
+        ("Eccentricity",           format_value(ke.eccentricity),                   ""),
+        ("Inclination",            format_value(rad2deg(ke.inclination)),           "°"),
+        ("RA of Asc. Node",        format_value(rad2deg(ke.raan)),                  "°"),
+        ("Arg. of Periapsis",      format_value(rad2deg(ke.argument_of_periapsis)), "°"),
+        (_anomaly_label(Tanomaly), format_value(rad2deg(ke.anomaly)),               "°"),
     ]
 
     print_tree_body(io, fields, PrintedSection[])
@@ -45,13 +45,13 @@ end
 
 function print_tree_body(io::IO, orbit::AbstractEquinoctialElements)
     fields = PrintedField[
-        ("Epoch",           epoch_string(orbit.epoch),                     ""),
-        ("Semi-Major Axis", format_value(orbit.semi_major_axis / 1000),    "km"),
-        ("h",               format_value(orbit.h),                         ""),
-        ("k",               format_value(orbit.k),                         ""),
-        ("p",               format_value(orbit.p),                         ""),
-        ("q",               format_value(orbit.q),                         ""),
-        ("Mean Longitude",  format_value(rad2deg(orbit.mean_longitude)),   "°"),
+        ("Epoch",           epoch_string(orbit.epoch),                   ""),
+        ("Semi-Major Axis", format_value(orbit.semi_major_axis / 1000),  "km"),
+        ("h",               format_value(orbit.h),                       ""),
+        ("k",               format_value(orbit.k),                       ""),
+        ("p",               format_value(orbit.p),                       ""),
+        ("q",               format_value(orbit.q),                       ""),
+        ("Mean Longitude",  format_value(rad2deg(orbit.mean_longitude)), "°"),
     ]
 
     print_tree_body(io, fields, PrintedSection[])
@@ -62,10 +62,10 @@ end
 
 function print_tree_body(io::IO, sv::OrbitStateVector)
     fields = PrintedField[
-        ("Epoch",        epoch_string(sv.epoch),        ""),
-        ("Position",     format_value(sv.r ./ 1000),    "km"),
-        ("Velocity",     format_value(sv.v ./ 1000),    "km/s"),
-        ("Acceleration", format_value(sv.a ./ 1000),    "km/s²"),
+        ("Epoch",        epoch_string(sv.epoch),     ""),
+        ("Position",     format_value(sv.r ./ 1000), "km"),
+        ("Velocity",     format_value(sv.v ./ 1000), "km/s"),
+        ("Acceleration", format_value(sv.a ./ 1000), "km/s²"),
     ]
 
     print_tree_body(io, fields, PrintedSection[])

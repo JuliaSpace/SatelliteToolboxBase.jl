@@ -86,13 +86,13 @@ julia> orb = KeplerianElements(
             123.456 |> deg2rad,
        )
 KeplerianElements{TrueAnomaly, Float64, Float64}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.982 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  True Anomaly       : 123.456°
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.982 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  True Anomaly      : 123.456°
 
 julia> orb_M = KeplerianElements{MeanAnomaly}(
            date_to_jd(1986, 6, 19, 18, 35, 0),
@@ -104,13 +104,13 @@ julia> orb_M = KeplerianElements{MeanAnomaly}(
             123.456 |> deg2rad,
        )
 KeplerianElements{MeanAnomaly, Float64, Float64}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.982 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  Mean Anomaly       : 123.456°
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.982 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  Mean Anomaly      : 123.456°
 ```
 
 The functions `true_anomaly`, `eccentric_anomaly`, and `mean_anomaly` return the desired

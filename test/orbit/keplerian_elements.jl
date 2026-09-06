@@ -220,25 +220,25 @@ end
 
     expected = """
 KeplerianElements{TrueAnomaly, Float64, Float64}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.982 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  True Anomaly       : 123.456°"""
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.982 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  True Anomaly      : 123.456°"""
     str = sprint(show, MIME("text/plain"), orb)
     @test str == expected
 
     expected = """
 KeplerianElements{TrueAnomaly, Float64, Float32}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.98 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  True Anomaly       : 123.456°"""
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.98 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  True Anomaly      : 123.456°"""
     str = sprint(show, MIME("text/plain"), orb_f32)
     @test str == expected
 
@@ -252,13 +252,13 @@ KeplerianElements{TrueAnomaly, Float64, Float32}:
 
     expected = """
 KeplerianElements{EccentricAnomaly, Float64, Float64}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.982 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  Eccentric Anomaly  : 123.450689°"""
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.982 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  Eccentric Anomaly : 123.450689°"""
     str = sprint(show, MIME("text/plain"), orb_E)
     @test str == expected
 
@@ -270,13 +270,13 @@ KeplerianElements{EccentricAnomaly, Float64, Float64}:
 
     expected = """
 KeplerianElements{MeanAnomaly, Float64, Float64}:
-  Epoch              : 2.4466e6 (1986-06-19T18:35:00)
-  Semi-Major Axis    : 7130.982 km
-  Eccentricity       : 0.0001111
-  Inclination        : 98.405°
-  RA of Asc. Node    : 200.0°
-  Arg. of Pericenter : 90.0°
-  Mean Anomaly       : 123.4453778°"""
+  Epoch             : 2.4466e6 (1986-06-19T18:35:00)
+  Semi-Major Axis   : 7130.982 km
+  Eccentricity      : 0.0001111
+  Inclination       : 98.405°
+  RA of Asc. Node   : 200.0°
+  Arg. of Periapsis : 90.0°
+  Mean Anomaly      : 123.4453778°"""
     str = sprint(show, MIME("text/plain"), orb_M)
     @test str == expected
 
