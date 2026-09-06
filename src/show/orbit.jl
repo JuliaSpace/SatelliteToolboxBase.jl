@@ -11,7 +11,7 @@
 ############################################################################################
 
 function Base.show(io::IO, orbit::Orbit)
-    print_compact(io, _orbit_type_name(orbit), orbit.epoch)
+    print_compact(io, type_name(orbit), orbit.epoch)
     return nothing
 end
 
@@ -20,7 +20,7 @@ end
 ############################################################################################
 
 function Base.show(io::IO, ::MIME"text/plain", orbit::Orbit)
-    print_tree(io, _orbit_type_name(orbit), orbit)
+    print_tree(io, type_name(orbit), orbit)
     return nothing
 end
 
@@ -86,14 +86,3 @@ _anomaly_label(::Type{<:AbstractAnomaly}) = "Anomaly"
 _anomaly_label(::Type{<:EccentricAnomaly}) = "Eccentric Anomaly"
 _anomaly_label(::Type{<:MeanAnomaly}) = "Mean Anomaly"
 _anomaly_label(::Type{<:TrueAnomaly}) = "True Anomaly"
-
-"""
-    _orbit_type_name(orbit::Orbit) -> String
-
-Return the name of the type of `orbit` with its parameters, as used in the headers of the
-printed representations.
-"""
-function _orbit_type_name(orbit::Orbit)
-    Torbit = typeof(orbit)
-    return string(nameof(Torbit), "{", join(Torbit.parameters, ", "), "}")
-end

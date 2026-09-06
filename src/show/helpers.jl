@@ -179,12 +179,14 @@ function print_fields(io::IO, fields::AbstractVector{PrintedField}, rail::String
     width = maximum(textwidth ∘ first, fields)
 
     for (label, value, unit) in fields
-        padded_label = rpad(label, width)
+        # The padding that aligns the labels is not decorated.
+        padding = " "^(width - textwidth(label))
 
         print(
             io,
             styled"{satellitetoolbox_base_tree:$rail}",
-            styled"{satellitetoolbox_base_label:$padded_label}",
+            styled"{satellitetoolbox_base_label:$label}",
+            padding,
             " :",
         )
 
@@ -224,6 +226,19 @@ function print_node(io::IO, name::String, rail::String, connector::String)
     return nothing
 end
 
+"""
+    print_status(io::IO, status::String) -> Nothing
+
+Print to `io` the body of a rich representation composed of the single field `Status` with
+the value `status`, e.g. `not initialized`, as described in [`print_tree_body`](@ref).
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.print_status`.
+"""
+function print_status(io::IO, status::String)
+    print_tree_body(io, PrintedField[("Status", status, "")], PrintedSection[])
+    return nothing
+end
+
 ############################################################################################
 #                                          Values                                          #
 ############################################################################################
@@ -240,6 +255,21 @@ function epoch_string(epoch::Number)
     epoch_str = sprint(print, epoch; context = :compact => true)
     date_str  = sprint(print, jd_to_date(DateTime, epoch))
     return string(epoch_str, " (", date_str, ")")
+end
+
+"""
+    type_name(x) -> String
+
+Return the name of the type of `x` followed by its parameters between braces, as used in
+the headers of the representations, e.g. `KeplerianElements{TrueAnomaly, Float64, Float64}`.
+The braces are omitted for a type without parameters.
+
+This function is public but not exported. Call it as `SatelliteToolboxBase.type_name`.
+"""
+function type_name(x)
+    T = typeof(x)
+    isempty(T.parameters) && return string(nameof(T))
+    return string(nameof(T), "{", join(T.parameters, ", "), "}")
 end
 
 """
@@ -294,7 +324,7 @@ end
     _register_faces() -> Nothing
 
 Register the `StyledStrings` faces used by the printed representations. A face already
-defined, e.g. by the user, is not overwritten.
+registered, e.g. by the user, is kept.
 
 The registered faces are:
 
@@ -314,10 +344,8 @@ function _register_faces()
         :satellitetoolbox_base_unit  => StyledStrings.Face(; foreground = :gray),
     )
 
-    for (name, face) in faces
-        haskey(StyledStrings.FACES.default, name) && continue
-        StyledStrings.addface!(name => face)
-    end
+    # `addface!` keeps a face that is already registered, e.g. by the user.
+    foreach(StyledStrings.addface!, faces)
 
     return nothing
 end

@@ -27,6 +27,17 @@
         @test SatelliteToolboxBase.format_value("SGP4") == "SGP4"
     end
 
+    @testset "type_name" begin
+        @test SatelliteToolboxBase.type_name(1.0) == "Float64"
+        @test SatelliteToolboxBase.type_name((1, 2.0)) == "Tuple{Int64, Float64}"
+        @test SatelliteToolboxBase.type_name(1 => 2.0) == "Pair{Int64, Float64}"
+    end
+
+    @testset "print_status" begin
+        str = sprint(SatelliteToolboxBase.print_status, "not initialized")
+        @test str == "  Status : not initialized"
+    end
+
     @testset "print_compact" begin
         str = sprint(SatelliteToolboxBase.print_compact, "MyOrbit", 2.4466e6)
         @test str == "MyOrbit: Epoch = 2.4466e6 (1986-06-18T12:00:00)"
@@ -63,10 +74,14 @@
         # The rails, the labels, and the units must be decorated when the output supports
         # colors.
         str_color = sprint(
-            SatelliteToolboxBase.print_fields, fields[1:1], "│  "; context = :color => true
+            SatelliteToolboxBase.print_fields, fields[1:2], "│  "; context = :color => true
         )
-        @test str_color ==
-            "\e[90m│  \e[39m\e[1mSemi-Major Axis\e[22m : 7130.982 \e[90mkm\e[39m\n"
+        @test str_color == join(
+            (
+                "\e[90m│  \e[39m\e[1mSemi-Major Axis\e[22m : 7130.982 \e[90mkm\e[39m\n",
+                "\e[90m│  \e[39m\e[1mInclination\e[22m     : 98.405\e[90m°\e[39m\n",
+            ),
+        )
     end
 
     @testset "print_node" begin

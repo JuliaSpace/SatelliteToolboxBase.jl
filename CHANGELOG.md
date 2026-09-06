@@ -13,8 +13,8 @@ Version 2.1.0
 - ![Feature][badge-feature] Make the helpers that print the representations public, so
   that the other packages of the ecosystem can print their types with the same layout:
   `print_compact`, `print_tree`, `print_tree_body`, `print_fields`, `print_node`,
-  `epoch_string`, and `format_value`, together with the types `PrintedField` and
-  `PrintedSection`. They are not exported and live in `src/show/helpers.jl`. The rich
+  `print_status`, `epoch_string`, `format_value`, and `type_name`, together with the types
+  `PrintedField` and `PrintedSection`. They are not exported and live in `src/show/helpers.jl`. The rich
   representation is a tree whose sections are drawn as nodes and can hold subsections, and
   `print_tree_body` is overloaded by the orbit types so that a wrapper can print their body
   under its own header.
